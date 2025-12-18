@@ -86,6 +86,10 @@ class RakacaServiceProvider extends ServiceProvider
 
         $this->publishes($this->getMigrations(), 'rakaca:migrations');
 
+        $this->publishes([
+            __DIR__ . '/../database/seeders/KecamatanDesaSeeder.php' => database_path('/seeders/KecamatanDesaSeeder.php'),
+        ], 'rakaca:seeders');
+
     }
 
     /**

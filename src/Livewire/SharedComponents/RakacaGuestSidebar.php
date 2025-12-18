@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 
-class RakacaSidebar extends Component
+class RakacaGuestSidebar extends Component
 {
     #[Layout('rakaca::layouts.app')]
 
@@ -19,6 +19,6 @@ class RakacaSidebar extends Component
 
     public function render()
     {
-        return view('rakaca::livewire.shared-components.rakaca-sidebar');
+        return view('rakaca::livewire.shared-components.rakaca-guest-sidebar');
     }
 }

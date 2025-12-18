@@ -15,16 +15,15 @@
         href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;1,500&family=Noto+Color+Emoji&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,500;1,500&family=Quicksand&display=swap"
         rel="stylesheet">
 
-    <x-bale-cms::script />
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 
 </head>
 
 {{-- Layout For Livewire Admin Panel --}}
 
 <body
-    class="min-h-screen bg-gray-100 dark:bg-slate-900 scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-100/50 overscroll-none">
+    class="min-h-screen bg-gray-100 dark:bg-slate-900 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-300 scrollbar-thumb-rounded-full scrollbar-track-rounded-full overscroll-none">
 
     <div class="fixed inset-x-0 top-0 z-40 w-full h-full px-4 pb-10 bg-white backdrop-blur-md dark:bg-slate-900 sm:px-6 md:px-8 lg:pl-72"
         x-data="{ loader: true }" x-show="loader" x-init="setTimeout(() => loader = false, 600)"
@@ -39,14 +38,24 @@
         <span class="sr-only">preloader</span>
     </div>
 
-    <livewire:shared-components.volt.topbar />
-    <livewire:rakaca.shared-components.rakaca-sidebar />
+    <livewire:core.shared-components.topbar />
+
+    @can('dashboard')
+        <livewire:rakaca.shared-components.rakaca-landlord-sidebar />
+    @endcan
+
+    @role('guest')
+    <livewire:rakaca.shared-components.rakaca-guest-sidebar />
+    @endrole
 
     <div class="w-full px-4 pt-5 pb-10 sm:px-6 md:px-8 lg:pl-72">
         <main>
             {{ $slot }}
         </main>
     </div>
+    @livewireScripts
+
+    <x-core::toast />
 
 </body>
 
