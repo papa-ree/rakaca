@@ -21,6 +21,13 @@
                 <li>
                     <h5 class="mb-3 text-sm font-semibold text-gray-800 dark:text-gray-200">Data Internet Desa</h5>
                     <ul class="ms-0.5 space-y-2 border-s-2 border-gray-100 dark:border-gray-800">
+                        @if ($this->availableKosadataMenus == [])
+                            <div class="dark:text-white text-xs">
+                                <p>{{ 'Please run:' }}</p>
+                                <p>{{ 'composer require nawasara/kosadata' }}</p>
+                            </div>
+                        @endif
+
                         @foreach ($this->availableKosadataMenus as $menu)
                             <li>
                                 <a class="block py-1 ps-4 -ms-px border-s-2 border-transparent text-sm text-gray-700 hover:border-gray-400 hover:text-gray-900 focus:outline-hidden focus:border-gray-400 focus:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 dark:focus:text-gray-300 "
