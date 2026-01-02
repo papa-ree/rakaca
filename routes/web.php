@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Paparee\Rakaca\Livewire\LandingPages\Home\Index;
-use Paparee\Rakaca\Livewire\Pages\Guest\Index as GuestIndex;
-// use Paparee\Rakaca\Livewire\Pages\Guest\Index;
+use Paparee\Rakaca\Livewire\Pages\Guest\SelectBale\Index as SelectBaleIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Dashboard\Index as LandlordDashboardIndex;
+use Paparee\Rakaca\Livewire\Pages\Guest\Dashboard\Index as GuestDashboardIndex;
 
 Route::middleware(['web'])->group(function () {
 
@@ -18,7 +18,11 @@ Route::middleware(['web'])->group(function () {
 
         // redirect from dashboard redirector in core package
         Route::group(['middleware' => ['permission:waiting room']], function () {
-            Route::get('guest', GuestIndex::class)->name('overview');
+            Route::get('guest', GuestDashboardIndex::class)->name('guest.dashboard');
         });
+
+        // select bale
+        Route::get('select-bale', SelectBaleIndex::class)->name('select-bale');
+
     });
 });
