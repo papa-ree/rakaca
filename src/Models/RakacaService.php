@@ -20,4 +20,9 @@ class RakacaService extends Model
     {
         return $this->hasMany(ServiceOrderHistory::class, 'rakaca_service_id', 'id');
     }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class, 'rakaca_service_id', 'id');
+    }
 }

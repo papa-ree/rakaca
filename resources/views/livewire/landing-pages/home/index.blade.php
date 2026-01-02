@@ -52,8 +52,13 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="py-20 text-white hero-gradient md:py-32">
-        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <section class="py-20 text-white md:py-32 relative overflow-hidden"
+        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);">
+        {{-- Decorative Elements --}}
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32"></div>
+
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 relative z-10">
             <div class="text-center">
                 <h1 class="mb-6 text-4xl font-bold md:text-5xl lg:text-6xl">
                     Etalase Layanan Teknologi Informasi dan Infrastruktur
@@ -68,7 +73,7 @@
                     Solusi digital yang andal untuk mendukung Instansi Pemerintah Kabupaten Ponorogo
                 </p>
                 <a href="#Layanan"
-                    class="inline-flex items-center px-8 py-3 text-base font-medium transition duration-300 bg-white border border-transparent rounded-md shadow-sm text-primary-700 hover:bg-gray-100 md:py-4 md:text-lg md:px-10">
+                    class="inline-flex items-center px-8 py-3 text-base font-medium transition duration-300 bg-white border border-transparent rounded-md shadow-sm text-purple-700 hover:bg-gray-100 md:py-4 md:text-lg md:px-10">
                     Eksplorasi Layanan
                 </a>
             </div>

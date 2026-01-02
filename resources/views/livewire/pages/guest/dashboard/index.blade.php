@@ -29,6 +29,9 @@
         {{-- Active Services Card --}}
         <livewire:rakaca.pages.guest.dashboard.section.active-service-card />
 
+        {{-- Pending Submissions --}}
+        <livewire:rakaca.pages.guest.dashboard.section.pending-submission-card />
+
         {{-- Total Services Available --}}
         <div
             class="group p-6 transition-all duration-300 bg-white border border-gray-100 shadow-md dark:bg-gray-800 rounded-2xl hover:shadow-xl dark:border-gray-700 hover:-translate-y-1">
@@ -49,25 +52,6 @@
                     Lihat semua layanan
                     <x-lucide-arrow-right class="w-3 h-3 ml-1" />
                 </a>
-            </div>
-        </div>
-
-        {{-- Pending Submissions --}}
-        <div
-            class="group p-6 transition-all duration-300 bg-white border border-gray-100 shadow-md dark:bg-gray-800 rounded-2xl hover:shadow-xl dark:border-gray-700 hover:-translate-y-1">
-            <div class="flex items-center justify-between mb-4">
-                <div class="p-3 bg-linear-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg">
-                    <x-lucide-clock class="w-6 h-6 text-white" />
-                </div>
-                <span
-                    class="px-3 py-1 text-xs font-semibold text-amber-700 bg-amber-100 rounded-full dark:bg-amber-900/50 dark:text-amber-300">Menunggu</span>
-            </div>
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pengajuan Pending</p>
-                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">0</p>
-            </div>
-            <div class="mt-4">
-                <p class="text-xs text-gray-500 dark:text-gray-400">Tidak ada pengajuan menunggu</p>
             </div>
         </div>
 
@@ -134,94 +118,14 @@
     </div>
 
     {{-- Submission Status Section --}}
-    <div id="submissions" class="mb-8" data-aos="fade-up" data-aos-delay="200">
-        <div class="p-6 bg-white border border-gray-100 shadow-md dark:bg-gray-800 rounded-2xl dark:border-gray-700">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Status Pengajuan</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pantau status pengajuan layanan Anda</p>
-                </div>
-                <div class="p-3 bg-linear-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-lg">
-                    <x-lucide-clipboard-list class="w-6 h-6 text-white" />
-                </div>
-            </div>
-
-            {{-- Empty State --}}
-            <div class="text-center py-12">
-                <div
-                    class="flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-700">
-                    <x-lucide-inbox class="w-10 h-10 text-gray-400 dark:text-gray-500" />
-                </div>
-                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Belum Ada Pengajuan</h4>
-                <p class="text-gray-600 dark:text-gray-400 mb-6">
-                    Anda belum memiliki pengajuan layanan. Mulai dengan memilih layanan yang Anda butuhkan.
-                </p>
-                <a href="#services">
-                    <x-core::button label="Mulai Pengajuan" type="button" class="inline-flex items-center gap-x-2">
-                        <x-slot name="icon">
-                            <x-lucide-plus class="w-5 h-5" />
-                        </x-slot>
-                    </x-core::button>
-                </a>
-            </div>
-
-            {{-- Example of filled state (commented out for reference) --}}
-            <div class="space-y-3">
-                <div
-                    class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
-                                <x-lucide-server class="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900 dark:text-white">VPS Server</h4>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Pengajuan #12345</p>
-                            </div>
-                        </div>
-                        <span
-                            class="px-3 py-1 text-xs font-semibold text-amber-700 bg-amber-100 rounded-full dark:bg-amber-900/50 dark:text-amber-300">
-                            Dalam Review
-                        </span>
-                    </div>
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">Diajukan: 31 Des 2025</span>
-                        <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Lihat Detail</a>
-                    </div>
-                </div>
-
-                <div
-                    class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
-                                <x-lucide-mail class="w-5 h-5 text-green-600 dark:text-green-400" />
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900 dark:text-white">Email Pemerintah</h4>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Pengajuan #12344</p>
-                            </div>
-                        </div>
-                        <span
-                            class="px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full dark:bg-green-900/50 dark:text-green-300">
-                            Disetujui
-                        </span>
-                    </div>
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">Disetujui: 30 Des 2025</span>
-                        <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Lihat Detail</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <livewire:rakaca.pages.guest.dashboard.section.submission-status />
 
     {{-- CTA Section --}}
-    <div class="p-8 mb-8 bg-linear-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl"
+    <div class="p-8 mb-8 bg-linear-to-br from-purple-50 to-purple-50 dark:from-purple-900/20 dark:to-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-2xl"
         data-aos="fade-up" data-aos-delay="250">
         <div class="max-w-3xl mx-auto text-center">
             <div
-                class="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-linear-to-br from-emerald-500 to-teal-500 shadow-lg">
+                class="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-linear-to-br from-purple-500 to-purple-500 shadow-lg">
                 <x-lucide-zap class="w-10 h-10 text-white" />
             </div>
             <h2 class="mb-3 text-3xl font-bold text-gray-900 dark:text-white">Siap Untuk Memulai?</h2>

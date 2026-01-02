@@ -8,11 +8,11 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('service_order_histories', function (Blueprint $table) {
+        Schema::create('submissions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_uuid');
             $table->uuid('rakaca_service_id');
-            $table->string('submission_id');
+            $table->string('code');
             $table->string('status')->default('pending');
             $table->json('data')->nullable();
             $table->timestamps();
@@ -21,6 +21,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('service_order_histories');
+        Schema::dropIfExists('submissions');
     }
 };
