@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Schema;
 class GenerateServiceCommand extends Command
 {
     protected $signature = 'rakaca:make-service 
-        {name : Service name, e.g. Bale CMS} 
+        {--name : Service name, e.g. Bale CMS} 
         {--slug= : Slug for the service (optional)} 
         {--user= : User UUID to attach (optional)}';
 
@@ -18,7 +18,7 @@ class GenerateServiceCommand extends Command
 
     public function handle()
     {
-        $name = $this->argument('name');
+        $name = $this->option('name');
         $slug = $this->option('slug') ?? Str::slug($name);
         $userUuid = $this->option('user');
 
