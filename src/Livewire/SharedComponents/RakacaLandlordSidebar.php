@@ -23,6 +23,14 @@ class RakacaLandlordSidebar extends Component
             ],
         ];
 
+        // Add User Management menu if user has permission
+        if (auth()->check() && auth()->user()->can('user management')) {
+            $menu[] = [
+                'label' => 'User Management',
+                'url' => 'user-management',
+            ];
+        }
+
         return $menu;
     }
 
