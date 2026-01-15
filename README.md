@@ -36,25 +36,43 @@ You can publish the config file with:
 php artisan vendor:publish --tag="rakaca-config"
 ```
 
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
 Optionally, you can publish the views using
 
 ```bash
 php artisan vendor:publish --tag="rakaca-views"
 ```
 
+## Artisan Commands
+
+Rakaca provides several artisan commands to manage services, user-service relations, and submissions.
+
+### Create Service
+
+Generate a new service and optionally attach it to a user.
+
+```bash
+php artisan rakaca:make-service --name="Bale CMS" --slug="bale-cms" --user="user-uuid-here"
+```
+
+### Link User to Service (Interactive)
+
+Interactive command to link an existing user to an active service.
+
+```bash
+php artisan rakaca:make-person-service
+```
+
+### Create User Submission
+
+Generate a new submission record for a specific user and service.
+
+```bash
+php artisan rakaca:make-user-submission --username="john_doe" --service_slug="bale-cms"
+```
+
 ## Usage
 
-```php
-$rakaca = new Paparee\Rakaca();
-echo $rakaca->echoPhrase('Hello, Paparee!');
-```
+The package provides a GUI for managing services and submissions. Ensure you have run the migrations and configured any necessary services via the commands above or the provided UI.
 
 ## Testing
 
