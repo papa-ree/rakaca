@@ -355,6 +355,9 @@
         </div>
     </section>
 
+    {{-- SSO Session Popup --}}
+    <livewire:core.shared-components.session-popup />
+
     <!-- Footer Section -->
     <footer id="Kontak" class="py-12 text-gray-300 bg-gray-800 dark:bg-gray-950">
         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
