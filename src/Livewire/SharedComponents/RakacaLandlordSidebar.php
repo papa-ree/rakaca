@@ -20,6 +20,7 @@ class RakacaLandlordSidebar extends Component
             [
                 'label' => 'Dashboard',
                 'url' => 'landlord-dashboard',
+                'icon' => 'layout-dashboard',
             ],
         ];
 
@@ -28,6 +29,7 @@ class RakacaLandlordSidebar extends Component
             $menu[] = [
                 'label' => 'User Management',
                 'url' => 'user-management',
+                'icon' => 'users',
             ];
         }
 
@@ -44,16 +46,19 @@ class RakacaLandlordSidebar extends Component
                 [
                     'label' => 'Overview',
                     'url' => 'internet-desa-overview',
+                    'icon' => 'activity',
                 ],
             \Nawasara\Kosadata\Livewire\Pages\InternetProvider\Index::class =>
                 [
                     'label' => 'Internet Provider',
                     'url' => 'internet-provider',
+                    'icon' => 'globe',
                 ],
             \Nawasara\Kosadata\Livewire\Pages\IspDesa\Index::class =>
                 [
                     'label' => 'ISP Desa',
                     'url' => 'isp-desa',
+                    'icon' => 'network',
                 ],
         ];
 
