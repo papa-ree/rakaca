@@ -9,6 +9,8 @@ use Livewire\Livewire;
 use Paparee\Rakaca\Commands\GeneratePersonHasServiceCommand;
 use Paparee\Rakaca\Commands\GenerateServiceCommand;
 use Paparee\Rakaca\Commands\GenerateUserSubmissionCommand;
+use Paparee\Rakaca\Commands\InstallRakacaCommand;
+use Paparee\Rakaca\Commands\PublishMigrationCommand;
 use Symfony\Component\Finder\Finder;
 
 class RakacaServiceProvider extends ServiceProvider
@@ -24,6 +26,8 @@ class RakacaServiceProvider extends ServiceProvider
             'command.rakaca:make-service' => GenerateServiceCommand::class,
             'command.rakaca:make-person-service' => GeneratePersonHasServiceCommand::class,
             'command.rakaca:make-user-submission' => GenerateUserSubmissionCommand::class,
+            'command.rakaca:install' => InstallRakacaCommand::class,
+            'command.rakaca:publish-migration' => PublishMigrationCommand::class,
         ];
 
         foreach ($commands as $key => $class) {

@@ -14,12 +14,13 @@ use Livewire\Attributes\{Layout};
 class Index extends Component
 {
     public $bales = [];
+    public $userUuid;
 
     public function mount()
     {
-        $userUuid = Auth::user()?->uuid;
+        $this->userUuid = Auth::user()?->uuid;
 
-        $baleIds = BaleUser::where('user_uuid', $userUuid)
+        $baleIds = BaleUser::where('user_uuid', $this->userUuid)
             ->pluck('bale_id');
 
         $this->bales = BaleList::whereIn('id', $baleIds)->get();
@@ -31,6 +32,10 @@ class Index extends Component
 
         $selected_bale = BaleList::find($id);
         session(['bale_active_slug' => $selected_bale->slug]);
+
+        $user_role = BaleUser::whereUserUuid($this->userUuid)->whereBaleId($id)->first();
+        session(['bale_active_user_role' => $user_role->role]);
+        session(['bale_active_user_uuid' => $this->userUuid]);
 
         return redirect()->route('bale.cms.overview');
     }

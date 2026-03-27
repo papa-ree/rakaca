@@ -70,7 +70,8 @@
 
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($bales as $bale)
-                    <button wire:click="selectBale('{{ $bale->id }}')" wire:loading.attr="disabled" wire:target="selectBale('{{ $bale->id }}')"
+                    <button wire:click="selectBale('{{ $bale->id }}')" wire:loading.attr="disabled"
+                        wire:target="selectBale('{{ $bale->id }}')"
                         class="group relative cursor-pointer flex flex-col p-6 text-left transition-all duration-300 bg-white border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700 rounded-2xl hover:shadow-xl hover:-translate-y-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-purple-400 dark:focus:ring-offset-gray-900">
 
                         {{-- Gradient Accent --}}
@@ -109,13 +110,12 @@
                                 Masuk Dashboard
                             </div>
                             <div wire:loading wire:target="selectBale('{{ $bale->id }}')"
-                            class="flex items-center text-sm font-semibold text-purple-600 dark:text-purple-400 opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                                <svg class="w-8 h-8 absolute -bottom-4 -right-1 text-purple-600 animate-spin" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10"
-                                        stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                class="flex items-center text-sm font-semibold text-purple-600 dark:text-purple-400 opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                <svg class="w-8 h-8 absolute -bottom-4 -right-1 text-purple-600 animate-spin"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                                    </circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                 </svg>
                             </div>
                         </div>
@@ -142,7 +142,7 @@
 
                     {{-- Quick Actions --}}
                     <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                        <a href="{{ route('rakaca.guest.dashboard') }}"
+                        <a href="{{ route('rakaca.guest-dashboard.index') }}"
                             class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">
                             <x-lucide-arrow-left class="w-4 h-4 mr-2" />
                             Kembali ke Dashboard

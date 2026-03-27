@@ -26,9 +26,22 @@ composer require papa-ree/rakaca
 You can publish and run the migrations with:
 
 ```bash
-php artisan vendor:publish --tag="rakaca-migrations"
+php artisan vendor:publish --tag="rakaca:migrations"
 php artisan migrate
 ```
+
+### Migration Publisher (Recommended)
+
+Alternatively, you can use the interactive migration publisher which provides more control:
+
+```bash
+php artisan rakaca:publish-migration
+```
+
+This command allows you to:
+- **All**: Publish all migrations.
+- **Auto (Only missing)**: Publish only migrations that don't exist yet in your application.
+- **Specific Migration**: Select specific migrations from a list.
 
 You can publish the config file with:
 
