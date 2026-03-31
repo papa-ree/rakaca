@@ -64,7 +64,7 @@
                             </div>
                             <div class="flex items-center justify-between text-sm">
                                 <span class="text-gray-500 dark:text-gray-400">
-                                    Diajukan: {{ $submission->created_at->format('d M Y') }}
+                                    Diajukan: {{ $submission->created_at }}
                                 </span>
                                 <button wire:click="viewDetail('{{ $submission->id }}')"
                                     class="text-blue-600 dark:text-blue-400 hover:underline">
