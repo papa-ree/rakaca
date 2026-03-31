@@ -19,9 +19,7 @@
                                 <option value="{{ $bale->id }}">{{ $bale->name }}</option>
                             @endforeach
                         </select>
-                        @error('bale_id')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="bale_id" />
                     </div>
 
                     {{-- User --}}
@@ -34,9 +32,7 @@
                                 <option value="{{ $user->uuid }}">{{ $user->name }} ({{ $user->email }})</option>
                             @endforeach
                         </select>
-                        @error('user_uuid')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="user_uuid" />
                     </div>
 
                     {{-- Role --}}
@@ -48,9 +44,7 @@
                             <option value="admin">Admin</option>
                             <option value="root">Root</option>
                         </select>
-                        @error('role')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="role" />
                     </div>
 
                     {{-- Info note --}}

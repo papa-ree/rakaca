@@ -13,9 +13,7 @@
                     <x-core::label for="name" :value="__('Organization Name *')" />
                     <x-core::input id="name" type="text" wire:model.live="name" required
                         placeholder="e.g. Dinas Komunikasi dan Informatika" />
-                    @error('name')
-                        <x-core::input-error :message="$message" />
-                    @enderror
+                    <x-core::input-error for="name" />
                 </div>
 
                 {{-- Slug --}}
@@ -23,10 +21,9 @@
                     <x-core::label for="slug" :value="__('Slug *')" />
                     <x-core::input id="slug" type="text" wire:model="slug" required placeholder="dinas-kominfo" />
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        {{ __('Unique identifier for the organization') }}</p>
-                    @error('slug')
-                        <x-core::input-error :message="$message" />
-                    @enderror
+                        {{ __('Unique identifier for the organization') }}
+                    </p>
+                    <x-core::input-error for="slug" />
                 </div>
 
                 {{-- Actions --}}

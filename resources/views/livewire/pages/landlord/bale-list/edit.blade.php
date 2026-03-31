@@ -19,68 +19,55 @@
                                 <option value="{{ $org->id }}">{{ $org->name }}</option>
                             @endforeach
                         </select>
-                        @error('organization_id')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="organization_id" />
                     </div>
 
                     {{-- Name --}}
                     <div>
                         <x-core::label for="name" :value="__('Instance Name *')" />
                         <x-core::input id="name" type="text" wire:model.live="name" required />
-                        @error('name')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="name" />
                     </div>
 
                     {{-- Slug --}}
                     <div>
                         <x-core::label for="slug" :value="__('Slug *')" />
                         <x-core::input id="slug" type="text" wire:model="slug" required />
-                        @error('slug')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="slug" />
                     </div>
 
                     <div class="col-span-2 border-t border-gray-100 dark:border-gray-700 pt-4">
                         <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                            {{ __('Database Configuration') }}</h3>
+                            {{ __('Database Configuration') }}
+                        </h3>
                     </div>
 
                     {{-- DB Host --}}
                     <div>
                         <x-core::label for="database_host" :value="__('Database Host *')" />
                         <x-core::input id="database_host" type="text" wire:model="database_host" required />
-                        @error('database_host')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="database_host" />
                     </div>
 
                     {{-- DB Name --}}
                     <div>
                         <x-core::label for="database_name" :value="__('Database Name *')" />
                         <x-core::input id="database_name" type="text" wire:model="database_name" required />
-                        @error('database_name')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="database_name" />
                     </div>
 
                     {{-- DB Username --}}
                     <div>
                         <x-core::label for="database_username" :value="__('Database Username *')" />
                         <x-core::input id="database_username" type="text" wire:model="database_username" required />
-                        @error('database_username')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="database_username" />
                     </div>
 
                     {{-- DB Password --}}
                     <div>
                         <x-core::label for="database_password" :value="__('Database Password')" />
                         <x-core::input id="database_password" type="password" wire:model="database_password" />
-                        @error('database_password')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="database_password" />
                     </div>
 
                     <div class="col-span-2 border-t border-gray-100 dark:border-gray-700 pt-4">
@@ -91,9 +78,7 @@
                     <div>
                         <x-core::label for="storage_prefix" :value="__('Storage Prefix')" />
                         <x-core::input id="storage_prefix" type="text" wire:model="storage_prefix" />
-                        @error('storage_prefix')
-                            <x-core::input-error :message="$message" />
-                        @enderror
+                        <x-core::input-error for="storage_prefix" />
                     </div>
 
                     {{-- Is Active --}}
