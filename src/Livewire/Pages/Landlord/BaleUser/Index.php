@@ -13,12 +13,6 @@ use Illuminate\Support\Facades\DB;
 #[Title('Bale User Management')]
 class Index extends Component
 {
-    use WithPagination;
-
-    public $query = '';
-    public $sortField = 'created_at';
-    public $sortDirection = 'desc';
-
     public function mount()
     {
         if (!auth()->user()->can('bale-user.read')) {
@@ -29,33 +23,6 @@ class Index extends Component
     public function render()
     {
         return view('rakaca::livewire.pages.landlord.bale-user.index');
-    }
-
-    #[Computed]
-    public function baleUsers()
-    {
-        return BaleUser::query()
-            ->with(['bale', 'user'])
-            ->when($this->query, function ($query) {
-                $query->whereHas('user', function ($q) {
-                    $q->where('name', 'like', '%' . $this->query . '%')
-                        ->orWhere('email', 'like', '%' . $this->query . '%');
-                })->orWhereHas('bale', function ($q) {
-                    $q->where('name', 'like', '%' . $this->query . '%');
-                });
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
-    }
-
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'asc';
-        }
     }
 
     #[On('deleteItem')]

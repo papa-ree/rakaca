@@ -18,6 +18,11 @@ class PersonHasService extends Model
         'actived',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:d M Y',
+        'updated_at' => 'datetime:d M Y',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_uuid', 'uuid');

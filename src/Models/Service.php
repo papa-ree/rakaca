@@ -27,5 +27,7 @@ class Service extends Model
 
     protected $casts = [
         'actived' => 'boolean',
+        'created_at' => 'datetime:d M Y',
+        'updated_at' => 'datetime:d M Y',
     ];
 }

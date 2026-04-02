@@ -19,6 +19,11 @@ class BaleUser extends Model
         'role',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:d M Y',
+        'updated_at' => 'datetime:d M Y',
+    ];
+
     /**
      * Get the bale list that this user belongs to.
      */

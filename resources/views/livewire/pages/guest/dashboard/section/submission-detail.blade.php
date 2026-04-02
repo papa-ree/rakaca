@@ -62,20 +62,20 @@
                 <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Tanggal Pengajuan</p>
                     <p class="font-semibold text-gray-900 dark:text-white">
-                        {{ $submission?->created_at?->format('d F Y') }}
+                        {{ $submission?->created_at }}
                     </p>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {{ $submission?->created_at?->format('H:i') }} WIB
+                        {{ $submission?->created_at }} WIB
                     </p>
                 </div>
 
                 <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Terakhir Diupdate</p>
                     <p class="font-semibold text-gray-900 dark:text-white">
-                        {{ $submission?->updated_at?->format('d F Y') }}
+                        {{ $submission?->updated_at }}
                     </p>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {{ $submission?->updated_at?->diffForHumans() }}
+                        {{ $submission?->updated_at }}
                     </p>
                 </div>
             </div>

@@ -11,12 +11,6 @@ use Paparee\Rakaca\Models\Organization;
 #[Title('Organization Management')]
 class Index extends Component
 {
-    use WithPagination;
-
-    public $query = '';
-    public $sortField = 'name';
-    public $sortDirection = 'asc';
-
     public function mount()
     {
         if (!auth()->user()->can('organization.read')) {
@@ -29,28 +23,6 @@ class Index extends Component
         return view('rakaca::livewire.pages.landlord.organization.index');
     }
 
-    #[Computed]
-    public function organizations()
-    {
-        return Organization::query()
-            ->when($this->query, function ($query) {
-                $query->where('name', 'like', '%' . $this->query . '%')
-                    ->orWhere('slug', 'like', '%' . $this->query . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
-    }
-
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'asc';
-        }
-    }
-
     #[On('deleteItem')]
     public function deleteOrganization($id)
     {
@@ -61,7 +33,7 @@ class Index extends Component
         $organization = Organization::findOrFail($id);
         $organization->delete();
 
-        session()->flash('message', __('Organization deleted successfully.'));
+        $this->dispatch('toast', message: __('Organization deleted successfully.'), type: 'success');
         $this->dispatch('paginated');
     }
 }

@@ -19,5 +19,7 @@ class TenantAnalytics extends Model
 
     protected $casts = [
         'enabled' => 'boolean',
+        'created_at' => 'datetime:d M Y',
+        'updated_at' => 'datetime:d M Y',
     ];
 }

@@ -11,12 +11,6 @@ use Paparee\Rakaca\Models\Submission;
 #[Title('Submission Management')]
 class Index extends Component
 {
-    use WithPagination;
-
-    public $query = '';
-    public $sortField = 'created_at';
-    public $sortDirection = 'desc';
-
     public function mount()
     {
         if (!auth()->user()->can('submission.read')) {
@@ -29,30 +23,6 @@ class Index extends Component
         return view('rakaca::livewire.pages.landlord.submission.index');
     }
 
-    #[Computed]
-    public function submissions()
-    {
-        return Submission::with('service')
-            ->when($this->query, function ($query) {
-                $query->where('code', 'like', '%' . $this->query . '%')
-                    ->orWhereHas('service', function ($q) {
-                        $q->where('name', 'like', '%' . $this->query . '%');
-                    });
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
-    }
-
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'asc';
-        }
-    }
-
     #[On('deleteItem')]
     public function deleteSubmission($id)
     {
@@ -63,7 +33,7 @@ class Index extends Component
         $submission = Submission::findOrFail($id);
         $submission->delete();
 
-        session()->flash('message', 'Submission deleted successfully.');
+        $this->dispatch('toast', message: 'Submission deleted successfully.', type: 'success');
         $this->dispatch('paginated');
     }
 }

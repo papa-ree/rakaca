@@ -11,6 +11,11 @@ class RakacaService extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'created_at' => 'datetime:d M Y',
+        'updated_at' => 'datetime:d M Y',
+    ];
+
     public function persons()
     {
         return $this->hasMany(PersonHasService::class, 'rakaca_service_id', 'id');

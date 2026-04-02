@@ -20,6 +20,8 @@ class Submission extends Model
 
     protected $casts = [
         'data' => 'array',
+        'created_at' => 'datetime:d M Y',
+        'updated_at' => 'datetime:d M Y',
     ];
 
     public function service(): BelongsTo

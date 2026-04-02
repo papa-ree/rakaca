@@ -19,6 +19,11 @@ class Organization extends Model
         'created_by',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:d M Y',
+        'updated_at' => 'datetime:d M Y',
+    ];
+
     /**
      * Get the user who created the organization.
      */

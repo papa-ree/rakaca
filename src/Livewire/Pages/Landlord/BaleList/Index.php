@@ -11,12 +11,6 @@ use Paparee\Rakaca\Models\BaleList;
 #[Title('Bale List Management')]
 class Index extends Component
 {
-    use WithPagination;
-
-    public $query = '';
-    public $sortField = 'name';
-    public $sortDirection = 'asc';
-
     public function mount()
     {
         if (!auth()->user()->can('bale-list.read')) {
@@ -29,29 +23,6 @@ class Index extends Component
         return view('rakaca::livewire.pages.landlord.bale-list.index');
     }
 
-    #[Computed]
-    public function baleLists()
-    {
-        return BaleList::query()
-            ->with('organization')
-            ->when($this->query, function ($query) {
-                $query->where('name', 'like', '%' . $this->query . '%')
-                    ->orWhere('slug', 'like', '%' . $this->query . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
-    }
-
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'asc';
-        }
-    }
-
     #[On('deleteItem')]
     public function deleteBaleList($id)
     {
@@ -62,7 +33,7 @@ class Index extends Component
         $baleList = BaleList::findOrFail($id);
         $baleList->delete();
 
-        session()->flash('message', __('Bale List deleted successfully.'));
+        $this->dispatch('toast', message: __('Bale List deleted successfully.'), type: 'success');
         $this->dispatch('paginated');
     }
 
