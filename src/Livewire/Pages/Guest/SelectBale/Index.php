@@ -13,17 +13,11 @@ use Livewire\Attributes\{Layout};
 #[Title('Rakaca | Select Bale')]
 class Index extends Component
 {
-    public $bales = [];
     public $userUuid;
 
     public function mount()
     {
         $this->userUuid = Auth::user()?->uuid;
-
-        $baleIds = BaleUser::where('user_uuid', $this->userUuid)
-            ->pluck('bale_id');
-
-        $this->bales = BaleList::whereIn('id', $baleIds)->get();
     }
 
     public function selectBale(string $id)
@@ -42,8 +36,13 @@ class Index extends Component
 
     public function render()
     {
+        $baleIds = BaleUser::where('user_uuid', $this->userUuid)
+            ->pluck('bale_id');
+
+        $bales = BaleList::whereIn('id', $baleIds)->get();
+
         return view('rakaca::livewire.pages.guest.select-bale.index', [
-            'bales' => $this->bales,
+            'bales' => $bales,
         ]);
     }
 }

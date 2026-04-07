@@ -1,7 +1,7 @@
 <tr wire:key="bale-list-row-{{ $record->id }}"
     class="transition-colors duration-300 hover:bg-slate-50 dark:hover:bg-slate-800">
     <td class="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 max-w-0 sm:w-auto sm:max-w-none">
-        <button wire:click="selectBale('{{ $record->id }}')" class="flex items-center gap-x-3 text-left w-full group">
+        <button wire:click="$parent.selectBale('{{ $record->id }}')" class="flex items-center gap-x-3 text-left w-full group">
             <div
                 class="flex items-center justify-center w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 font-semibold p-2 shadow-sm ring-1 ring-inset ring-indigo-500/10 group-hover:scale-110 transition-transform duration-200">
                 <x-lucide-server class="w-5 h-5" />
