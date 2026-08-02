@@ -2,16 +2,18 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\Organization;
 
-use Livewire\Component;
-use Livewire\Attributes\{Layout, Title};
-use Paparee\Rakaca\Models\Organization;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
+use Paparee\Rakaca\Models\Organization;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Create Organization')]
 class Create extends Component
 {
     public $name;
+
     public $slug;
 
     protected $rules = [
@@ -26,7 +28,7 @@ class Create extends Component
 
     public function mount()
     {
-        if (!auth()->user()->can('organization.create')) {
+        if (! auth()->user()->can('organization.create')) {
             abort(403);
         }
     }

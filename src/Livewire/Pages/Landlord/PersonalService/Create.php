@@ -3,8 +3,10 @@
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService;
 
 use App\Models\User;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\Attributes\{Layout, Title, Computed};
 use Paparee\Rakaca\Models\PersonHasService;
 use Paparee\Rakaca\Models\RakacaService;
 
@@ -13,7 +15,9 @@ use Paparee\Rakaca\Models\RakacaService;
 class Create extends Component
 {
     public string $user_uuid = '';
+
     public array $rakaca_service_ids = [];
+
     public bool $actived = true;
 
     public string $userSearch = '';
@@ -30,7 +34,7 @@ class Create extends Component
 
     public function mount(): void
     {
-        if (!auth()->user()->can('personal-service.create')) {
+        if (! auth()->user()->can('personal-service.create')) {
             abort(403);
         }
     }
@@ -61,8 +65,8 @@ class Create extends Component
     public function users()
     {
         return User::when($this->userSearch, function ($q) {
-            $q->where('name', 'like', '%' . $this->userSearch . '%')
-                ->orWhere('email', 'like', '%' . $this->userSearch . '%');
+            $q->where('name', 'like', '%'.$this->userSearch.'%')
+                ->orWhere('email', 'like', '%'.$this->userSearch.'%');
         })->orderBy('name')->limit(50)->get();
     }
 

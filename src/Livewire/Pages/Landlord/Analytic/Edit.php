@@ -2,20 +2,27 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\Analytic;
 
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\Attributes\{Layout, Title, Computed};
-use Paparee\Rakaca\Models\TenantAnalytics;
 use Paparee\Rakaca\Models\BaleList;
+use Paparee\Rakaca\Models\TenantAnalytics;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Edit Analytic')]
 class Edit extends Component
 {
     public $analyticId;
+
     public $bale_id;
+
     public $provider;
+
     public $website_id;
+
     public $domain;
+
     public $enabled;
 
     protected function rules()
@@ -31,7 +38,7 @@ class Edit extends Component
 
     public function mount($analytic)
     {
-        if (!auth()->user()->can('analytic.update')) {
+        if (! auth()->user()->can('analytic.update')) {
             abort(403);
         }
 

@@ -5,9 +5,9 @@ namespace Paparee\Rakaca\Livewire\Pages\Guest\SelectBale;
 use Bale\Cms\Models\BaleList;
 use Bale\Cms\Models\BaleUser;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\Attributes\{Layout};
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Rakaca | Select Bale')]

@@ -3,10 +3,10 @@
 namespace Paparee\Rakaca\Livewire\Pages\Guest\Dashboard\Section;
 
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\Attributes\{Layout};
 use Paparee\Rakaca\Models\Submission;
 
 #[Layout('rakaca::layouts.app')]
@@ -14,6 +14,7 @@ use Paparee\Rakaca\Models\Submission;
 class SubmissionStatus extends Component
 {
     public $selectedSubmissionId = null;
+
     public $showDetail = false;
 
     public function render()

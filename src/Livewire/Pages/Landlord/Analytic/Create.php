@@ -2,19 +2,25 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\Analytic;
 
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\Attributes\{Layout, Title, Computed};
-use Paparee\Rakaca\Models\TenantAnalytics;
 use Paparee\Rakaca\Models\BaleList;
+use Paparee\Rakaca\Models\TenantAnalytics;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Create Analytic')]
 class Create extends Component
 {
     public $bale_id = '';
+
     public $provider = 'umami';
+
     public $website_id = '';
+
     public $domain = '';
+
     public $enabled = true;
 
     protected $rules = [
@@ -27,7 +33,7 @@ class Create extends Component
 
     public function mount()
     {
-        if (!auth()->user()->can('analytic.create')) {
+        if (! auth()->user()->can('analytic.create')) {
             abort(403);
         }
     }
@@ -40,7 +46,7 @@ class Create extends Component
 
     public function save()
     {
-        if (!auth()->user()->can('analytic.create')) {
+        if (! auth()->user()->can('analytic.create')) {
             abort(403);
         }
 

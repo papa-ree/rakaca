@@ -3,13 +3,14 @@
 namespace Paparee\Rakaca\Models;
 
 use App\Models\User;
+use Bale\Core\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Organization extends Model
 {
-    use HasUuids;
+    use HasUuids, LogsActivity;
 
     protected $table = 'bale_organizations';
 

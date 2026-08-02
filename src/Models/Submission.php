@@ -2,31 +2,39 @@
 
 namespace Paparee\Rakaca\Models;
 
+use Bale\Core\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Submission extends Model
 {
-    use HasUuids;
+    use HasUuids, LogsActivity;
+
+    protected $table = 'rakaca_submissions';
 
     protected $fillable = [
         'user_uuid',
-        'rakaca_service_id',
+        'rakaca_form_id',
         'code',
         'status',
-        'data',
+        'items',
     ];
 
     protected $casts = [
-        'data' => 'array',
+        'items' => 'array',
         'created_at' => 'datetime:d M Y',
         'updated_at' => 'datetime:d M Y',
     ];
 
-    public function service(): BelongsTo
+    public function form(): BelongsTo
     {
-        return $this->belongsTo(RakacaService::class, 'rakaca_service_id');
+        return $this->belongsTo(Form::class, 'rakaca_form_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_uuid', 'uuid');
     }
 
     public function getStatusColorAttribute(): string

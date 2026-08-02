@@ -4,9 +4,9 @@ namespace Paparee\Rakaca\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class GeneratePersonHasServiceCommand extends Command
 {
@@ -19,8 +19,9 @@ class GeneratePersonHasServiceCommand extends Command
         $this->info('🔧 Menautkan user ke service...');
 
         // Cek tabel
-        if (!Schema::hasTable('rakaca_services') || !Schema::hasTable('person_has_services')) {
+        if (! Schema::hasTable('rakaca_services') || ! Schema::hasTable('person_has_services')) {
             $this->error('Tabel "services" atau "person_has_services" belum ada. Jalankan migrasi terlebih dahulu.');
+
             return Command::FAILURE;
         }
 
@@ -29,8 +30,9 @@ class GeneratePersonHasServiceCommand extends Command
 
         $user = User::where('username', $username)->first();
 
-        if (!$user) {
+        if (! $user) {
             $this->error("❌ User dengan username '{$username}' tidak ditemukan.");
+
             return Command::FAILURE;
         }
 
@@ -42,6 +44,7 @@ class GeneratePersonHasServiceCommand extends Command
 
         if (empty($services)) {
             $this->error('❌ Tidak ada service yang aktif di tabel services.');
+
             return Command::FAILURE;
         }
 
@@ -59,6 +62,7 @@ class GeneratePersonHasServiceCommand extends Command
 
         if ($exists) {
             $this->warn("⚠️ User '{$username}' sudah memiliki relasi dengan service '{$service->name}'.");
+
             return Command::SUCCESS;
         }
 
@@ -73,6 +77,7 @@ class GeneratePersonHasServiceCommand extends Command
         ]);
 
         $this->info("✅ Relasi antara user '{$username}' dan service '{$service->name}' berhasil dibuat.");
+
         return Command::SUCCESS;
     }
 }

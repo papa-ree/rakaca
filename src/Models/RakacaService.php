@@ -2,12 +2,13 @@
 
 namespace Paparee\Rakaca\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Bale\Core\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 
 class RakacaService extends Model
 {
-    use HasUuids;
+    use HasUuids, LogsActivity;
 
     protected $guarded = ['id'];
 
@@ -29,5 +30,10 @@ class RakacaService extends Model
     public function submissions()
     {
         return $this->hasMany(Submission::class, 'rakaca_service_id', 'id');
+    }
+
+    public function forms()
+    {
+        return $this->hasMany(Form::class, 'rakaca_service_id', 'id');
     }
 }

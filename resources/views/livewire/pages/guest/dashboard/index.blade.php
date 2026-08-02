@@ -44,7 +44,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Layanan</p>
-                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">9</p>
+                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">{{ $this->totalServices }}</p>
             </div>
             <div class="mt-4">
                 <a href="#services"

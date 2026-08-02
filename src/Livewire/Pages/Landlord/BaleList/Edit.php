@@ -2,8 +2,10 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\BaleList;
 
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\Attributes\{Layout, Title, Computed};
 use Paparee\Rakaca\Models\BaleList;
 use Paparee\Rakaca\Models\Organization;
 
@@ -12,14 +14,23 @@ use Paparee\Rakaca\Models\Organization;
 class Edit extends Component
 {
     public $baleListId;
+
     public $organization_id;
+
     public $name;
+
     public $slug;
+
     public $database_host;
+
     public $database_name;
+
     public $database_username;
+
     public $database_password;
+
     public $storage_prefix;
+
     public $is_active;
 
     protected function rules()
@@ -27,9 +38,9 @@ class Edit extends Component
         return [
             'organization_id' => 'required|exists:bale_organizations,id',
             'name' => 'required|min:3|max:255',
-            'slug' => 'required|unique:bale_lists,slug,' . $this->baleListId,
+            'slug' => 'required|unique:bale_lists,slug,'.$this->baleListId,
             'database_host' => 'required',
-            'database_name' => 'required|unique:bale_lists,database_name,' . $this->baleListId,
+            'database_name' => 'required|unique:bale_lists,database_name,'.$this->baleListId,
             'database_username' => 'required',
             // 'database_password' => 'nullable',
             'is_active' => 'boolean',
@@ -38,7 +49,7 @@ class Edit extends Component
 
     public function mount($baleList)
     {
-        if (!auth()->user()->can('bale-list.update')) {
+        if (! auth()->user()->can('bale-list.update')) {
             abort(403);
         }
 

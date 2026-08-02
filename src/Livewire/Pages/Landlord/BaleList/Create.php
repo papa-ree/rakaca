@@ -2,24 +2,34 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\BaleList;
 
+use Illuminate\Support\Str;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\Attributes\{Layout, Title, Computed};
 use Paparee\Rakaca\Models\BaleList;
 use Paparee\Rakaca\Models\Organization;
-use Illuminate\Support\Str;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Create Bale List')]
 class Create extends Component
 {
     public $organization_id;
+
     public $name;
+
     public $slug;
+
     public $database_host = 'localhost';
+
     public $database_name;
+
     public $database_username = 'root';
+
     public $database_password;
+
     public $storage_prefix;
+
     public $is_active = true;
 
     protected $rules = [
@@ -37,13 +47,13 @@ class Create extends Component
     {
         $this->slug = Str::slug($value);
         if (empty($this->database_name)) {
-            $this->database_name = 'bale_' . str_replace('-', '_', $this->slug);
+            $this->database_name = 'bale_'.str_replace('-', '_', $this->slug);
         }
     }
 
     public function mount()
     {
-        if (!auth()->user()->can('bale-list.create')) {
+        if (! auth()->user()->can('bale-list.create')) {
             abort(403);
         }
     }

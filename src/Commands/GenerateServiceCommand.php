@@ -3,9 +3,9 @@
 namespace Paparee\Rakaca\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class GenerateServiceCommand extends Command
 {
@@ -23,15 +23,16 @@ class GenerateServiceCommand extends Command
         $userUuid = $this->option('user');
 
         // Pastikan tabel tersedia
-        if (!Schema::hasTable('rakaca_services') || !Schema::hasTable('person_has_services')) {
+        if (! Schema::hasTable('rakaca_services') || ! Schema::hasTable('person_has_services')) {
             $this->error('Tabel "services" dan "person_has_services" belum ada. Jalankan migrasi terlebih dahulu.');
+
             return Command::FAILURE;
         }
 
         // Cek apakah service sudah ada
         $service = DB::table('rakaca_services')->where('slug', $slug)->first();
 
-        if (!$service) {
+        if (! $service) {
             $serviceId = (string) Str::uuid();
 
             DB::table('rakaca_services')->insert([
@@ -56,7 +57,7 @@ class GenerateServiceCommand extends Command
                 ->where('rakaca_service_id', $serviceId)
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 DB::table('person_has_services')->insert([
                     'id' => (string) Str::uuid(),
                     'user_uuid' => $userUuid,
@@ -72,6 +73,7 @@ class GenerateServiceCommand extends Command
         }
 
         $this->info('✨ Proses selesai.');
+
         return Command::SUCCESS;
     }
 }

@@ -22,18 +22,20 @@ class GenerateUserSubmissionCommand extends Command
         // Look up user
         $user = DB::table('users')->where('username', $username)->first();
 
-        if (!$user) {
+        if (! $user) {
             $this->error("❌ User dengan username '{$username}' tidak ditemukan.");
+
             return self::FAILURE;
         }
 
         $serviceSlug = $this->option('service_slug');
 
-        if (!$serviceSlug) {
+        if (! $serviceSlug) {
             $services = RakacaService::all();
 
             if ($services->isEmpty()) {
-                $this->error("❌ Tidak ada service yang tersedia di tabel rakaca_services.");
+                $this->error('❌ Tidak ada service yang tersedia di tabel rakaca_services.');
+
                 return self::FAILURE;
             }
 
@@ -44,8 +46,9 @@ class GenerateUserSubmissionCommand extends Command
 
         $service = RakacaService::where('slug', $serviceSlug)->first();
 
-        if (!$service) {
+        if (! $service) {
             $this->error("❌ Service dengan slug '{$serviceSlug}' tidak ditemukan.");
+
             return self::FAILURE;
         }
 
@@ -57,12 +60,12 @@ class GenerateUserSubmissionCommand extends Command
             'data' => [],
         ]);
 
-        $this->info("✅ Submission berhasil dibuat!");
+        $this->info('✅ Submission berhasil dibuat!');
         $this->table(
             ['Field', 'Value'],
             [
                 ['ID', $submission->id],
-                ['User', $username . " ({$user->uuid})"],
+                ['User', $username." ({$user->uuid})"],
                 ['Service', $service->name],
                 ['Code', $submission->code],
                 ['Status', $submission->status],

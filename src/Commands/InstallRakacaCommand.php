@@ -5,6 +5,7 @@ namespace Paparee\Rakaca\Commands;
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class InstallRakacaCommand extends Command
 {
@@ -47,6 +48,10 @@ class InstallRakacaCommand extends Command
             'service.read',
             'service.update',
             'service.delete',
+            'form.create',
+            'form.read',
+            'form.update',
+            'form.delete',
             'submission.create',
             'submission.read',
             'submission.update',
@@ -87,7 +92,7 @@ class InstallRakacaCommand extends Command
             $rootRole->syncPermissions(Permission::where('name', '!=', 'guest.sidebar')->get());
 
             // Clear cache
-            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
 
             $this->info('Permissions force synced and cache cleared for root role.');
         }

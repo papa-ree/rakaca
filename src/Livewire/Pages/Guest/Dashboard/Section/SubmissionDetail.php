@@ -11,6 +11,7 @@ use Paparee\Rakaca\Models\Submission;
 class SubmissionDetail extends Component
 {
     public $submissionId;
+
     public ?Submission $submission = null;
 
     public function mount($submissionId)
@@ -28,7 +29,7 @@ class SubmissionDetail extends Component
 
     public function render()
     {
-        if (!$this->submission) {
+        if (! $this->submission) {
             $this->loadSubmission();
         }
 

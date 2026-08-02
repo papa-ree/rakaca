@@ -3,13 +3,13 @@
 namespace Paparee\Rakaca\Livewire\SharedComponents;
 
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
-use Livewire\Attributes\{Computed, Layout};
 
 class RakacaGuestSidebar extends Component
 {
     #[Layout('rakaca::layouts.app')]
-
     public $user;
 
     public function mount()

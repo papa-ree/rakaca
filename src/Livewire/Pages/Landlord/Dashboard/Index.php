@@ -2,8 +2,9 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\Dashboard;
 
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\Attributes\{Layout, Title};
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Rakaca | Dashboard')]

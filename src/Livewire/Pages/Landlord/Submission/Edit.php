@@ -2,33 +2,38 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\Submission;
 
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\Attributes\{Layout, Title};
-use Paparee\Rakaca\Models\Submission;
 use Paparee\Rakaca\Models\Service;
+use Paparee\Rakaca\Models\Submission;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Edit Submission')]
 class Edit extends Component
 {
     public Submission $submission;
+
     public $rakaca_service_id;
+
     public $code;
+
     public $status;
+
     public $data;
 
     protected function rules()
     {
         return [
             'rakaca_service_id' => 'required|exists:rakaca_services,id',
-            'code' => 'required|unique:submissions,code,' . $this->submission->id,
+            'code' => 'required|unique:submissions,code,'.$this->submission->id,
             'status' => 'required|in:pending,approved,rejected,review',
         ];
     }
 
     public function mount(Submission $submission)
     {
-        if (!auth()->user()->can('submission.update')) {
+        if (! auth()->user()->can('submission.update')) {
             abort(403);
         }
 
@@ -57,7 +62,7 @@ class Edit extends Component
     public function render()
     {
         return view('rakaca::livewire.pages.landlord.submission.edit', [
-            'services' => Service::where('actived', true)->get()
+            'services' => Service::where('actived', true)->get(),
         ]);
     }
 }

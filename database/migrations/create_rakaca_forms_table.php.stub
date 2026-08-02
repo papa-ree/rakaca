@@ -8,19 +8,19 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('submissions', function (Blueprint $table) {
+        Schema::create('rakaca_forms', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('user_uuid');
             $table->uuid('rakaca_service_id');
-            $table->string('code');
-            $table->string('status')->default('pending');
-            $table->json('data')->nullable();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->json('meta')->nullable();
+            $table->boolean('actived')->default(true);
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('submissions');
+        Schema::dropIfExists('rakaca_forms');
     }
 };

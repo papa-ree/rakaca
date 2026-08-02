@@ -4,32 +4,32 @@ namespace Paparee\Rakaca\Tests\Feature\Livewire\Guest;
 
 use App\Models\User;
 use Bale\Cms\Models\BaleList;
-use Bale\Cms\Models\BaleUser;
 use Bale\Cms\Models\BaleOrganization;
+use Bale\Cms\Models\BaleUser;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Paparee\Rakaca\Livewire\Pages\Guest\SelectBale\Index;
 
 /**
  * Demo Test: Memilih Bale (Modul Rakaca)
- * 
+ *
  * File ini mendemonstrasikan cara melakukan automated testing untuk komponen Livewire
  * menggunakan Pest PHP.
  */
-
 it('menampilkan daftar bale yang dimiliki oleh user', function () {
     // 1. Persiapan Data (Setup)
     // Membuat organisasi sebagai induk dari Bale
     $org = BaleOrganization::create([
-        'id' => \Illuminate\Support\Str::uuid(),
+        'id' => Str::uuid(),
         'name' => 'Demo Org',
-        'slug' => 'demo-org'
+        'slug' => 'demo-org',
     ]);
-    
+
     $user = User::factory()->create();
 
     // Membuat 2 Bale (Project)
     $bale1 = BaleList::create([
-        'id' => \Illuminate\Support\Str::uuid(),
+        'id' => Str::uuid(),
         'organization_id' => $org->id,
         'name' => 'Bale Satu',
         'slug' => 'bale-satu',
@@ -37,11 +37,11 @@ it('menampilkan daftar bale yang dimiliki oleh user', function () {
         'database_name' => 'bale1_db',
         'database_username' => 'user',
         'database_password' => 'secret',
-        'is_active' => true
+        'is_active' => true,
     ]);
 
     $bale2 = BaleList::create([
-        'id' => \Illuminate\Support\Str::uuid(),
+        'id' => Str::uuid(),
         'organization_id' => $org->id,
         'name' => 'Bale Dua',
         'slug' => 'bale-dua',
@@ -49,15 +49,15 @@ it('menampilkan daftar bale yang dimiliki oleh user', function () {
         'database_name' => 'bale2_db',
         'database_username' => 'user',
         'database_password' => 'secret',
-        'is_active' => true
+        'is_active' => true,
     ]);
 
     // Menghubungkan user hanya ke Bale Satu
     BaleUser::create([
-        'id' => \Illuminate\Support\Str::uuid(),
+        'id' => Str::uuid(),
         'bale_id' => $bale1->id,
         'user_uuid' => $user->uuid,
-        'role' => 'admin'
+        'role' => 'admin',
     ]);
 
     // 2. Simulasi Bertindak sebagai User (ActingAs)
@@ -73,13 +73,13 @@ it('menampilkan daftar bale yang dimiliki oleh user', function () {
 it('dapat memilih bale dan diarahkan ke overview', function () {
     // 1. Setup
     $org = BaleOrganization::create([
-        'id' => \Illuminate\Support\Str::uuid(),
+        'id' => Str::uuid(),
         'name' => 'Demo Org',
-        'slug' => 'demo-org'
+        'slug' => 'demo-org',
     ]);
     $user = User::factory()->create();
     $bale = BaleList::create([
-        'id' => \Illuminate\Support\Str::uuid(),
+        'id' => Str::uuid(),
         'organization_id' => $org->id,
         'name' => 'Bale Active',
         'slug' => 'bale-active',
@@ -87,13 +87,13 @@ it('dapat memilih bale dan diarahkan ke overview', function () {
         'database_name' => 'active_db',
         'database_username' => 'user',
         'database_password' => 'secret',
-        'is_active' => true
+        'is_active' => true,
     ]);
     BaleUser::create([
-        'id' => \Illuminate\Support\Str::uuid(),
+        'id' => Str::uuid(),
         'bale_id' => $bale->id,
         'user_uuid' => $user->uuid,
-        'role' => 'editor'
+        'role' => 'editor',
     ]);
 
     // 2. Simulasi Aksi

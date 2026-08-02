@@ -2,20 +2,25 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\Submission;
 
-use Livewire\Component;
-use Livewire\Attributes\{Layout, Title};
-use Paparee\Rakaca\Models\Submission;
-use Paparee\Rakaca\Models\Service;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
+use Paparee\Rakaca\Models\Service;
+use Paparee\Rakaca\Models\Submission;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Create Submission')]
 class Create extends Component
 {
     public $rakaca_service_id;
+
     public $code;
+
     public $status = 'pending';
+
     public $user_uuid;
+
     public $data = [];
 
     protected $rules = [
@@ -27,7 +32,7 @@ class Create extends Component
 
     public function mount()
     {
-        if (!auth()->user()->can('submission.create')) {
+        if (! auth()->user()->can('submission.create')) {
             abort(403);
         }
 
@@ -55,7 +60,7 @@ class Create extends Component
     public function render()
     {
         return view('rakaca::livewire.pages.landlord.submission.create', [
-            'services' => Service::where('actived', true)->get()
+            'services' => Service::where('actived', true)->get(),
         ]);
     }
 }

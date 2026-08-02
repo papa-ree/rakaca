@@ -3,12 +3,13 @@
 namespace Paparee\Rakaca\Models;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
+use Bale\Core\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 
 class PersonHasService extends Model
 {
-    use HasUuids;
+    use HasUuids, LogsActivity;
 
     protected $table = 'person_has_services';
 

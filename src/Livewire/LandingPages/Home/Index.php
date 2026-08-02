@@ -2,8 +2,8 @@
 
 namespace Paparee\Rakaca\Livewire\LandingPages\Home;
 
+use Livewire\Attributes\Layout;
 use Livewire\Component;
-use Livewire\Attributes\{Layout};
 
 #[Layout('rakaca::layouts.guest')]
 class Index extends Component

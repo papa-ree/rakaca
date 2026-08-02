@@ -2,9 +2,10 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\Service;
 
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\Attributes\{Layout, Title, Computed, On};
 use Paparee\Rakaca\Models\Service;
 
 #[Layout('rakaca::layouts.app')]
@@ -13,7 +14,7 @@ class Index extends Component
 {
     public function mount()
     {
-        if (!auth()->user()->can('service.read')) {
+        if (! auth()->user()->can('service.read')) {
             abort(403);
         }
     }
@@ -26,7 +27,7 @@ class Index extends Component
     #[On('deleteItem')]
     public function deleteService($id)
     {
-        if (!auth()->user()->can('service.delete')) {
+        if (! auth()->user()->can('service.delete')) {
             abort(403);
         }
 

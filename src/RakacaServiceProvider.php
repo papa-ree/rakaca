@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Livewire\Component as LivewireComponent;
 use Livewire\Livewire;
+use Paparee\Rakaca\Commands\GenerateFormCommand;
 use Paparee\Rakaca\Commands\GeneratePersonHasServiceCommand;
 use Paparee\Rakaca\Commands\GenerateServiceCommand;
 use Paparee\Rakaca\Commands\GenerateUserSubmissionCommand;
@@ -26,6 +27,7 @@ class RakacaServiceProvider extends ServiceProvider
             'command.rakaca:make-service' => GenerateServiceCommand::class,
             'command.rakaca:make-person-service' => GeneratePersonHasServiceCommand::class,
             'command.rakaca:make-user-submission' => GenerateUserSubmissionCommand::class,
+            'command.rakaca:make-form' => GenerateFormCommand::class,
             'command.rakaca:install' => InstallRakacaCommand::class,
             'command.rakaca:publish-migration' => PublishMigrationCommand::class,
         ];
@@ -39,7 +41,7 @@ class RakacaServiceProvider extends ServiceProvider
 
     /**
      * Method boot()
-     * 
+     *
      * Dipanggil setelah semua service diregistrasi.
      * Digunakan untuk load resource seperti:
      * - view
@@ -50,7 +52,7 @@ class RakacaServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->booted(function () {
-            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         });
 
         $this->registerViews();
@@ -61,19 +63,19 @@ class RakacaServiceProvider extends ServiceProvider
 
     /**
      * Load migration langsung dari package.
-     * 
+     *
      * Dengan ini, user bisa langsung menjalankan migration
      * tanpa harus publish file ke aplikasi utama.
      */
     protected function loadMigrations(): void
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 
     protected function registerViews(): void
     {
         $this->loadViewsFrom(
-            __DIR__ . '/../resources/views',
+            __DIR__.'/../resources/views',
             'rakaca'
         );
     }
@@ -81,22 +83,21 @@ class RakacaServiceProvider extends ServiceProvider
     /**
      * Publish file agar bisa diubah oleh user.
      */
-
     protected function offerPublishing(): void
     {
-        if (!$this->app->runningInConsole()) {
+        if (! $this->app->runningInConsole()) {
             return;
         }
 
         // Publish config
         $this->publishes([
-            __DIR__ . '/../config/rakaca.php' => config_path('rakaca.php'),
+            __DIR__.'/../config/rakaca.php' => config_path('rakaca.php'),
         ], 'rakaca:config');
 
         $this->publishes($this->getMigrations(), 'rakaca:migrations');
 
         $this->publishes([
-            __DIR__ . '/../database/seeders/KecamatanDesaSeeder.php' => database_path('/seeders/KecamatanDesaSeeder.php'),
+            __DIR__.'/../database/seeders/KecamatanDesaSeeder.php' => database_path('/seeders/KecamatanDesaSeeder.php'),
         ], 'rakaca:seeders');
 
     }
@@ -107,15 +108,15 @@ class RakacaServiceProvider extends ServiceProvider
     protected function getMigrations(): array
     {
         $migrations = [];
-        $sourcePath = __DIR__ . '/../database/migrations/';
+        $sourcePath = __DIR__.'/../database/migrations/';
 
         // Pastikan direktori ada
-        if (!is_dir($sourcePath)) {
+        if (! is_dir($sourcePath)) {
             return $migrations;
         }
 
         // Loop semua file migration (baik .php maupun .stub)
-        foreach (glob($sourcePath . '*.{php,stub}', GLOB_BRACE) as $file) {
+        foreach (glob($sourcePath.'*.{php,stub}', GLOB_BRACE) as $file) {
             $filename = basename($file);
 
             // Jika file stub, ganti menjadi nama migration yang benar di aplikasi
@@ -135,33 +136,32 @@ class RakacaServiceProvider extends ServiceProvider
         $timestamp = date('Y_m_d_His');
         $migrationName = str_replace('.php.stub', '.php', $filename);
 
-        return database_path('migrations/' . $timestamp . '_' . $migrationName);
+        return database_path('migrations/'.$timestamp.'_'.$migrationName);
     }
 
     /**
      * Registrasi semua Livewire Component yang ada di folder src/Livewire.
-     * 
+     *
      * Mekanisme:
      * - Cari semua file PHP di dalam folder Livewire
      * - Pastikan class tersebut adalah turunan Livewire\Component
      * - Buat alias secara otomatis dari struktur folder
-     * 
+     *
      * Contoh:
      *   src/Livewire/Dashboard.php
      *     => <livewire:rakaca.dashboard />
-     *
      */
     protected function registerLivewireComponents(): void
     {
-        $namespace = "Paparee\\Rakaca\\Livewire";
-        $basePath = __DIR__ . "/Livewire";
+        $namespace = 'Paparee\\Rakaca\\Livewire';
+        $basePath = __DIR__.'/Livewire';
 
         // Jika folder Livewire tidak ada, hentikan proses
-        if (!is_dir($basePath)) {
+        if (! is_dir($basePath)) {
             return;
         }
 
-        $finder = new Finder();
+        $finder = new Finder;
         $finder->files()->in($basePath)->name('*.php');
 
         foreach ($finder as $file) {
@@ -171,24 +171,24 @@ class RakacaServiceProvider extends ServiceProvider
             $nsPath = str_replace(['/', '\\'], '\\', $relativePathname);
 
             // Konversi ke FQCN (Fully Qualified Class Name)
-            $class = $namespace . '\\' . Str::beforeLast($nsPath, '.php');
+            $class = $namespace.'\\'.Str::beforeLast($nsPath, '.php');
 
             // Skip jika class tidak ditemukan
-            if (!class_exists($class)) {
+            if (! class_exists($class)) {
                 continue;
             }
 
             // Skip jika bukan turunan Livewire\Component
-            if (!is_subclass_of($class, LivewireComponent::class)) {
+            if (! is_subclass_of($class, LivewireComponent::class)) {
                 continue;
             }
 
             // Buat alias berdasarkan struktur folder (kebab-case)
             $withoutExt = Str::replaceLast('.php', '', $relativePathname);
             $segments = preg_split('#[\\/\\\\]#', $withoutExt);
-            $kebab = array_map(fn($s) => Str::kebab($s), $segments);
+            $kebab = array_map(fn ($s) => Str::kebab($s), $segments);
 
-            $alias = 'rakaca.' . implode('.', $kebab);
+            $alias = 'rakaca.'.implode('.', $kebab);
 
             // Registrasi komponen ke Livewire
             Livewire::component($alias, $class);

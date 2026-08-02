@@ -3,9 +3,13 @@
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService;
 
 use App\Models\User;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\{Layout, Title, Computed, On};
 use Paparee\Rakaca\Models\PersonHasService;
 
 #[Layout('rakaca::layouts.app')]
@@ -15,12 +19,14 @@ class Index extends Component
     use WithPagination;
 
     public string $query = '';
+
     public string $sortField = 'created_at';
+
     public string $sortDirection = 'desc';
 
     public function mount(): void
     {
-        if (!auth()->user()->can('personal-service.read')) {
+        if (! auth()->user()->can('personal-service.read')) {
             abort(403);
         }
     }
@@ -37,10 +43,10 @@ class Index extends Component
         $query = PersonHasService::with(['user', 'service'])
             ->when($this->query, function ($q) {
                 $q->whereHas('user', function ($uq) {
-                    $uq->where('name', 'like', '%' . $this->query . '%')
-                        ->orWhere('email', 'like', '%' . $this->query . '%');
+                    $uq->where('name', 'like', '%'.$this->query.'%')
+                        ->orWhere('email', 'like', '%'.$this->query.'%');
                 })->orWhereHas('service', function ($sq) {
-                    $sq->where('name', 'like', '%' . $this->query . '%');
+                    $sq->where('name', 'like', '%'.$this->query.'%');
                 });
             });
 
@@ -62,6 +68,7 @@ class Index extends Component
             $services = PersonHasService::with('service')
                 ->where('user_uuid', $uuid)
                 ->get();
+
             return [
                 'user' => $user,
                 'uuid' => $uuid,
@@ -71,7 +78,7 @@ class Index extends Component
         });
 
         // Build paginator
-        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+        $paginator = new LengthAwarePaginator(
             $customers,
             $total,
             $perPage,
@@ -95,7 +102,7 @@ class Index extends Component
     #[On('deleteCustomer')]
     public function deleteCustomer(string $uuid): void
     {
-        if (!auth()->user()->can('personal-service.delete')) {
+        if (! auth()->user()->can('personal-service.delete')) {
             abort(403);
         }
 
@@ -108,7 +115,7 @@ class Index extends Component
     #[On('deleteService')]
     public function deleteService(string $id): void
     {
-        if (!auth()->user()->can('personal-service.delete')) {
+        if (! auth()->user()->can('personal-service.delete')) {
             abort(403);
         }
 

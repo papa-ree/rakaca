@@ -2,19 +2,21 @@
 
 namespace Paparee\Rakaca\Models;
 
+use Bale\Core\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model
 {
     use HasFactory;
     use HasUuids;
+    use LogsActivity;
 
     protected $table = 'rakaca_services';
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -22,6 +24,7 @@ class Service extends Model
         'name',
         'slug',
         'icon',
+        'description',
         'actived',
     ];
 

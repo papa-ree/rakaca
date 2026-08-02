@@ -2,22 +2,27 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\BaleUser;
 
-use Livewire\Component;
-use Livewire\Attributes\{Layout, Title, Computed};
-use Paparee\Rakaca\Models\BaleList;
-use Paparee\Rakaca\Models\BaleUser;
-use Paparee\Rakaca\Models\PersonHasService;
 use App\Models\User;
 use Bale\Cms\Services\TenantManager;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+use Paparee\Rakaca\Models\BaleList;
+use Paparee\Rakaca\Models\BaleUser;
+use Paparee\Rakaca\Models\PersonHasService;
 
 #[Layout('rakaca::layouts.app')]
 class Form extends Component
 {
     public $baleUserId;
+
     public $bale_id;
+
     public $user_uuid;
+
     public $role = 'user';
+
     public $isEdit = false;
 
     protected function rules()
@@ -54,7 +59,7 @@ class Form extends Component
 
                     $isGodRole = $user?->hasAnyRole(['root', 'admin']);
 
-                    if (!$hasBaleCmsService && !$isGodRole) {
+                    if (! $hasBaleCmsService && ! $isGodRole) {
                         $fail(__('This user does not have an active Bale CMS service.'));
                     }
                 },
@@ -68,11 +73,11 @@ class Form extends Component
             $this->isEdit = true;
             $item = BaleUser::findOrFail($baleUser);
 
-            if ($item->user?->hasRole('root') && !auth()->user()->hasRole('root')) {
+            if ($item->user?->hasRole('root') && ! auth()->user()->hasRole('root')) {
                 abort(403, __('Only users with root role can edit this assignment.'));
             }
 
-            if (!auth()->user()->can('bale-user.update')) {
+            if (! auth()->user()->can('bale-user.update')) {
                 abort(403);
             }
 
@@ -81,16 +86,20 @@ class Form extends Component
             $this->user_uuid = $item->user_uuid;
             $this->role = $item->role;
         } else {
-            if (!auth()->user()->can('bale-user.create')) {
+            if (! auth()->user()->can('bale-user.create')) {
                 abort(403);
             }
+
+            $this->user_uuid = request()->query('user', '');
         }
     }
 
     #[Computed]
     public function baleLists()
     {
-        return BaleList::orderBy('name')->get();
+        return BaleList::orderBy('name')->get()
+            ->map(fn ($bale) => ['itemTitle' => $bale->name, 'itemSlug' => $bale->id])
+            ->toArray();
     }
 
     #[Computed]
@@ -104,7 +113,9 @@ class Form extends Component
                 ->orWhereHas('roles', function ($q) {
                     $q->whereIn('name', ['root', 'admin']);
                 });
-        })->orderBy('name')->get();
+        })->orderBy('name')->get()
+            ->map(fn ($user) => ['itemTitle' => "{$user->name} ({$user->email})", 'itemSlug' => $user->uuid])
+            ->toArray();
     }
 
     public function save()
@@ -161,7 +172,7 @@ class Form extends Component
                 ]
             );
         } catch (\Exception $e) {
-            info("Failed to sync user to tenant: " . $e->getMessage());
+            info('Failed to sync user to tenant: '.$e->getMessage());
         }
     }
 

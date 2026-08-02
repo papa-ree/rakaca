@@ -26,6 +26,11 @@
                 'sortable' => true,
             ],
             [
+                'key'      => 'description',
+                'label'    => __('Description'),
+                'sortable' => false,
+            ],
+            [
                 'key'      => 'actived',
                 'label'    => __('Status'),
                 'sortable' => true,
@@ -36,7 +41,7 @@
                 'sortable' => false,
             ],
         ]"
-        :searchable="['name', 'slug']"
+        :searchable="['name', 'slug', 'description']"
         sortField="name"
         sortDirection="asc"
         :perPage="20"

@@ -38,7 +38,7 @@ trait HasServiceRelation
         static $cachedServices = [];
 
         // Cache sementara agar tidak query berulang
-        if (!isset($cachedServices[$this->uuid])) {
+        if (! isset($cachedServices[$this->uuid])) {
             $cachedServices[$this->uuid] = $this->services->pluck('slug')->toArray();
         }
 

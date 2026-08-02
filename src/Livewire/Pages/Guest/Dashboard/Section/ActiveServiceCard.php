@@ -3,11 +3,10 @@
 namespace Paparee\Rakaca\Livewire\Pages\Guest\Dashboard\Section;
 
 use Livewire\Attributes\Computed;
-use Livewire\Component;
-use Livewire\Attributes\{Layout};
-use Paparee\Rakaca\Models\PersonHasService;
-
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
+use Livewire\Component;
+use Paparee\Rakaca\Models\PersonHasService;
 
 #[Layout('rakaca::layouts.app')]
 #[Lazy]

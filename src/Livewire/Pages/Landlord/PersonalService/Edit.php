@@ -2,8 +2,10 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService;
 
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\Attributes\{Layout, Title, Computed};
 use Paparee\Rakaca\Models\PersonHasService;
 use Paparee\Rakaca\Models\RakacaService;
 
@@ -12,22 +14,24 @@ use Paparee\Rakaca\Models\RakacaService;
 class Edit extends Component
 {
     public PersonHasService $personalService;
+
     public bool $actived;
+
     public string $rakaca_service_id;
 
     protected function rules(): array
     {
         return [
             'rakaca_service_id' => 'required|exists:rakaca_services,id|unique:person_has_services,rakaca_service_id,'
-                . $this->personalService->id
-                . ',id,user_uuid,' . $this->personalService->user_uuid,
+                .$this->personalService->id
+                .',id,user_uuid,'.$this->personalService->user_uuid,
             'actived' => 'boolean',
         ];
     }
 
     public function mount(PersonHasService $personalService): void
     {
-        if (!auth()->user()->can('personal-service.update')) {
+        if (! auth()->user()->can('personal-service.update')) {
             abort(403);
         }
 
