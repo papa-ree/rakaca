@@ -2,6 +2,7 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\BaleList;
 
+use Illuminate\Contracts\Encryption\DecryptException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -60,10 +61,21 @@ class Edit extends Component
         $this->slug = $item->slug;
         $this->database_host = $item->database_host;
         $this->database_name = $item->database_name;
-        $this->database_username = $item->database_username;
-        $this->database_password = $item->database_password;
         $this->storage_prefix = $item->storage_prefix;
         $this->is_active = $item->is_active;
+
+        try {
+            $this->database_username = $item->database_username;
+        } catch (DecryptException $e) {
+            $this->database_username = '';
+            session()->flash('warning', __('Gagal mendekripsi database username (APP_KEY berbeda). Silakan isi kembali.'));
+        }
+
+        try {
+            $this->database_password = $item->database_password;
+        } catch (DecryptException $e) {
+            $this->database_password = '';
+        }
     }
 
     #[Computed]

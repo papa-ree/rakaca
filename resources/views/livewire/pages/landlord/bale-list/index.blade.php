@@ -11,6 +11,24 @@
         </x-slot>
     </x-core::page-header>
 
+    @if (session()->has('error'))
+        <div class="mb-6 p-4 bg-rose-50 border border-rose-200 border-l-4 border-l-rose-500 rounded-r-xl dark:bg-rose-950/20 dark:border-rose-800/40 dark:border-l-rose-600">
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 animate-pulse">
+                    <x-lucide-x-circle class="h-5 w-5 text-rose-500 dark:text-rose-400" />
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-rose-900 dark:text-rose-200">
+                        {{ __('Connection Error') }}
+                    </h4>
+                    <p class="text-xs text-rose-700 dark:text-rose-300 mt-0.5">
+                        {{ session('error') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <livewire:core-shared-components::data-table
         model="Paparee\Rakaca\Models\BaleList"
         rowView="rakaca::livewire.pages.landlord.bale-list.section.bale-list-row"

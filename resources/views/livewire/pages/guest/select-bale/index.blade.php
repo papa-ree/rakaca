@@ -17,6 +17,25 @@
         </div>
     </div>
 
+    {{-- Error Banner --}}
+    @if (session()->has('error'))
+        <div class="mb-8 p-6 bg-rose-50 border border-rose-200 border-l-4 border-l-rose-500 rounded-r-2xl dark:bg-rose-950/20 dark:border-rose-800/40 dark:border-l-rose-600" data-aos="fade-up">
+            <div class="flex items-start gap-4">
+                <div class="p-2 bg-rose-600 rounded-lg shrink-0 shadow-lg animate-pulse">
+                    <x-lucide-x-circle class="w-5 h-5 text-white" />
+                </div>
+                <div>
+                    <h3 class="font-bold text-rose-900 dark:text-rose-200 mb-0.5">
+                        {{ __('Gagal Membuka Layanan') }}
+                    </h3>
+                    <p class="text-sm text-rose-700 dark:text-rose-300">
+                        {{ session('error') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Info Cards --}}
     <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2" data-aos="fade-up" data-aos-delay="100">
         {{-- Total Bales Card --}}

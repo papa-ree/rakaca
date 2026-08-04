@@ -5,6 +5,24 @@
 
     <x-core::page-header :title="__('Edit Bale List')" :subtitle="__('Update Bale instance and database configuration')" />
 
+    @if (session()->has('warning'))
+        <div class="mb-6 p-4 bg-amber-50 border border-amber-200 border-l-4 border-l-amber-500 rounded-r-xl dark:bg-amber-950/20 dark:border-amber-800/40 dark:border-l-amber-600 max-w-4xl">
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0">
+                    <x-lucide-alert-triangle class="h-5 w-5 text-amber-500 dark:text-amber-400" />
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-amber-900 dark:text-amber-200">
+                        {{ __('Warning Decryption') }}
+                    </h4>
+                    <p class="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                        {{ session('warning') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="max-w-4xl">
         <div class="p-6 bg-white border border-gray-200 shadow-sm dark:bg-gray-800 rounded-xl dark:border-gray-700">
             <form wire:submit="save" class="space-y-6">
