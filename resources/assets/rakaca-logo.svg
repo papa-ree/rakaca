@@ -1,0 +1,14 @@
+<svg class="{{ $class }}" viewBox="0 0 32 32" fill="none" aria-hidden="{{ $ariaHidden }}">
+    <defs>
+        <linearGradient id="rakacaLogoGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#3B5BFF"/>
+            <stop offset="0.55" stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#2DD4E8"/>
+        </linearGradient>
+    </defs>
+    <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#rakacaLogoGrad)" opacity="0.16"/>
+    <rect x="6" y="6" width="8.5" height="8.5" rx="2" fill="url(#rakacaLogoGrad)"/>
+    <rect x="17.5" y="6" width="8.5" height="8.5" rx="2" fill="url(#rakacaLogoGrad)" opacity="0.55"/>
+    <rect x="6" y="17.5" width="8.5" height="8.5" rx="2" fill="url(#rakacaLogoGrad)" opacity="0.55"/>
+    <rect x="17.5" y="17.5" width="8.5" height="8.5" rx="2" fill="url(#rakacaLogoGrad)"/>
+</svg>

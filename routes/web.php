@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Paparee\Rakaca\Livewire\LandingPages\Home\Index;
 use Paparee\Rakaca\Livewire\Pages\Guest\Dashboard\Index as GuestDashboardIndex;
 use Paparee\Rakaca\Livewire\Pages\Guest\SelectBale\Index as SelectBaleIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\BaleUser\Form;
@@ -20,8 +19,6 @@ use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Create as GuestSubmissionCrea
 use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Edit as GuestSubmissionEdit;
 
 Route::middleware(['web'])->group(function () {
-
-    Route::get('/', Index::class);
 
     Route::middleware(['auth'])->as('rakaca.')->group(function () {
 
