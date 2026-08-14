@@ -1,12 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Paparee\Rakaca\Livewire\Pages\Guest\Aduan\Index as AduanIndex;
 use Paparee\Rakaca\Livewire\Pages\Guest\Dashboard\Index as GuestDashboardIndex;
 use Paparee\Rakaca\Livewire\Pages\Guest\SelectBale\Index as SelectBaleIndex;
+use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Create as GuestSubmissionCreate;
+use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Edit as GuestSubmissionEdit;
+use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Index as GuestSubmissionIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\BaleUser\Form;
+use Paparee\Rakaca\Livewire\Pages\Landlord\Dashboard\Index as LandlordDashboardIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Form\Form as RakacaForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Form\Index as RakacaFormIndex;
-use Paparee\Rakaca\Livewire\Pages\Landlord\Dashboard\Index as LandlordDashboardIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Create as PersonalServiceCreate;
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Edit as PersonalServiceEdit;
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Index as PersonalServiceIndex;
@@ -14,11 +18,14 @@ use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Form as RakacaServiceForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Index as RakacaServiceIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Create;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Edit;
-use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Index as GuestSubmissionIndex;
-use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Create as GuestSubmissionCreate;
-use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Edit as GuestSubmissionEdit;
+use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Index;
 
 Route::middleware(['web'])->group(function () {
+
+    // Public: Aduan / Bantuan (tanpa login)
+    Route::get('bantuan', AduanIndex::class)
+        ->middleware('throttle:30,1')
+        ->name('rakaca.aduan.index');
 
     Route::middleware(['auth'])->as('rakaca.')->group(function () {
 
@@ -41,7 +48,7 @@ Route::middleware(['web'])->group(function () {
 
             // Submission Management
             Route::group(['prefix' => 'rakaca', 'middleware' => ['permission:submission.read']], function () {
-                Route::get('submissions', Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Index::class)->name('landlord.submission.index');
+                Route::get('submissions', Index::class)->name('landlord.submission.index');
                 Route::get('submissions/create', Create::class)->name('landlord.submission.create');
                 Route::get('submissions/{submission}/edit', Edit::class)->name('landlord.submission.edit');
             });

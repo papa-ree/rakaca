@@ -18,6 +18,8 @@ class RakacaServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/rakaca.php', 'rakaca');
+
         $this->registerCommands();
     }
 
@@ -98,6 +100,10 @@ class RakacaServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/../database/seeders/KecamatanDesaSeeder.php' => database_path('/seeders/KecamatanDesaSeeder.php'),
+        ], 'rakaca:seeders');
+
+        $this->publishes([
+            __DIR__.'/../src/Database/Seeders/AduanCategorySeeder.php' => database_path('/seeders/AduanCategorySeeder.php'),
         ], 'rakaca:seeders');
 
     }
