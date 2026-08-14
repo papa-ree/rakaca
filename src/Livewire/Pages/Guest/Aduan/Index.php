@@ -31,11 +31,32 @@ class Index extends Component
     {
         return [
             'nama_lengkap' => ['required', 'string', 'max:255'],
-            'nip' => ['required', 'numeric', 'digits:16'],
+            'nip' => ['required', 'string', 'min:21', 'max:21'],
             'wa_number' => ['required', 'digits_between:9,15'],
             'aduan_category_id' => ['required', 'exists:rakaca_aduan_categories,id'],
             'deskripsi' => ['required', 'string', 'min:10', 'max:5000'],
             'recaptchaToken' => ['required'],
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
+            'nama_lengkap.string' => 'Nama lengkap harus berupa teks.',
+            'nama_lengkap.max' => 'Nama lengkap tidak boleh lebih dari :max karakter.',
+            'nip.required' => 'NIP wajib diisi.',
+            'nip.min' => 'NIP harus terdiri dari 18 digit angka.',
+            'nip.max' => 'NIP harus terdiri dari 18 digit angka.',
+            'wa_number.required' => 'Nomor WhatsApp wajib diisi.',
+            'wa_number.digits_between' => 'Nomor WhatsApp harus terdiri dari :min sampai :max digit angka.',
+            'aduan_category_id.required' => 'Silakan pilih jenis aduan terlebih dahulu.',
+            'aduan_category_id.exists' => 'Jenis aduan yang dipilih tidak valid.',
+            'deskripsi.required' => 'Deskripsi keluhan wajib diisi.',
+            'deskripsi.string' => 'Deskripsi keluhan harus berupa teks.',
+            'deskripsi.min' => 'Deskripsi keluhan minimal :min karakter.',
+            'deskripsi.max' => 'Deskripsi keluhan tidak boleh lebih dari :max karakter.',
+            'recaptchaToken.required' => 'Verifikasi keamanan belum selesai, silakan tunggu sesaat lalu coba lagi.',
         ];
     }
 
@@ -66,7 +87,6 @@ class Index extends Component
         RateLimiter::hit($key, (int) config('rakaca.aduan.decay_seconds', 60));
 
         $validated = $this->validate();
-
         try {
             $score = RecaptchaV3::verify($validated['recaptchaToken'], config('rakaca.aduan.recaptcha_action', 'aduan'));
         } catch (\Throwable $e) {
@@ -81,6 +101,8 @@ class Index extends Component
 
             return;
         }
+
+        $validated['nip'] = preg_replace('/\s+/', '', $validated['nip']);
 
         $service = app(AduanService::class);
 

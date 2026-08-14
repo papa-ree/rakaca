@@ -38,7 +38,7 @@ it('berhasil mengirim aduan, tersimpan dengan NIP & WA terenkripsi', function ()
 
     $response = Livewire::test(Index::class)
         ->set('nama_lengkap', '  Budi  Santoso  ')
-        ->set('nip', '1970010120000301')
+        ->set('nip', '19700101 200003 1 123')
         ->set('wa_number', '081234567890')
         ->set('aduan_category_id', $category->id)
         ->set('deskripsi', "Login SSO saya gagal terus.\nPadahal password sudah benar.")
@@ -51,7 +51,7 @@ it('berhasil mengirim aduan, tersimpan dengan NIP & WA terenkripsi', function ()
         ->assertRedirectContains(rawurlencode('*Aduan Rakaca*'))
         ->assertRedirectContains(rawurlencode('*Kode Ref*: '))
         ->assertRedirectContains(rawurlencode('*Nama Lengkap*: Budi Santoso'))
-        ->assertRedirectContains(rawurlencode('*NIP*: `1970010120000301`'))
+        ->assertRedirectContains(rawurlencode('*NIP*: `197001012000031123`'))
         ->assertRedirectContains(rawurlencode('*Deskripsi*:'))
         ->assertRedirectContains(rawurlencode('Login SSO saya gagal terus.'));
 
@@ -61,7 +61,7 @@ it('berhasil mengirim aduan, tersimpan dengan NIP & WA terenkripsi', function ()
         ->and($aduan->ref_code)->toMatch('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i')
         ->and(Aduan::query()->where('ref_code', $aduan->ref_code)->count())->toBe(1)
         ->and(Crypt::decryptString($aduan->getRawOriginal('nama_lengkap')))->toBe('Budi Santoso')
-        ->and(Crypt::decryptString($aduan->getRawOriginal('nip')))->toBe('1970010120000301')
+        ->and(Crypt::decryptString($aduan->getRawOriginal('nip')))->toBe('197001012000031123')
         ->and(Crypt::decryptString($aduan->getRawOriginal('wa_number')))->toBe('6281234567890')
         ->and($aduan->status)->toBe('pending');
 
@@ -72,12 +72,34 @@ it('berhasil mengirim aduan, tersimpan dengan NIP & WA terenkripsi', function ()
         ->not->toContain(rawurlencode('*No. WhatsApp*:'));
 });
 
-it('gagal menyimpan ketika validasi NIP kurang dari 16 digit', function () {
+it('menerima NIP dengan format mask (spasi) dan menyimpannya tanpa spasi', function () {
+    $category = AduanCategory::create(['name' => 'SSO']);
+
+    $response = Livewire::test(Index::class)
+        ->set('nama_lengkap', 'Budi Santoso')
+        ->set('nip', '12345678 123456 7 890')
+        ->set('wa_number', '081234567890')
+        ->set('aduan_category_id', $category->id)
+        ->set('deskripsi', 'Password SSO tidak bisa digunakan.')
+        ->set('recaptchaToken', 'test-token')
+        ->call('submit');
+
+    $response
+        ->assertHasNoErrors()
+        ->assertRedirectContains(rawurlencode('*NIP*: `123456781234567890`'));
+
+    $aduan = Aduan::query()->first();
+
+    expect($aduan)->not->toBeNull()
+        ->and(Crypt::decryptString($aduan->getRawOriginal('nip')))->toBe('123456781234567890');
+});
+
+it('gagal menyimpan ketika NIP melebihi 21 karakter', function () {
     $category = AduanCategory::create(['name' => 'SSO']);
 
     Livewire::test(Index::class)
         ->set('nama_lengkap', 'Budi Santoso')
-        ->set('nip', '1970')
+        ->set('nip', '12345678 123456 1 2345')
         ->set('wa_number', '081234567890')
         ->set('aduan_category_id', $category->id)
         ->set('deskripsi', 'Password SSO tidak bisa digunakan.')
@@ -95,7 +117,7 @@ it('menolak aduan ketika skor reCAPTCHA rendah', function () {
 
     Livewire::test(Index::class)
         ->set('nama_lengkap', 'Budi Santoso')
-        ->set('nip', '1970010120000301')
+        ->set('nip', '12345678 123456 7 890')
         ->set('wa_number', '081234567890')
         ->set('aduan_category_id', $category->id)
         ->set('deskripsi', 'Password SSO tidak bisa digunakan.')
@@ -117,7 +139,7 @@ it('menangani kegagalan jaringan reCAPTCHA tanpa error 500', function () {
 
     Livewire::test(Index::class)
         ->set('nama_lengkap', 'Budi Santoso')
-        ->set('nip', '1970010120000301')
+        ->set('nip', '12345678 123456 7 890')
         ->set('wa_number', '081234567890')
         ->set('aduan_category_id', $category->id)
         ->set('deskripsi', 'Password SSO tidak bisa digunakan.')
@@ -133,7 +155,7 @@ it('membatasi jumlah pengiriman aduan per IP', function () {
 
     $submit = fn () => Livewire::test(Index::class)
         ->set('nama_lengkap', 'Budi Santoso')
-        ->set('nip', '1970010120000301')
+        ->set('nip', '12345678 123456 7 890')
         ->set('wa_number', '081234567890')
         ->set('aduan_category_id', $category->id)
         ->set('deskripsi', 'Password SSO tidak bisa digunakan.')
