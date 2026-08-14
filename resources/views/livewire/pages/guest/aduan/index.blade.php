@@ -18,7 +18,8 @@
             <li class="flex items-start gap-3">
                 <span
                     class="flex size-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-[11px] font-bold text-white">2</span>
-                <p class="text-sm text-gray-600 dark:text-gray-300">Kirim aduan — otomatis diteruskan ke tim kami via WhatsApp.</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Kirim aduan — otomatis diteruskan ke tim kami via
+                    WhatsApp.</p>
             </li>
             <li class="flex items-start gap-3">
                 <span
@@ -28,7 +29,8 @@
         </ol>
 
         {{-- Kepercayaan (desktop saja) --}}
-        <div class="mt-7 hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900/60 lg:block">
+        <div
+            class="mt-7 hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900/60 lg:block">
             <div class="flex items-center gap-3">
                 <span
                     class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
@@ -49,8 +51,7 @@
                     <svg class="size-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 12l2 2 4-4"></path>
-                        <path
-                            d="M12 3a9 9 0 0 1 9 9c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9z">
+                        <path d="M12 3a9 9 0 0 1 9 9c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9z">
                         </path>
                     </svg>
                 </span>
@@ -80,7 +81,9 @@
                 <div class="flex items-start gap-2.5">
                     <svg class="mt-0.5 size-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <path
+                            d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                        </path>
                     </svg>
                     <div class="flex-1 min-w-0">
                         <p class="text-xs font-semibold text-red-700 dark:text-red-300">Periksa kembali formulir</p>
@@ -88,8 +91,7 @@
                             <p class="text-[11px] text-red-600/80 dark:text-red-400/80">{{ $error }}</p>
                         @endforeach
                     </div>
-                    <button type="button" @click="open = false"
-                        class="shrink-0 text-red-400 transition hover:text-red-600">
+                    <button type="button" @click="open = false" class="shrink-0 text-red-400 transition hover:text-red-600">
                         <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 18L18 6M6 6l12 12"></path>
@@ -99,8 +101,8 @@
             </div>
         @endif
 
-        <form wire:submit="submit" autocomplete="off"
-            :class="{ 'opacity-60': !recaptchaValue }" :aria-busy="!recaptchaValue">
+        <form wire:submit="submit" autocomplete="off" :class="{ 'opacity-60': !recaptchaValue }"
+            :aria-busy="!recaptchaValue">
             {{-- Nama Lengkap --}}
             <div class="mb-4">
                 <label for="nama_lengkap"
@@ -143,9 +145,8 @@
                                 <path d="M3 10h18M7 15h4"></path>
                             </svg>
                         </div>
-                        <input wire:model="nip" type="text" id="nip" x-mask="999999999999999999"
-                            inputmode="numeric" maxlength="16" placeholder="16 digit NIP" :disabled="!recaptchaValue"
-                            class="block w-full rounded-lg border px-3.5 py-2.5 pl-9 text-sm transition-all duration-200 focus:outline-none
+                        <input wire:model="nip" type="text" id="nip" x-mask="99999999 999999 9 999" inputmode="numeric"
+                            placeholder="16 digit NIP" :disabled="!recaptchaValue" class="block w-full rounded-lg border px-3.5 py-2.5 pl-9 text-sm transition-all duration-200 focus:outline-none
                                             bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100
                                             placeholder-gray-400 dark:placeholder-gray-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400
                                             dark:disabled:bg-gray-800/50 dark:disabled:text-gray-500 input-purple
@@ -195,7 +196,8 @@
                     <div class="pointer-events-none absolute inset-y-0 left-3 flex items-center">
                         <svg class="size-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z">
+                            </path>
                             <path d="M7 7h.01"></path>
                         </svg>
                     </div>
@@ -257,16 +259,19 @@
                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
 
                     {{-- State normal: ikon + label --}}
-                    <svg wire:loading.remove class="size-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                    <svg wire:loading.remove class="size-4 shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                        </path>
                     </svg>
                     <span wire:loading.remove>Kirim ke WhatsApp</span>
 
                     {{-- State loading: spinner + label (sejajar via flex tombol) --}}
-                    <svg wire:loading class="size-4 shrink-0 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <svg wire:loading class="size-4 shrink-0 animate-spin" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
                     </svg>
                     <span wire:loading>Mengirim…</span>
