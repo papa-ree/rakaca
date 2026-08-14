@@ -77,7 +77,9 @@
                                     Rakaca
                                 </span>
                             </a>
-                            <x-core::dark-mode-toggle />
+                            <div class="lg:hidden">
+                                <x-core::dark-mode-toggle />
+                            </div>
                         </div>
                         {{ $aside }}
                     </aside>

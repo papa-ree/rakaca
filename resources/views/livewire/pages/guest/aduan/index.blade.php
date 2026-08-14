@@ -61,6 +61,11 @@
                 </div>
             </div>
         </div>
+
+        {{-- Dark mode toggle (desktop): di bawah aside agar tidak dekat logo --}}
+        <div class="mt-6 hidden justify-center lg:flex">
+            <x-core::dark-mode-toggle />
+        </div>
     </div>
 </x-slot>
 
