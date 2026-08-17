@@ -106,8 +106,7 @@
             </div>
         @endif
 
-        <form wire:submit="submit" autocomplete="off" :class="{ 'opacity-60': !recaptchaValue }"
-            :aria-busy="!recaptchaValue">
+        <form wire:submit="submit" autocomplete="off">
             {{-- Nama Lengkap --}}
             <div class="mb-4">
                 <label for="nama_lengkap"
@@ -123,11 +122,10 @@
                         </svg>
                     </div>
                     <input wire:model="nama_lengkap" type="text" id="nama_lengkap"
-                        placeholder="Nama lengkap tanpa gelar" :disabled="!recaptchaValue"
+                        placeholder="Nama lengkap tanpa gelar"
                         class="block w-full rounded-lg border px-3.5 py-2.5 pl-9 text-sm transition-all duration-200 focus:outline-none
                                         bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100
-                                        placeholder-gray-400 dark:placeholder-gray-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400
-                                        dark:disabled:bg-gray-800/50 dark:disabled:text-gray-500 input-purple
+                                        placeholder-gray-400 dark:placeholder-gray-500 input-purple
                                         @error('nama_lengkap') border-red-400 dark:border-red-500 input-red @enderror" />
                 </div>
                 @error('nama_lengkap')
@@ -151,10 +149,9 @@
                             </svg>
                         </div>
                         <input wire:model="nip" type="text" id="nip" x-mask="99999999 999999 9 999" inputmode="numeric"
-                            placeholder="16 digit NIP" :disabled="!recaptchaValue" class="block w-full rounded-lg border px-3.5 py-2.5 pl-9 text-sm transition-all duration-200 focus:outline-none
+                            placeholder="16 digit NIP" class="block w-full rounded-lg border px-3.5 py-2.5 pl-9 text-sm transition-all duration-200 focus:outline-none
                                             bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100
-                                            placeholder-gray-400 dark:placeholder-gray-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400
-                                            dark:disabled:bg-gray-800/50 dark:disabled:text-gray-500 input-purple
+                                            placeholder-gray-400 dark:placeholder-gray-500 input-purple
                                             @error('nip') border-red-400 dark:border-red-500 input-red @enderror" />
                     </div>
                     @error('nip')
@@ -178,11 +175,9 @@
                         </div>
                         <input wire:model="wa_number" type="text" id="wa_number" x-mask="99999999999999"
                             inputmode="numeric" maxlength="15" placeholder="Contoh: 081234567890"
-                            :disabled="!recaptchaValue"
                             class="block w-full rounded-lg border px-3.5 py-2.5 pl-9 text-sm transition-all duration-200 focus:outline-none
                                             bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100
-                                            placeholder-gray-400 dark:placeholder-gray-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400
-                                            dark:disabled:bg-gray-800/50 dark:disabled:text-gray-500 input-purple
+                                            placeholder-gray-400 dark:placeholder-gray-500 input-purple
                                             @error('wa_number') border-red-400 dark:border-red-500 input-red @enderror" />
                     </div>
                     @error('wa_number')
@@ -206,11 +201,10 @@
                             <path d="M7 7h.01"></path>
                         </svg>
                     </div>
-                    <select wire:model="aduan_category_id" id="aduan_category_id" :disabled="!recaptchaValue"
+                    <select wire:model="aduan_category_id" id="aduan_category_id"
                         class="block w-full appearance-none rounded-lg border px-3.5 py-2.5 pl-9 pr-9 text-sm transition-all duration-200 focus:outline-none
                                         bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100
-                                        placeholder-gray-400 dark:placeholder-gray-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400
-                                        dark:disabled:bg-gray-800/50 dark:disabled:text-gray-500 input-purple
+                                        placeholder-gray-400 dark:placeholder-gray-500 input-purple
                                         @error('aduan_category_id') border-red-400 dark:border-red-500 input-red @enderror">
                         <option value="">Pilih jenis aduan</option>
                         @foreach ($this->categories as $category)
@@ -236,12 +230,11 @@
                     Deskripsi Keluhan <span class="text-red-500">*</span>
                 </label>
                 <textarea wire:model="deskripsi" id="deskripsi" rows="4" maxlength="5000"
-                    placeholder="Jelaskan kendala yang Anda alami secara rinci" :disabled="!recaptchaValue"
+                    placeholder="Jelaskan kendala yang Anda alami secara rinci"
                     @input="charCount = $el.value.length"
                     class="block w-full resize-none rounded-lg border px-3.5 py-2.5 text-sm transition-all duration-200 focus:outline-none
                                     bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100
-                                    placeholder-gray-400 dark:placeholder-gray-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400
-                                    dark:disabled:bg-gray-800/50 dark:disabled:text-gray-500 input-purple
+                                    placeholder-gray-400 dark:placeholder-gray-500 input-purple
                                     @error('deskripsi') border-red-400 dark:border-red-500 input-red @enderror"></textarea>
                 <div class="mt-1 flex items-center justify-end">
                     <span class="text-[11px] text-gray-400 dark:text-gray-600" x-text="charCount">0</span>
@@ -259,7 +252,8 @@
 
             {{-- Submit --}}
             <div class="mt-5">
-                <button type="submit" :disabled="!recaptchaValue" wire:loading.attr="disabled"
+                <button type="submit" :disabled="!recaptchaReady" wire:loading.attr="disabled"
+                    :title="!recaptchaReady ? 'Menunggu verifikasi keamanan…' : ''"
                     class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.01] hover:shadow-xl active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
 
@@ -303,20 +297,37 @@
     {
         return {
             recaptchaValue: '',
+            recaptchaReady: false,
+
             init ()
             {
                 const el = this.$el.matches( '[wire\\:id]' ) ? this.$el : this.$el.closest( '[wire\\:id]' );
                 const $wire = el ? Livewire.find( el.getAttribute( 'wire:id' ) ) : Livewire.first();
 
-                const observer = new MutationObserver( () =>
+                const syncToken = () =>
                 {
                     const input = document.querySelector( 'input[name="g-recaptcha-response"]' );
                     if ( input && input.value && input.value !== this.recaptchaValue ) {
-                        this.recaptchaValue = input.value;
+                        this.recaptchaValue  = input.value;
+                        this.recaptchaReady  = true;
                         $wire.set( 'recaptchaToken', input.value );
                     }
+                };
+
+                // MutationObserver: tangkap token pertama kali di-inject oleh reCAPTCHA
+                const observer = new MutationObserver( syncToken );
+                observer.observe( document.body, { subtree: true, attributes: true, childList: true } );
+
+                // Polling setiap 5 detik: tangkap token baru ketika token lama expire (~2 menit)
+                // reCAPTCHA v3 memperbarui hidden input secara diam-diam tanpa event DOM yang konsisten
+                const poll = setInterval( syncToken, 5000 );
+
+                // Bersihkan saat komponen di-destroy (navigasi Livewire)
+                this.$cleanup( () =>
+                {
+                    observer.disconnect();
+                    clearInterval( poll );
                 } );
-                observer.observe( document.body, { subtree: true, attributes: true } );
             },
         };
     }
