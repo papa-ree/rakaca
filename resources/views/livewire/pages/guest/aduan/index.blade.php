@@ -230,8 +230,7 @@
                     Deskripsi Keluhan <span class="text-red-500">*</span>
                 </label>
                 <textarea wire:model="deskripsi" id="deskripsi" rows="4" maxlength="5000"
-                    placeholder="Jelaskan kendala yang Anda alami secara rinci"
-                    @input="charCount = $el.value.length"
+                    placeholder="Jelaskan kendala yang Anda alami secara rinci" @input="charCount = $el.value.length"
                     class="block w-full resize-none rounded-lg border px-3.5 py-2.5 text-sm transition-all duration-200 focus:outline-none
                                     bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100
                                     placeholder-gray-400 dark:placeholder-gray-500 input-purple
@@ -316,20 +315,16 @@
                     }
                 };
 
-                // MutationObserver: tangkap token pertama kali di-inject oleh reCAPTCHA
                 this._observer = new MutationObserver( syncToken );
                 this._observer.observe( document.body, { subtree: true, attributes: true, childList: true } );
 
-                // Polling setiap 5 detik: tangkap token baru ketika token lama expire (~2 menit)
-                // reCAPTCHA v3 memperbarui hidden input secara diam-diam tanpa event DOM yang konsisten
                 this._poll = setInterval( syncToken, 5000 );
             },
 
-            // Lifecycle hook Alpine.js — dipanggil otomatis saat elemen di-remove dari DOM
             destroy ()
             {
                 if ( this._observer ) this._observer.disconnect();
-                if ( this._poll )     clearInterval( this._poll );
+                if ( this._poll ) clearInterval( this._poll );
             },
         };
     }
