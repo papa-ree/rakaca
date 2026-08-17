@@ -298,6 +298,8 @@
         return {
             recaptchaValue: '',
             recaptchaReady: false,
+            _observer: null,
+            _poll: null,
 
             init ()
             {
@@ -308,26 +310,26 @@
                 {
                     const input = document.querySelector( 'input[name="g-recaptcha-response"]' );
                     if ( input && input.value && input.value !== this.recaptchaValue ) {
-                        this.recaptchaValue  = input.value;
-                        this.recaptchaReady  = true;
+                        this.recaptchaValue = input.value;
+                        this.recaptchaReady = true;
                         $wire.set( 'recaptchaToken', input.value );
                     }
                 };
 
                 // MutationObserver: tangkap token pertama kali di-inject oleh reCAPTCHA
-                const observer = new MutationObserver( syncToken );
-                observer.observe( document.body, { subtree: true, attributes: true, childList: true } );
+                this._observer = new MutationObserver( syncToken );
+                this._observer.observe( document.body, { subtree: true, attributes: true, childList: true } );
 
                 // Polling setiap 5 detik: tangkap token baru ketika token lama expire (~2 menit)
                 // reCAPTCHA v3 memperbarui hidden input secara diam-diam tanpa event DOM yang konsisten
-                const poll = setInterval( syncToken, 5000 );
+                this._poll = setInterval( syncToken, 5000 );
+            },
 
-                // Bersihkan saat komponen di-destroy (navigasi Livewire)
-                this.$cleanup( () =>
-                {
-                    observer.disconnect();
-                    clearInterval( poll );
-                } );
+            // Lifecycle hook Alpine.js — dipanggil otomatis saat elemen di-remove dari DOM
+            destroy ()
+            {
+                if ( this._observer ) this._observer.disconnect();
+                if ( this._poll )     clearInterval( this._poll );
             },
         };
     }
