@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Submission extends Model
+class RakacaSubmission extends Model
 {
     use HasUuids, LogsActivity;
 
@@ -19,10 +19,14 @@ class Submission extends Model
         'code',
         'status',
         'items',
+        'admin_response',
+        'processed_at',
+        'processed_by',
     ];
 
     protected $casts = [
         'items' => 'array',
+        'processed_at' => 'datetime',
         'created_at' => 'datetime:d M Y',
         'updated_at' => 'datetime:d M Y',
     ];
@@ -37,6 +41,16 @@ class Submission extends Model
         return $this->belongsTo(\App\Models\User::class, 'user_uuid', 'uuid');
     }
 
+    public function uploads(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RakacaSubmissionUpload::class, 'rakaca_submission_id');
+    }
+
+    public function processedBy(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\User::class, 'processed_by', 'uuid');
+    }
+
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
@@ -44,6 +58,7 @@ class Submission extends Model
             'approved' => 'green',
             'rejected' => 'red',
             'review' => 'blue',
+            'ditutup' => 'slate',
             default => 'gray',
         };
     }
@@ -55,6 +70,7 @@ class Submission extends Model
             'approved' => 'Disetujui',
             'rejected' => 'Ditolak',
             'review' => 'Dalam Review',
+            'ditutup' => 'Ditutup',
             default => 'Unknown',
         };
     }

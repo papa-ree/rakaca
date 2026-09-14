@@ -10,20 +10,21 @@
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
             @forelse($this->services as $service)
-                <a href="https://wa.me/6285126061182" target="_blank"
-                    class="group relative overflow-hidden p-5 transition-all duration-300 bg-white border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700 rounded-2xl hover:shadow-xl hover:-translate-y-1">
+                @php $firstForm = $service->forms->first(); @endphp
+                <div
+                    class="group relative overflow-hidden p-5 transition-all duration-300 bg-white border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700 rounded-2xl hover:shadow-xl hover:-translate-y-1 flex flex-col">
                     {{-- Gradient Accent --}}
                     <div
                         class="absolute top-0 inset-x-0 h-1 bg-linear-to-r from-purple-500 via-pink-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     </div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 flex-1">
                         <div
                             class="shrink-0 flex items-center justify-center w-11 h-11 bg-linear-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg transition-transform duration-200 group-hover:scale-110">
                             <x-dynamic-component :component="'lucide-' . $service->icon"
                                 class="w-5 h-5 text-white" />
                         </div>
-                        <div class="min-w-0">
+                        <div class="min-w-0 flex-1">
                             <h4
                                 class="text-sm font-bold text-gray-900 transition-colors dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 truncate">
                                 {{ $service->name }}
@@ -33,7 +34,19 @@
                             </p>
                         </div>
                     </div>
-                </a>
+                    <div class="mt-4">
+                        @if($firstForm)
+                            <a href="{{ route('rakaca.guest.submission.create', ['form_id' => $firstForm->id]) }}" wire:navigate
+                                class="inline-flex w-full items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
+                                <x-lucide-plus class="w-3 h-3" /> {{ __('Ajukan') }}
+                            </a>
+                        @else
+                            <span class="inline-flex w-full items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-not-allowed" title="{{ __('Belum ada formulir') }}">
+                                {{ __('Belum ada formulir') }}
+                            </span>
+                        @endif
+                    </div>
+                </div>
             @empty
                 <div class="col-span-full text-center py-12">
                     <div

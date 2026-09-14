@@ -36,8 +36,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Paparee\\Rakaca\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/"
+            "Paparee\\Rakaca\\Tests\\": "tests/"
         }
     },
     "scripts": {

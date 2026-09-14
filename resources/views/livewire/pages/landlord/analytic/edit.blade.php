@@ -61,7 +61,7 @@
 
                     {{-- Enabled --}}
                     <div class="flex items-center gap-x-3">
-                        {{-- <x-core::checkbox id="enabled" wire:model="enabled" /> --}}
+                        <x-core::checkbox id="enabled" wire:model.live="enabled" />
                         <x-core::label for="enabled" :value="__('Enabled')" />
                         <x-core::input-error for="enabled" class="mt-2" />
                     </div>

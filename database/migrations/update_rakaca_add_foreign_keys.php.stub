@@ -1,0 +1,82 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        if (Schema::hasTable('rakaca_forms') && Schema::hasTable('rakaca_services')) {
+            Schema::table('rakaca_forms', function (Blueprint $table) {
+                // Add FK only if not already exists
+                try {
+                    $table->foreign('rakaca_service_id')->references('id')->on('rakaca_services')->cascadeOnDelete();
+                } catch (\Throwable $e) {
+                    // FK already exists or table not yet migrated
+                }
+            });
+        }
+
+        if (Schema::hasTable('rakaca_submissions') && Schema::hasTable('rakaca_forms')) {
+            Schema::table('rakaca_submissions', function (Blueprint $table) {
+                try {
+                    $table->foreign('rakaca_form_id')->references('id')->on('rakaca_forms')->cascadeOnDelete();
+                } catch (\Throwable $e) {
+                }
+            });
+        }
+
+        if (Schema::hasTable('person_has_services')) {
+            Schema::table('person_has_services', function (Blueprint $table) {
+                try {
+                    if (Schema::hasTable('users')) {
+                        $table->foreign('user_uuid')->references('uuid')->on('users')->cascadeOnDelete();
+                    }
+                } catch (\Throwable $e) {
+                }
+                try {
+                    if (Schema::hasTable('rakaca_services')) {
+                        $table->foreign('rakaca_service_id')->references('id')->on('rakaca_services')->cascadeOnDelete();
+                    }
+                } catch (\Throwable $e) {
+                }
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        if (Schema::hasTable('rakaca_forms')) {
+            Schema::table('rakaca_forms', function (Blueprint $table) {
+                try {
+                    $table->dropForeign(['rakaca_service_id']);
+                } catch (\Throwable $e) {
+                }
+            });
+        }
+
+        if (Schema::hasTable('rakaca_submissions')) {
+            Schema::table('rakaca_submissions', function (Blueprint $table) {
+                try {
+                    $table->dropForeign(['rakaca_form_id']);
+                } catch (\Throwable $e) {
+                }
+            });
+        }
+
+        if (Schema::hasTable('person_has_services')) {
+            Schema::table('person_has_services', function (Blueprint $table) {
+                try {
+                    $table->dropForeign(['user_uuid']);
+                } catch (\Throwable $e) {
+                }
+                try {
+                    $table->dropForeign(['rakaca_service_id']);
+                } catch (\Throwable $e) {
+                }
+            });
+        }
+    }
+};

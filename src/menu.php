@@ -4,7 +4,7 @@
  * Menu definisi untuk package paparee/rakaca (Landlord Layout).
  *
  * Mendefinisikan dua grup:
- * - 'rakaca': manajemen layanan, formulir, submission, dan personal service
+ * - 'rakaca': manajemen layanan, formulir, Submission, dan personal service
  * - 'bale-cms-mgmt': manajemen organisasi, bale list, user, dan analytics
  */
 return [

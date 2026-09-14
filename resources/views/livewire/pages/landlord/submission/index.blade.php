@@ -12,17 +12,22 @@
     </x-core::page-header>
 
     <livewire:core-shared-components::data-table
-        model="Paparee\Rakaca\Models\Submission"
+        model="Paparee\Rakaca\Models\RakacaSubmission"
         rowView="rakaca::livewire.pages.landlord.submission.section.submission-row"
         :columns="[
             [
                 'key'      => 'code',
-                'label'    => __('Code'),
+                'label'    => __('Pengajuan'),
                 'sortable' => true,
             ],
             [
-                'key'      => 'service_id',
-                'label'    => __('Service'),
+                'key'      => 'nip',
+                'label'    => __('NIP'),
+                'sortable' => false,
+            ],
+            [
+                'key'      => 'form.service.name',
+                'label'    => __('Layanan'),
                 'sortable' => false,
             ],
             [
@@ -32,7 +37,7 @@
             ],
             [
                 'key'      => 'created_at',
-                'label'    => __('Date'),
+                'label'    => __('Tanggal'),
                 'sortable' => true,
             ],
             [
@@ -41,10 +46,10 @@
                 'sortable' => false,
             ],
         ]"
-        :with="['service']"
+        :with="['form.service', 'user', 'uploads']"
         :searchable="['code', 'status']"
         sortField="created_at"
-        sortDirection="desc"
+        sortDirection="asc"
         :perPage="20"
     />
 </div>

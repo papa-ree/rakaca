@@ -6,12 +6,12 @@ use Bale\Core\Support\Sanitize;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
-use Paparee\Rakaca\Models\Service;
+use Paparee\Rakaca\Models\RakacaService;
 
 #[Layout('rakaca::layouts.app')]
 class Form extends Component
 {
-    public ?Service $service = null;
+    public ?RakacaService $service = null;
 
     public bool $isEdit = false;
 
@@ -25,7 +25,7 @@ class Form extends Component
 
     public bool $actived = true;
 
-    public function mount(?Service $service = null): void
+    public function mount(?RakacaService $service = null): void
     {
         if ($service) {
             if (! auth()->user()->can('service.update')) {
@@ -103,7 +103,7 @@ class Form extends Component
             $this->service->update($data);
             session()->flash('success', 'Service updated successfully.');
         } else {
-            Service::create($data);
+            RakacaService::create($data);
             session()->flash('success', 'New service created successfully.');
         }
 

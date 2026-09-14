@@ -6,7 +6,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Paparee\Rakaca\Models\Submission;
+use Paparee\Rakaca\Models\RakacaSubmission;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Submission Management')]
@@ -31,7 +31,7 @@ class Index extends Component
             abort(403);
         }
 
-        $submission = Submission::findOrFail($id);
+        $submission = RakacaSubmission::findOrFail($id);
         $submission->delete();
 
         $this->dispatch('toast', message: 'Submission deleted successfully.', type: 'success');

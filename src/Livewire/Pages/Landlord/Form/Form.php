@@ -8,7 +8,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Paparee\Rakaca\Models\Form as FormModel;
-use Paparee\Rakaca\Models\Service;
+use Paparee\Rakaca\Models\RakacaService;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Form Builder')]
@@ -75,8 +75,24 @@ class Form extends Component
             'type' => 'string',
             'required' => false,
             'placeholder' => '',
+            'options' => [],
             'order' => count($this->fields) + 1,
         ];
+    }
+
+    public function addOption(int $fieldIndex): void
+    {
+        if (isset($this->fields[$fieldIndex])) {
+            $this->fields[$fieldIndex]['options'][] = '';
+        }
+    }
+
+    public function removeOption(int $fieldIndex, int $optionIndex): void
+    {
+        if (isset($this->fields[$fieldIndex]['options'][$optionIndex])) {
+            unset($this->fields[$fieldIndex]['options'][$optionIndex]);
+            $this->fields[$fieldIndex]['options'] = array_values($this->fields[$fieldIndex]['options']);
+        }
     }
 
     public function removeField(int $index): void
@@ -115,6 +131,8 @@ class Form extends Component
             'fields.*.type' => 'required|string|in:string,textarea,number,email,select,checkbox,date,file',
             'fields.*.required' => 'boolean',
             'fields.*.placeholder' => 'nullable|string|max:255',
+            'fields.*.options' => 'nullable|array',
+            'fields.*.options.*' => 'nullable|string|max:255',
             'fields.*.order' => 'required|integer',
         ];
     }
@@ -139,6 +157,11 @@ class Form extends Component
             $this->fields[$i]['key'] = Str::snake(Str::lower(Sanitize::text($field['key'])));
             $this->fields[$i]['label'] = Sanitize::text($field['label']);
             $this->fields[$i]['placeholder'] = Sanitize::text($field['placeholder'] ?? '');
+            if (isset($field['options']) && is_array($field['options'])) {
+                $this->fields[$i]['options'] = array_values(array_filter(array_map(fn ($o) => Sanitize::text((string) $o), $field['options']), fn ($o) => $o !== ''));
+            } else {
+                $this->fields[$i]['options'] = [];
+            }
         }
 
         // Sync fields into meta
@@ -167,7 +190,7 @@ class Form extends Component
 
     public function render()
     {
-        $services = Service::where('actived', true)->get();
+        $services = RakacaService::where('actived', true)->get();
         return view('rakaca::livewire.pages.landlord.form.form', [
             'services' => $services,
         ]);

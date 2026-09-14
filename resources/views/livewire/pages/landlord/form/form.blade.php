@@ -238,6 +238,25 @@
                                                 </label>
                                             </div>
 
+                                            {{-- Options (only for select) --}}
+                                            <div x-show="fields[index].type === 'select'" x-cloak class="mt-3 p-3 bg-white dark:bg-slate-700 rounded-lg border border-amber-200 dark:border-amber-800/40">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <span class="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">{{ __('Select Options') }}</span>
+                                                    <button type="button" @click="$wire.call('addOption', index)" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 rounded-md hover:bg-amber-100 transition-colors">
+                                                        <x-lucide-plus class="w-3 h-3" /> {{ __('Add') }}
+                                                    </button>
+                                                </div>
+                                                <template x-for="(opt, optIndex) in (fields[index].options || [])" :key="optIndex">
+                                                    <div class="flex items-center gap-2 mb-1.5">
+                                                        <input type="text" x-model="fields[index].options[optIndex]" placeholder="e.g. Option A" class="block w-full py-2 px-3 text-sm bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500" />
+                                                        <button type="button" @click="$wire.call('removeOption', index, optIndex)" class="shrink-0 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors">
+                                                            <x-lucide-x class="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </template>
+                                                <p x-show="!fields[index].options || fields[index].options.length === 0" class="text-xs text-gray-400 dark:text-gray-500 italic">{{ __('Belum ada opsi. Klik Add untuk menambah.') }}</p>
+                                            </div>
+
                                         {{-- Placeholder --}}
                                         <div class="mt-3">
                                             <x-core::label :value="__('Placeholder')" />
@@ -370,6 +389,9 @@
                                                 :required="field.required"
                                                 class="block w-full py-3 px-4 text-gray-900 transition-all duration-200 bg-white border border-gray-300 form-input rounded-xl dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                                                 <option value="">{{ __('-- Select --') }}</option>
+                                                <template x-for="opt in (field.options || [])" :key="opt">
+                                                    <option :value="opt" x-text="opt"></option>
+                                                </template>
                                             </select>
                                         </div>
 

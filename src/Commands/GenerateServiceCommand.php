@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class GenerateServiceCommand extends Command
 {
     protected $signature = 'rakaca:make-service 
-        {--name : Service name, e.g. Bale CMS} 
+        {--name= : Service name, e.g. Bale CMS} 
         {--slug= : Slug for the service (optional)} 
         {--user= : User UUID to attach (optional)}';
 
@@ -19,6 +19,17 @@ class GenerateServiceCommand extends Command
     public function handle()
     {
         $name = $this->option('name');
+
+        if (empty($name)) {
+            $name = $this->ask('What is the service name?');
+
+            if (empty($name)) {
+                $this->error('Nama service wajib diisi.');
+
+                return Command::FAILURE;
+            }
+        }
+
         $slug = $this->option('slug') ?? Str::slug($name);
         $userUuid = $this->option('user');
 

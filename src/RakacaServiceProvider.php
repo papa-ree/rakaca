@@ -55,6 +55,28 @@ class RakacaServiceProvider extends ServiceProvider
     {
         $this->app->booted(function () {
             $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+            // Register guest menu terpisah (tanpa ubah bale-core)
+            try {
+                $registry = $this->app->make(\Bale\Core\Services\MenuRegistry::class);
+                // Coba pakai registerFromProvider untuk menu-guest.php via refleksi manual
+                $menuGuestPath = __DIR__.'/menu-guest.php';
+                if (file_exists($menuGuestPath) && method_exists($registry, 'flush')) {
+                    // Fallback: langsung include dan push ke groups via reflection (tidak ubah core)
+                    $config = include $menuGuestPath;
+                    if (is_array($config) && isset($config['type'], $config['groups'])) {
+                        $ref = new \ReflectionClass($registry);
+                        $prop = $ref->getProperty('groups');
+                        $prop->setAccessible(true);
+                        $existing = $prop->getValue($registry);
+                        foreach ($config['groups'] as $group) {
+                            $existing[] = array_merge($group, ['_type' => $config['type']]);
+                        }
+                        $prop->setValue($registry, $existing);
+                    }
+                }
+            } catch (\Throwable $e) {
+                // diam
+            }
         });
 
         $this->registerViews();
@@ -99,11 +121,7 @@ class RakacaServiceProvider extends ServiceProvider
         $this->publishes($this->getMigrations(), 'rakaca:migrations');
 
         $this->publishes([
-            __DIR__.'/../database/seeders/KecamatanDesaSeeder.php' => database_path('/seeders/KecamatanDesaSeeder.php'),
-        ], 'rakaca:seeders');
-
-        $this->publishes([
-            __DIR__.'/../src/Database/Seeders/AduanCategorySeeder.php' => database_path('/seeders/AduanCategorySeeder.php'),
+            __DIR__.'/../src/Database/Seeders/AduanCategorySeeder.php' => database_path('seeders/AduanCategorySeeder.php'),
         ], 'rakaca:seeders');
 
     }

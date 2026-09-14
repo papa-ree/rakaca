@@ -43,7 +43,7 @@ class Create extends Component
             'created_by' => auth()->user()->uuid ?? auth()->user()->id,
         ]);
 
-        session()->flash('message', __('Organization created successfully.'));
+        $this->dispatch('toast', message: __('Organization created successfully.'), type: 'success');
 
         return redirect()->route('rakaca.landlord.organization.index');
     }

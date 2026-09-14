@@ -7,7 +7,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Paparee\Rakaca\Models\Submission;
+use Paparee\Rakaca\Models\RakacaSubmission;
 
 #[Layout('rakaca::layouts.app')]
 #[Lazy]
@@ -30,7 +30,7 @@ class SubmissionStatus extends Component
     #[Computed()]
     public function submissions()
     {
-        return Submission::with('service')
+        return RakacaSubmission::with('form.service')
             ->whereUserUuid(auth()->user()->uuid)
             ->orderBy('created_at', 'desc')
             ->get();

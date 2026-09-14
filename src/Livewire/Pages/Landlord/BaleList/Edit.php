@@ -101,7 +101,7 @@ class Edit extends Component
             'is_active' => $this->is_active,
         ]);
 
-        session()->flash('message', __('Bale List updated successfully.'));
+        $this->dispatch('toast', message: __('Bale List updated successfully.'), type: 'success');
 
         return redirect()->route('rakaca.landlord.bale-list.index');
     }

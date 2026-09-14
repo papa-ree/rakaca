@@ -6,7 +6,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Paparee\Rakaca\Models\Service;
+use Paparee\Rakaca\Models\RakacaService;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Service Management')]
@@ -31,7 +31,7 @@ class Index extends Component
             abort(403);
         }
 
-        $service = Service::findOrFail($id);
+        $service = RakacaService::findOrFail($id);
         $service->delete();
 
         $this->dispatch('toast', message: 'Service deleted successfully.', type: 'success');

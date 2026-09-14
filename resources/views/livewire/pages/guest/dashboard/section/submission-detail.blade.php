@@ -1,5 +1,5 @@
 @php
-    $serviceSlug = $submission?->service?->slug ?? 'default';
+    $serviceSlug = $submission?->form?->service?->slug ?? 'default';
     $icon = $this->getServiceIcon($serviceSlug);
     $color = $this->getServiceColor($serviceSlug);
     $statusColor = $submission?->statusColor ?? 'gray';
@@ -35,7 +35,7 @@
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                            {{ $submission?->service?->name ?? 'Unknown Service' }}
+                            {{ $submission?->form?->service?->name ?? 'Unknown Service' }}
                         </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                             Pengajuan #{{ $submission?->code }}
@@ -81,11 +81,11 @@
             </div>
 
             {{-- Submission Data --}}
-            @if($submission?->data)
+            @if($submission?->items['data'] ?? null)
                 <div class="mb-6">
                     <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Detail Pengajuan</h4>
                     <div class="space-y-2">
-                        @foreach($submission->data as $key => $value)
+                        @foreach($submission->items['data'] as $key => $value)
                             <div class="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                                 <div class="flex-1">
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">
@@ -106,11 +106,11 @@
             @endif
 
             {{-- Service Description --}}
-            @if($submission?->service?->description)
+            @if($submission?->form?->service?->description)
                 <div class="mb-6">
                     <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Tentang Layanan</h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ $submission->service->description }}
+                        {{ $submission->form->service->description }}
                     </p>
                 </div>
             @endif

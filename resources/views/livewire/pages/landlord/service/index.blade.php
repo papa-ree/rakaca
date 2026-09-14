@@ -12,7 +12,7 @@
     </x-core::page-header>
 
     <livewire:core-shared-components::data-table
-        model="Paparee\Rakaca\Models\Service"
+        model="Paparee\Rakaca\Models\RakacaService"
         rowView="rakaca::livewire.pages.landlord.service.section.service-row"
         :columns="[
             [

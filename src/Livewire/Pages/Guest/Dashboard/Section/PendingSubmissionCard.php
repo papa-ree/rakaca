@@ -6,7 +6,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
-use Paparee\Rakaca\Models\Submission;
+use Paparee\Rakaca\Models\RakacaSubmission;
 
 #[Layout('rakaca::layouts.app')]
 #[Lazy]
@@ -25,7 +25,7 @@ class PendingSubmissionCard extends Component
     #[Computed]
     public function pendingSubmissions()
     {
-        return Submission::whereUserUuid(auth()->user()->uuid)
+        return RakacaSubmission::whereUserUuid(auth()->user()->uuid)
             ->where('status', 'pending')->count();
     }
 }

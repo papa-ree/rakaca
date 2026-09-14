@@ -10,9 +10,23 @@ class RakacaService extends Model
 {
     use HasUuids, LogsActivity;
 
-    protected $guarded = ['id'];
+    protected $table = 'rakaca_services';
+
+    protected $fillable = [
+        'id',
+        'name',
+        'slug',
+        'icon',
+        'description',
+        'actived',
+    ];
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $casts = [
+        'actived' => 'boolean',
         'created_at' => 'datetime:d M Y',
         'updated_at' => 'datetime:d M Y',
     ];
@@ -20,16 +34,6 @@ class RakacaService extends Model
     public function persons()
     {
         return $this->hasMany(PersonHasService::class, 'rakaca_service_id', 'id');
-    }
-
-    public function orders()
-    {
-        return $this->hasMany(ServiceOrderHistory::class, 'rakaca_service_id', 'id');
-    }
-
-    public function submissions()
-    {
-        return $this->hasMany(Submission::class, 'rakaca_service_id', 'id');
     }
 
     public function forms()

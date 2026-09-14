@@ -33,12 +33,12 @@
             @else
                 {{-- Submissions List --}}
                 <div class="space-y-3">
-                    @foreach($this->submissions as $submission)
+                    @foreach($this->submissions as $Submission)
                         @php
-                            $serviceIcon = $submission->service->icon ?? 'default';
+                            $serviceIcon = $Submission->service->icon ?? 'default';
                             $icon = $this->getServiceIcon($serviceIcon);
                             $color = $this->getServiceColor($serviceIcon);
-                            $statusColor = $submission->statusColor;
+                            $statusColor = $Submission->statusColor;
                         @endphp
                         <div
                             class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
@@ -50,23 +50,23 @@
                                     </div>
                                     <div>
                                         <h4 class="font-semibold text-gray-900 dark:text-white">
-                                            {{ $submission->service->name ?? 'Unknown Service' }}
+                                            {{ $Submission->service->name ?? 'Unknown Service' }}
                                         </h4>
                                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            Pengajuan #{{ $submission->code }}
+                                            Pengajuan #{{ $Submission->code }}
                                         </p>
                                     </div>
                                 </div>
                                 <span
                                     class="px-3 py-1 text-xs font-semibold text-{{ $statusColor }}-700 bg-{{ $statusColor }}-100 rounded-full dark:bg-{{ $statusColor }}-900/50 dark:text-{{ $statusColor }}-300">
-                                    {{ $submission->statusLabel }}
+                                    {{ $Submission->statusLabel }}
                                 </span>
                             </div>
                             <div class="flex items-center justify-between text-sm">
                                 <span class="text-gray-500 dark:text-gray-400">
-                                    Diajukan: {{ $submission->created_at }}
+                                    Diajukan: {{ $Submission->created_at }}
                                 </span>
-                                <button wire:click="viewDetail('{{ $submission->id }}')"
+                                <button wire:click="viewDetail('{{ $Submission->id }}')"
                                     class="text-blue-600 dark:text-blue-400 hover:underline">
                                     Lihat Detail
                                 </button>

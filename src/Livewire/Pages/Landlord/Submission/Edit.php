@@ -5,43 +5,43 @@ namespace Paparee\Rakaca\Livewire\Pages\Landlord\Submission;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Paparee\Rakaca\Models\Service;
-use Paparee\Rakaca\Models\Submission;
+use Paparee\Rakaca\Models\Form;
+use Paparee\Rakaca\Models\RakacaSubmission;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Edit Submission')]
 class Edit extends Component
 {
-    public Submission $submission;
+    public RakacaSubmission $submission;
 
-    public $rakaca_service_id;
+    public $rakaca_form_id;
 
     public $code;
 
     public $status;
 
-    public $data;
+    public $items;
 
     protected function rules()
     {
         return [
-            'rakaca_service_id' => 'required|exists:rakaca_services,id',
-            'code' => 'required|unique:submissions,code,'.$this->submission->id,
+            'rakaca_form_id' => 'required|exists:rakaca_forms,id',
+            'code' => 'required|unique:rakaca_submissions,code,'.$this->submission->id,
             'status' => 'required|in:pending,approved,rejected,review',
         ];
     }
 
-    public function mount(Submission $submission)
+    public function mount(RakacaSubmission $submission)
     {
         if (! auth()->user()->can('submission.update')) {
             abort(403);
         }
 
         $this->submission = $submission;
-        $this->rakaca_service_id = $submission->rakaca_service_id;
+        $this->rakaca_form_id = $submission->rakaca_form_id;
         $this->code = $submission->code;
         $this->status = $submission->status;
-        $this->data = $submission->data;
+        $this->items = $submission->items;
     }
 
     public function save()
@@ -49,9 +49,9 @@ class Edit extends Component
         $this->validate();
 
         $this->submission->update([
-            'rakaca_service_id' => $this->rakaca_service_id,
+            'rakaca_form_id' => $this->rakaca_form_id,
             'status' => $this->status,
-            'data' => $this->data,
+            'items' => $this->items,
         ]);
 
         session()->flash('message', 'Submission updated successfully.');
@@ -62,7 +62,7 @@ class Edit extends Component
     public function render()
     {
         return view('rakaca::livewire.pages.landlord.submission.edit', [
-            'services' => Service::where('actived', true)->get(),
+            'forms' => Form::where('actived', true)->get(),
         ]);
     }
 }

@@ -80,7 +80,7 @@ class Create extends Component
             'is_active' => $this->is_active,
         ]);
 
-        session()->flash('message', __('Bale List created successfully.'));
+        $this->dispatch('toast', message: __('Bale List created successfully.'), type: 'success');
 
         return redirect()->route('rakaca.landlord.bale-list.index');
     }

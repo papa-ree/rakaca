@@ -78,7 +78,21 @@
         <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Semua kolom wajib diisi.</p>
     </div>
 
-    <div class="p-5 sm:p-6">
+    {{-- Skeleton while waiting for reCAPTCHA token (inputs remain fillable after loaded) --}}
+    <div x-show="!loaded" x-cloak class="p-5 sm:p-6 space-y-4 animate-pulse">
+        <div class="h-4 w-1/3 rounded bg-gray-200 dark:bg-gray-700"></div>
+        <div class="h-10 rounded-lg bg-gray-100 dark:bg-gray-800"></div>
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div class="h-10 rounded-lg bg-gray-100 dark:bg-gray-800"></div>
+            <div class="h-10 rounded-lg bg-gray-100 dark:bg-gray-800"></div>
+        </div>
+        <div class="h-10 rounded-lg bg-gray-100 dark:bg-gray-800"></div>
+        <div class="h-24 rounded-lg bg-gray-100 dark:bg-gray-800"></div>
+        <div class="h-11 rounded-xl bg-gray-200 dark:bg-gray-700"></div>
+        <p class="text-center text-xs text-gray-400 dark:text-gray-600">Menunggu verifikasi keamanan…</p>
+    </div>
+
+    <div x-show="loaded" class="p-5 sm:p-6">
         {{-- Error banner --}}
         @if ($errors->any())
             <div x-data="{ open: true }" x-show="open"
@@ -297,6 +311,7 @@
         return {
             recaptchaValue: '',
             recaptchaReady: false,
+            loaded: false,
             _observer: null,
             _poll: null,
 
@@ -311,7 +326,11 @@
                     if ( input && input.value && input.value !== this.recaptchaValue ) {
                         this.recaptchaValue = input.value;
                         this.recaptchaReady = true;
+                        if ( ! this.loaded ) this.loaded = true;
                         $wire.set( 'recaptchaToken', input.value );
+                    } else if ( input && ! input.value && this.recaptchaReady ) {
+                        // Token expired — keep loaded true, keep inputs, only disable button
+                        this.recaptchaReady = false;
                     }
                 };
 

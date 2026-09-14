@@ -4,14 +4,14 @@ namespace Paparee\Rakaca\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Paparee\Rakaca\Models\RakacaService;
-use Paparee\Rakaca\Models\Submission;
+use Paparee\Rakaca\Models\Form;
+use Paparee\Rakaca\Models\RakacaSubmission;
 
 class GenerateUserSubmissionCommand extends Command
 {
     protected $signature = 'rakaca:make-user-submission 
                             {--username= : Username of the user} 
-                            {--service_slug= : Slug of the service}';
+                            {--form_slug= : Slug of the form}';
 
     protected $description = 'Create a new submission for a user';
 
@@ -19,7 +19,6 @@ class GenerateUserSubmissionCommand extends Command
     {
         $username = $this->option('username') ?? $this->ask('Masukkan username user');
 
-        // Look up user
         $user = DB::table('users')->where('username', $username)->first();
 
         if (! $user) {
@@ -28,36 +27,36 @@ class GenerateUserSubmissionCommand extends Command
             return self::FAILURE;
         }
 
-        $serviceSlug = $this->option('service_slug');
+        $formSlug = $this->option('form_slug');
 
-        if (! $serviceSlug) {
-            $services = RakacaService::all();
+        if (! $formSlug) {
+            $forms = Form::all();
 
-            if ($services->isEmpty()) {
-                $this->error('❌ Tidak ada service yang tersedia di tabel rakaca_services.');
+            if ($forms->isEmpty()) {
+                $this->error('❌ Tidak ada form yang tersedia di tabel rakaca_forms.');
 
                 return self::FAILURE;
             }
 
-            $serviceNames = $services->pluck('name', 'slug')->toArray();
-            $selectedName = $this->choice('Pilih Service', array_values($serviceNames));
-            $serviceSlug = array_search($selectedName, $serviceNames);
+            $formNames = $forms->pluck('name', 'slug')->toArray();
+            $selectedName = $this->choice('Pilih Form', array_values($formNames));
+            $formSlug = array_search($selectedName, $formNames);
         }
 
-        $service = RakacaService::where('slug', $serviceSlug)->first();
+        $form = Form::where('slug', $formSlug)->first();
 
-        if (! $service) {
-            $this->error("❌ Service dengan slug '{$serviceSlug}' tidak ditemukan.");
+        if (! $form) {
+            $this->error("❌ Form dengan slug '{$formSlug}' tidak ditemukan.");
 
             return self::FAILURE;
         }
 
-        $submission = Submission::create([
+        $submission = RakacaSubmission::create([
             'user_uuid' => $user->uuid,
-            'rakaca_service_id' => $service->id,
+            'rakaca_form_id' => $form->id,
             'code' => uniqid(),
             'status' => 'pending',
-            'data' => [],
+            'items' => [],
         ]);
 
         $this->info('✅ Submission berhasil dibuat!');
@@ -66,7 +65,7 @@ class GenerateUserSubmissionCommand extends Command
             [
                 ['ID', $submission->id],
                 ['User', $username." ({$user->uuid})"],
-                ['Service', $service->name],
+                ['Form', $form->name],
                 ['Code', $submission->code],
                 ['Status', $submission->status],
             ]

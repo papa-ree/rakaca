@@ -5,14 +5,14 @@ namespace Paparee\Rakaca\Livewire\Pages\Guest\Dashboard\Section;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Paparee\Rakaca\Models\Submission;
+use Paparee\Rakaca\Models\RakacaSubmission;
 
 #[Lazy]
 class SubmissionDetail extends Component
 {
     public $submissionId;
 
-    public ?Submission $submission = null;
+    public ?RakacaSubmission $submission = null;
 
     public function mount($submissionId)
     {
@@ -21,7 +21,7 @@ class SubmissionDetail extends Component
 
     public function loadSubmission()
     {
-        $this->submission = Submission::with('service')
+        $this->submission = RakacaSubmission::with('form.service')
             ->where('id', $this->submissionId)
             ->whereUserUuid(auth()->user()->uuid)
             ->first();

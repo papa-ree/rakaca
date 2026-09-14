@@ -17,6 +17,7 @@ use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Index as PersonalServ
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Form as RakacaServiceForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Index as RakacaServiceIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Create;
+use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Detail as SubmissionDetail;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Edit;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Index;
 
@@ -51,6 +52,7 @@ Route::middleware(['web'])->group(function () {
                 Route::get('submissions', Index::class)->name('landlord.submission.index');
                 Route::get('submissions/create', Create::class)->name('landlord.submission.create');
                 Route::get('submissions/{submission}/edit', Edit::class)->name('landlord.submission.edit');
+                Route::get('submissions/{submission}/detail', SubmissionDetail::class)->name('landlord.submission.detail');
             });
 
             // Personal Service Management (Customer)
@@ -101,7 +103,7 @@ Route::middleware(['web'])->group(function () {
         });
 
         // Guest Submission Management
-        Route::group(['prefix' => 'submissions', 'as' => 'guest.submission.'], function () {
+        Route::group(['prefix' => 'guest/submissions', 'as' => 'guest.submission.'], function () {
             Route::get('/', GuestSubmissionIndex::class)->name('index');
             Route::get('/create', GuestSubmissionCreate::class)->name('create');
             Route::get('/{submission}/edit', GuestSubmissionEdit::class)->name('edit');

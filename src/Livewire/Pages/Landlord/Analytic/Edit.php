@@ -70,7 +70,7 @@ class Edit extends Component
             'enabled' => $this->enabled,
         ]);
 
-        session()->flash('message', __('Analytic updated successfully.'));
+        $this->dispatch('toast', message: __('Analytic updated successfully.'), type: 'success');
 
         return redirect()->route('rakaca.landlord.analytic.index');
     }

@@ -51,7 +51,7 @@ class Edit extends Component
             'slug' => $this->slug,
         ]);
 
-        session()->flash('message', __('Organization updated successfully.'));
+        $this->dispatch('toast', message: __('Organization updated successfully.'), type: 'success');
 
         return redirect()->route('rakaca.landlord.organization.index');
     }

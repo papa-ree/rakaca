@@ -62,12 +62,26 @@ class Index extends Component
         $total = $userUuids->count();
         $pagedUuids = $userUuids->slice(($page - 1) * $perPage, $perPage)->values();
 
-        // For each user, load their services
-        $customers = $pagedUuids->map(function ($uuid) {
-            $user = User::where('uuid', $uuid)->first();
-            $services = PersonHasService::with('service')
-                ->where('user_uuid', $uuid)
-                ->get();
+        if ($pagedUuids->isEmpty()) {
+            return new LengthAwarePaginator(
+                collect(),
+                $total,
+                $perPage,
+                $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
+        }
+
+        // Eager load users and services in 2 queries (fix N+1)
+        $users = User::whereIn('uuid', $pagedUuids)->get()->keyBy('uuid');
+        $servicesByUser = PersonHasService::with('service')
+            ->whereIn('user_uuid', $pagedUuids)
+            ->get()
+            ->groupBy('user_uuid');
+
+        $customers = $pagedUuids->map(function ($uuid) use ($users, $servicesByUser) {
+            $user = $users->get($uuid);
+            $services = $servicesByUser->get($uuid, collect());
 
             return [
                 'user' => $user,

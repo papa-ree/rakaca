@@ -45,7 +45,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Layanan</p>
-                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">9</p>
+                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">{{ $this->totalServices }}</p>
             </div>
             <div class="mt-4">
                 <p class="text-xs text-gray-500 dark:text-gray-400">Layanan tersedia</p>
@@ -67,7 +67,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pengajuan Pending</p>
-                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">0</p>
+                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">{{ $this->pendingSubmissions }}</p>
             </div>
             <div class="mt-4">
                 <p class="text-xs text-gray-500 dark:text-gray-400">Menunggu review</p>
@@ -90,7 +90,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Pengguna</p>
-                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">0</p>
+                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">{{ $this->totalUsers }}</p>
             </div>
             <div class="mt-4">
                 <p class="text-xs text-gray-500 dark:text-gray-400">Pengguna terdaftar</p>
@@ -112,7 +112,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Layanan Aktif</p>
-                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">0</p>
+                <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">{{ $this->activeServices }}</p>
             </div>
             <div class="mt-4">
                 <p class="text-xs text-gray-500 dark:text-gray-400">Instansi menggunakan</p>
@@ -122,7 +122,7 @@
 
     {{-- Quick Actions --}}
     <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-3" data-aos="fade-up" data-aos-delay="150">
-        <a href="#"
+        <a href="{{ route('rakaca.landlord.service.index') }}" wire:navigate
             class="group p-6 bg-linear-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200 dark:border-blue-800 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-blue-600 rounded-xl">
@@ -139,7 +139,7 @@
             </div>
         </a>
 
-        <a href="#"
+        <a href="{{ route('rakaca.landlord.bale-user.index') }}" wire:navigate
             class="group p-6 bg-linear-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-800 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-purple-600 rounded-xl">
@@ -156,7 +156,7 @@
             </div>
         </a>
 
-        <a href="#"
+        <a href="{{ route('rakaca.landlord.analytic.index') }}" wire:navigate
             class="group p-6 bg-linear-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-800 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-green-600 rounded-xl">
@@ -191,22 +191,39 @@
                 </div>
             </div>
 
-            {{-- Empty State --}}
-            <div class="text-center py-12">
-                <div
-                    class="flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-700">
-                    <svg class="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
-                        </path>
-                    </svg>
+            @if($this->recentSubmissions->isEmpty())
+                {{-- Empty State --}}
+                <div class="text-center py-12">
+                    <div
+                        class="flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-700">
+                        <svg class="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                            </path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Belum Ada Pengajuan</h4>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">
+                        Pengajuan layanan dari instansi akan muncul di sini.
+                    </p>
                 </div>
-                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Belum Ada Pengajuan</h4>
-                <p class="text-gray-600 dark:text-gray-400 mb-6">
-                    Pengajuan layanan dari instansi akan muncul di sini.
-                </p>
-            </div>
+            @else
+                <div class="space-y-3">
+                    @foreach($this->recentSubmissions as $item)
+                        <a href="{{ route('rakaca.landlord.submission.detail', $item->id) }}" wire:navigate class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $item->code }} — {{ $item->form?->name ?? '' }} ({{ $item->form?->service?->name ?? '' }})</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->user?->name ?? $item->items['data']['nama_lengkap'] ?? '-' }} · {{ $item->created_at->format('d M Y H:i') }} · <span class="px-2 py-0.5 rounded-full text-xs bg-{{ $item->statusColor }}-100 text-{{ $item->statusColor }}-700">{{ $item->statusLabel }}</span> · {{ $item->uploads->count() }} berkas</p>
+                            </div>
+                            <x-lucide-chevron-right class="w-4 h-4 text-gray-400" />
+                        </a>
+                    @endforeach
+                    <div class="text-center pt-2">
+                        <a href="{{ route('rakaca.landlord.submission.index') }}" wire:navigate class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Lihat semua pengajuan →</a>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 

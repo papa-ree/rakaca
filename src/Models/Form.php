@@ -44,6 +44,6 @@ class Form extends Model
 
     public function submissions(): HasMany
     {
-        return $this->hasMany(Submission::class, 'rakaca_form_id');
+        return $this->hasMany(RakacaSubmission::class, 'rakaca_form_id');
     }
 }

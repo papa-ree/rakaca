@@ -1,7 +1,7 @@
 <div>
-    <x-core::page-header :title="__('Create Submission')" :subtitle="__('Create a new service submission')">
+    <x-core::page-header :title="__('Create Submission')" :subtitle="__('Create a new service Submission')">
         <x-slot name="actions">
-            <a href="{{ route('rakaca.landlord.submission.index') }}" wire:navigate
+            <a href="{{ route('rakaca.landlord.Submission.index') }}" wire:navigate
                 class="inline-flex items-center gap-x-2 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm">
                 <x-lucide-arrow-left class="w-4 h-4" />
                 {{ __('Back to List') }}
@@ -15,24 +15,24 @@
             <div
                 class="p-6 border-b border-gray-100 dark:border-slate-800 bg-linear-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/10 dark:to-purple-900/10">
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('Submission Details') }}</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Enter the submission information below') }}
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Enter the Submission information below') }}
                 </p>
             </div>
 
             <form wire:submit="save" class="p-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Service --}}
+                    {{-- Form --}}
                     <div class="space-y-2">
                         <label
-                            class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ __('Service') }}</label>
-                        <select wire:model="rakaca_service_id"
+                            class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ __('Form') }}</label>
+                        <select wire:model="rakaca_form_id"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
-                            <option value="">{{ __('Select Service') }}</option>
-                            @foreach($services as $service)
-                                <option value="{{ $service->id }}">{{ $service->name }}</option>
+                            <option value="">{{ __('Select Form') }}</option>
+                            @foreach($forms as $form)
+                                <option value="{{ $form->id }}">{{ $form->name }}</option>
                             @endforeach
                         </select>
-                        @error('rakaca_service_id') <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+                        @error('rakaca_form_id') <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
                         @enderror
                     </div>
 
