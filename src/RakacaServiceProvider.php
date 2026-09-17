@@ -2,10 +2,14 @@
 
 namespace Paparee\Rakaca;
 
+use Bale\Api\Http\Controllers\Api\BaseApiController;
+use Bale\Core\Services\MenuRegistry;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Livewire\Component as LivewireComponent;
 use Livewire\Livewire;
+use Paparee\Rakaca\Commands\AutoCancelTicketsCommand;
 use Paparee\Rakaca\Commands\GenerateFormCommand;
 use Paparee\Rakaca\Commands\GeneratePersonHasServiceCommand;
 use Paparee\Rakaca\Commands\GenerateServiceCommand;
@@ -32,6 +36,7 @@ class RakacaServiceProvider extends ServiceProvider
             'command.rakaca:make-form' => GenerateFormCommand::class,
             'command.rakaca:install' => InstallRakacaCommand::class,
             'command.rakaca:publish-migration' => PublishMigrationCommand::class,
+            'command.rakaca:auto-cancel' => AutoCancelTicketsCommand::class,
         ];
 
         foreach ($commands as $key => $class) {
@@ -39,6 +44,22 @@ class RakacaServiceProvider extends ServiceProvider
         }
 
         $this->commands(array_keys($commands));
+    }
+
+    /**
+     * Daftarkan scope API milik rakaca ke registry bale/api.
+     */
+    protected function registerApiScopes(): void
+    {
+        if (! function_exists('registerApiScopes')) {
+            return;
+        }
+
+        registerApiScopes('rakaca', [
+            'rakaca.form.read' => 'Membaca daftar dan detail formulir pengajuan.',
+            'rakaca.submission.read' => 'Membaca daftar pengajuan (submission).',
+            'rakaca.submission.write' => 'Membuat pengajuan baru.',
+        ]);
     }
 
     /**
@@ -53,11 +74,19 @@ class RakacaServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->registerApiScopes();
+
         $this->app->booted(function () {
             $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+
+            if (class_exists(BaseApiController::class)) {
+                $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+            }
+
+            Schedule::command('rakaca:auto-cancel')->everyTenMinutes();
             // Register guest menu terpisah (tanpa ubah bale-core)
             try {
-                $registry = $this->app->make(\Bale\Core\Services\MenuRegistry::class);
+                $registry = $this->app->make(MenuRegistry::class);
                 // Coba pakai registerFromProvider untuk menu-guest.php via refleksi manual
                 $menuGuestPath = __DIR__.'/menu-guest.php';
                 if (file_exists($menuGuestPath) && method_exists($registry, 'flush')) {

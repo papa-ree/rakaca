@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        if (Schema::hasTable('rakaca_forms')) {
+            Schema::table('rakaca_forms', function (Blueprint $table) {
+                if (! Schema::hasColumn('rakaca_forms', 'response_form_schema')) {
+                    $table->json('response_form_schema')->nullable()->after('meta');
+                }
+
+                if (! Schema::hasColumn('rakaca_forms', 'deleted_at')) {
+                    $table->softDeletes();
+                }
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        if (Schema::hasTable('rakaca_forms')) {
+            Schema::table('rakaca_forms', function (Blueprint $table) {
+                if (Schema::hasColumn('rakaca_forms', 'response_form_schema')) {
+                    $table->dropColumn('response_form_schema');
+                }
+
+                if (Schema::hasColumn('rakaca_forms', 'deleted_at')) {
+                    $table->dropSoftDeletes();
+                }
+            });
+        }
+    }
+};

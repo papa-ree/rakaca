@@ -27,15 +27,17 @@ class Form extends Component
     public bool $actived = true;
 
     public array $meta = [
-        'fields' => []
+        'fields' => [],
     ];
 
     public array $fields = [];
 
+    public array $response_fields = [];
+
     public function mount(?FormModel $form = null): void
     {
         if ($form && $form->exists) {
-            if (!auth()->user()->can('form.update')) {
+            if (! auth()->user()->can('form.update')) {
                 abort(403);
             }
 
@@ -47,8 +49,9 @@ class Form extends Component
             $this->actived = $form->actived;
             $this->meta = $form->meta ?? ['fields' => []];
             $this->fields = $this->meta['fields'] ?? [];
+            $this->response_fields = $form->response_form_schema ?? [];
         } else {
-            if (!auth()->user()->can('form.create')) {
+            if (! auth()->user()->can('form.create')) {
                 abort(403);
             }
             // Add a default field
@@ -114,10 +117,53 @@ class Form extends Component
         }
     }
 
+    public function addResponseField(): void
+    {
+        $this->response_fields[] = [
+            'key' => '',
+            'label' => '',
+            'type' => 'string',
+            'required' => false,
+            'placeholder' => '',
+            'options' => [],
+        ];
+    }
+
+    public function addResponseOption(int $fieldIndex): void
+    {
+        if (isset($this->response_fields[$fieldIndex])) {
+            $this->response_fields[$fieldIndex]['options'][] = '';
+        }
+    }
+
+    public function removeResponseOption(int $fieldIndex, int $optionIndex): void
+    {
+        if (isset($this->response_fields[$fieldIndex]['options'][$optionIndex])) {
+            unset($this->response_fields[$fieldIndex]['options'][$optionIndex]);
+            $this->response_fields[$fieldIndex]['options'] = array_values($this->response_fields[$fieldIndex]['options']);
+        }
+    }
+
+    public function removeResponseField(int $index): void
+    {
+        if (isset($this->response_fields[$index])) {
+            unset($this->response_fields[$index]);
+            $this->response_fields = array_values($this->response_fields);
+        }
+    }
+
+    public function updateResponseFieldKeyFromLabel(int $index, string $label): void
+    {
+        if (isset($this->response_fields[$index])) {
+            $this->response_fields[$index]['label'] = Sanitize::text($label);
+            $this->response_fields[$index]['key'] = Str::snake(Str::lower($label));
+        }
+    }
+
     protected function rules(): array
     {
         $uniqueRule = $this->isEdit
-            ? 'required|unique:rakaca_forms,slug,' . $this->formModel->id
+            ? 'required|unique:rakaca_forms,slug,'.$this->formModel->id
             : 'required|unique:rakaca_forms,slug';
 
         return [
@@ -134,6 +180,14 @@ class Form extends Component
             'fields.*.options' => 'nullable|array',
             'fields.*.options.*' => 'nullable|string|max:255',
             'fields.*.order' => 'required|integer',
+            'response_fields' => 'nullable|array',
+            'response_fields.*.key' => 'required|string|distinct|max:255',
+            'response_fields.*.label' => 'required|string|max:255',
+            'response_fields.*.type' => 'required|string|in:string,textarea,number,email,select,checkbox,date',
+            'response_fields.*.required' => 'boolean',
+            'response_fields.*.placeholder' => 'nullable|string|max:255',
+            'response_fields.*.options' => 'nullable|array',
+            'response_fields.*.options.*' => 'nullable|string|max:255',
         ];
     }
 
@@ -167,6 +221,18 @@ class Form extends Component
         // Sync fields into meta
         $this->meta['fields'] = $this->fields;
 
+        // Sanitize response fields
+        foreach ($this->response_fields as $i => $field) {
+            $this->response_fields[$i]['key'] = Str::snake(Str::lower(Sanitize::text($field['key'])));
+            $this->response_fields[$i]['label'] = Sanitize::text($field['label']);
+            $this->response_fields[$i]['placeholder'] = Sanitize::text($field['placeholder'] ?? '');
+            if (isset($field['options']) && is_array($field['options'])) {
+                $this->response_fields[$i]['options'] = array_values(array_filter(array_map(fn ($o) => Sanitize::text((string) $o), $field['options']), fn ($o) => $o !== ''));
+            } else {
+                $this->response_fields[$i]['options'] = [];
+            }
+        }
+
         $this->validate();
 
         $data = [
@@ -174,6 +240,7 @@ class Form extends Component
             'name' => $this->name,
             'slug' => $this->slug,
             'meta' => $this->meta,
+            'response_form_schema' => $this->response_fields,
             'actived' => $this->actived,
         ];
 
@@ -191,6 +258,7 @@ class Form extends Component
     public function render()
     {
         $services = RakacaService::where('actived', true)->get();
+
         return view('rakaca::livewire.pages.landlord.form.form', [
             'services' => $services,
         ]);

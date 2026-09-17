@@ -5,7 +5,9 @@ namespace Paparee\Rakaca\Tests\Feature;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Paparee\Rakaca\Models\Form as FormModel;
+use Paparee\Rakaca\Models\PersonHasService;
 use Paparee\Rakaca\Models\RakacaService;
+use Paparee\Rakaca\Models\RakacaSubmission;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -84,7 +86,7 @@ it('rakaca:make-person-service menautkan user ke service (interactive)', functio
         ->expectsQuestion('Pilih service yang ingin ditautkan:', $service->slug)
         ->assertExitCode(0);
 
-    expect(\Paparee\Rakaca\Models\PersonHasService::where('user_uuid', $user->uuid)->where('rakaca_service_id', $service->id)->exists())->toBeTrue();
+    expect(PersonHasService::where('user_uuid', $user->uuid)->where('rakaca_service_id', $service->id)->exists())->toBeTrue();
 });
 
 it('rakaca:make-user-submission membuat submission via form', function () {
@@ -107,5 +109,5 @@ it('rakaca:make-user-submission membuat submission via form', function () {
     $this->artisan('rakaca:make-user-submission', ['--username' => 'subuser', '--form_slug' => 'form-sub'])
         ->assertExitCode(0);
 
-    expect(\Paparee\Rakaca\Models\RakacaSubmission::where('user_uuid', $user->uuid)->where('rakaca_form_id', $form->id)->exists())->toBeTrue();
+    expect(RakacaSubmission::where('user_uuid', $user->uuid)->where('rakaca_form_id', $form->id)->exists())->toBeTrue();
 });

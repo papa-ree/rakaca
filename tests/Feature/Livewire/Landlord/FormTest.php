@@ -3,6 +3,7 @@
 namespace Paparee\Rakaca\Tests\Feature\Livewire\Landlord;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Form\Form as FormComponent;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Form\Index as FormIndex;
@@ -56,7 +57,7 @@ it('validasi form create wajib service dan name', function () {
 
 it('berhasil membuat form dengan field string dan select options', function () {
     $service = RakacaService::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'name' => 'Test Service',
         'slug' => 'test-service',
         'actived' => true,
@@ -102,7 +103,7 @@ it('berhasil membuat form dengan field string dan select options', function () {
 
 it('berhasil membuat form dengan 8 tipe field', function () {
     $service = RakacaService::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'name' => 'Service 8',
         'slug' => 'service-8',
         'actived' => true,
@@ -135,13 +136,13 @@ it('berhasil membuat form dengan 8 tipe field', function () {
 
 it('berhasil mengupdate form', function () {
     $service = RakacaService::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'name' => 'Srv',
         'slug' => 'srv',
         'actived' => true,
     ]);
     $form = FormModel::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'rakaca_service_id' => $service->id,
         'name' => 'Old Form',
         'slug' => 'old-form',
@@ -163,13 +164,13 @@ it('berhasil mengupdate form', function () {
 
 it('berhasil menghapus form via delete', function () {
     $service = RakacaService::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'name' => 'Srv Del',
         'slug' => 'srv-del',
         'actived' => true,
     ]);
     $form = FormModel::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'rakaca_service_id' => $service->id,
         'name' => 'To Delete',
         'slug' => 'to-delete',

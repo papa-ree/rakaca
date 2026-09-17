@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Paparee\Rakaca\Livewire\Pages\Landlord\BaleUser\Form as BaleUserForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\BaleUser\Index as BaleUserIndex;
+use Paparee\Rakaca\Livewire\Pages\Landlord\BaleUser\Section\Table;
 use Paparee\Rakaca\Models\BaleList;
 use Paparee\Rakaca\Models\BaleUser;
 use Paparee\Rakaca\Models\Organization;
@@ -197,7 +198,7 @@ it('berhasil menghapus bale-user', function () {
     // For simplicity, test direct delete via model (permission already tested)
     // Here test Index delete via Table component if needed, but we test via direct assignment delete
     // Use the Table component's delete method
-    $tableClass = \Paparee\Rakaca\Livewire\Pages\Landlord\BaleUser\Section\Table::class;
+    $tableClass = Table::class;
     Livewire::actingAs($admin)
         ->test($tableClass)
         ->call('deleteBaleUser', $assignment->id)

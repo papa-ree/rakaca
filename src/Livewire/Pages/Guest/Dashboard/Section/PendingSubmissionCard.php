@@ -6,6 +6,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
+use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\RakacaSubmission;
 
 #[Layout('rakaca::layouts.app')]
@@ -26,6 +27,7 @@ class PendingSubmissionCard extends Component
     public function pendingSubmissions()
     {
         return RakacaSubmission::whereUserUuid(auth()->user()->uuid)
-            ->where('status', 'pending')->count();
+            ->whereNotIn('status', array_map(fn ($s) => $s->value, [SubmissionStatus::Selesai, SubmissionStatus::Ditolak, SubmissionStatus::Dibatalkan]))
+            ->count();
     }
 }

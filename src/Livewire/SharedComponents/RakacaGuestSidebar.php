@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\RakacaSubmission;
 
 class RakacaGuestSidebar extends Component
@@ -60,7 +61,7 @@ class RakacaGuestSidebar extends Component
             // Jika ada method getGuestGroups (jika core sudah diupdate), pakai
             if (method_exists($registry, 'getGuestGroups')) {
                 $groups = $registry->getGuestGroups();
-                if (!empty($groups)) {
+                if (! empty($groups)) {
                     return $this->enrichWithBadge($groups);
                 }
             }
@@ -68,7 +69,7 @@ class RakacaGuestSidebar extends Component
             // Jika ada getGroupsByType atau resolveGroups, pakai
             if (method_exists($registry, 'getGroupsByType')) {
                 $groups = $registry->getGroupsByType('guest');
-                if (!empty($groups)) {
+                if (! empty($groups)) {
                     return $this->enrichWithBadge($groups);
                 }
             }
@@ -89,9 +90,10 @@ class RakacaGuestSidebar extends Component
                             if (isset($item['class']) && ! class_exists($item['class'])) {
                                 return false;
                             }
+
                             return true;
                         }));
-                        if (!empty($items)) {
+                        if (! empty($items)) {
                             $filtered[] = [
                                 'key' => $group['key'] ?? 'unknown',
                                 'label' => $group['label'] ?? 'Menu',
@@ -100,7 +102,7 @@ class RakacaGuestSidebar extends Component
                             ];
                         }
                     }
-                    if (!empty($filtered)) {
+                    if (! empty($filtered)) {
                         return $this->enrichWithBadge($filtered);
                     }
                 }
@@ -114,7 +116,7 @@ class RakacaGuestSidebar extends Component
                 $prop->setAccessible(true);
                 $all = $prop->getValue($registry);
                 $guestGroups = array_values(array_filter($all, fn ($g) => ($g['_type'] ?? '') === 'guest'));
-                if (!empty($guestGroups)) {
+                if (! empty($guestGroups)) {
                     $result = [];
                     foreach ($guestGroups as $group) {
                         $filteredItems = array_values(array_filter($group['items'] ?? [], function (array $item): bool {
@@ -123,9 +125,10 @@ class RakacaGuestSidebar extends Component
                                     return false;
                                 }
                             }
+
                             return true;
                         }));
-                        if (!empty($filteredItems)) {
+                        if (! empty($filteredItems)) {
                             $result[] = [
                                 'key' => $group['key'] ?? 'unknown',
                                 'label' => $group['label'] ?? 'Menu',
@@ -134,7 +137,7 @@ class RakacaGuestSidebar extends Component
                             ];
                         }
                     }
-                    if (!empty($result)) {
+                    if (! empty($result)) {
                         return $this->enrichWithBadge($result);
                     }
                 }
@@ -161,7 +164,7 @@ class RakacaGuestSidebar extends Component
             $pending = 0;
             if (auth()->check()) {
                 $pending = RakacaSubmission::where('user_uuid', auth()->user()->uuid)
-                    ->where('status', 'pending')
+                    ->whereNotIn('status', array_map(fn ($s) => $s->value, [SubmissionStatus::Selesai, SubmissionStatus::Ditolak, SubmissionStatus::Dibatalkan]))
                     ->count();
             }
             foreach ($groups as &$group) {

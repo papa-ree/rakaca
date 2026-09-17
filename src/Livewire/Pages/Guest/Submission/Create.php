@@ -3,11 +3,14 @@
 namespace Paparee\Rakaca\Livewire\Pages\Guest\Submission;
 
 use Bale\Core\Support\Sanitize;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\Form;
 use Paparee\Rakaca\Models\RakacaSubmission;
 use Paparee\Rakaca\Models\RakacaSubmissionUpload;
@@ -48,16 +51,17 @@ class Create extends Component
         $initialFormId = Sanitize::text((string) request()->query('form_id', ''));
         $initialServiceId = Sanitize::text((string) request()->query('service_id', ''));
 
-        if ($initialFormId !== '' && \Illuminate\Support\Facades\Validator::make(['form_id' => $initialFormId], ['form_id' => 'uuid|exists:rakaca_forms,id'])->passes()) {
+        if ($initialFormId !== '' && Validator::make(['form_id' => $initialFormId], ['form_id' => 'uuid|exists:rakaca_forms,id'])->passes()) {
             $form = Form::where('actived', true)->find($initialFormId);
             if ($form) {
                 $this->form_id = $form->id;
                 $this->updatedFormId($this->form_id);
+
                 return;
             }
         }
 
-        if ($initialServiceId !== '' && \Illuminate\Support\Facades\Validator::make(['service_id' => $initialServiceId], ['service_id' => 'uuid|exists:rakaca_services,id'])->passes()) {
+        if ($initialServiceId !== '' && Validator::make(['service_id' => $initialServiceId], ['service_id' => 'uuid|exists:rakaca_services,id'])->passes()) {
             $form = Form::where('actived', true)->where('rakaca_service_id', $initialServiceId)->first();
             if ($form) {
                 $this->form_id = $form->id;
@@ -71,6 +75,7 @@ class Create extends Component
         if (empty($value)) {
             $this->selectedForm = null;
             $this->items = [];
+
             return;
         }
 
@@ -104,8 +109,8 @@ class Create extends Component
                 } elseif ($type === 'select') {
                     $options = $field['options'] ?? [];
                     $rule = $required
-                        ? 'required|string|in:' . implode(',', $options)
-                        : 'nullable|string|in:' . implode(',', $options);
+                        ? 'required|string|in:'.implode(',', $options)
+                        : 'nullable|string|in:'.implode(',', $options);
                     if (empty($options)) {
                         $rule = $required ? 'required|string|max:10000' : 'nullable|string|max:10000';
                     }
@@ -160,7 +165,7 @@ class Create extends Component
             $key = $field['key'] ?? null;
             if (($field['type'] ?? null) === 'file' && isset($itemsToSave[$key]) && is_object($itemsToSave[$key])) {
                 $file = $itemsToSave[$key];
-                if ($file instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+                if ($file instanceof TemporaryUploadedFile) {
                     $itemsToSave[$key] = $file->store('rakaca-submissions', 'public');
                 } elseif (method_exists($file, 'store')) {
                     $itemsToSave[$key] = $file->store('rakaca-submissions', 'public');
@@ -172,7 +177,7 @@ class Create extends Component
             'user_uuid' => auth()->user()->uuid,
             'rakaca_form_id' => $this->form_id,
             'code' => strtoupper(uniqid('sub_')),
-            'status' => 'pending',
+            'status' => SubmissionStatus::MenungguBerkas->value,
             'items' => [
                 'id' => Str::uuid()->toString(),
                 'created_at' => now()->toISOString(),
@@ -183,7 +188,7 @@ class Create extends Component
 
         // Handle multi-upload zone (pdf, max 3, 5MB each) — separate table
         foreach ($this->uploads as $file) {
-            if ($file instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+            if ($file instanceof TemporaryUploadedFile) {
                 $path = $file->store('rakaca-submission-uploads', 'public');
                 RakacaSubmissionUpload::create([
                     'rakaca_submission_id' => $submission->id,

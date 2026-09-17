@@ -4,6 +4,7 @@ namespace Paparee\Rakaca\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\Form;
 use Paparee\Rakaca\Models\RakacaSubmission;
 
@@ -55,7 +56,7 @@ class GenerateUserSubmissionCommand extends Command
             'user_uuid' => $user->uuid,
             'rakaca_form_id' => $form->id,
             'code' => uniqid(),
-            'status' => 'pending',
+            'status' => SubmissionStatus::MenungguBerkas->value,
             'items' => [],
         ]);
 
@@ -67,7 +68,7 @@ class GenerateUserSubmissionCommand extends Command
                 ['User', $username." ({$user->uuid})"],
                 ['Form', $form->name],
                 ['Code', $submission->code],
-                ['Status', $submission->status],
+                ['Status', $submission->status?->value ?? '-'],
             ]
         );
 

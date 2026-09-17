@@ -27,11 +27,13 @@ class Form extends Model
         'name',
         'slug',
         'meta',
+        'response_form_schema',
         'actived',
     ];
 
     protected $casts = [
         'meta' => 'array',
+        'response_form_schema' => 'array',
         'actived' => 'boolean',
         'created_at' => 'datetime:d M Y',
         'updated_at' => 'datetime:d M Y',

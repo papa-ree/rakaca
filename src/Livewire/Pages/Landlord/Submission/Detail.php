@@ -3,133 +3,239 @@
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\Submission;
 
 use Bale\Core\Support\Sanitize;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\RakacaSubmission;
+use Paparee\Rakaca\Services\TicketWorkflowService;
 
 #[Layout('rakaca::layouts.app')]
-#[Title('Detail Submission')]
+#[Title('Detail Pengajuan')]
 class Detail extends Component
 {
     public RakacaSubmission $submission;
 
-    public string $admin_response = '';
+    public string $selectedAction = '';
 
-    public function mount(RakacaSubmission $submission): void
-    {
-        if (!auth()->user()->can('submission.read')) {
-            abort(403);
-        }
+    public array $resolution = [];
 
-        $this->submission = $submission->load(['form.service', 'user', 'uploads', 'processedBy']);
+    public string $reason = '';
 
-        // Tidak otomatis review — review via tombol manual (agar user masih bisa upload saat pending)
-        $this->admin_response = $this->submission->admin_response ?? '';
-    }
+    public string $revise_note = '';
 
     protected function rules(): array
     {
+        $minChars = config('rakaca.ticket.rejection_min_chars', 10);
+
+        $rules = [
+            'selectedAction' => 'required|in:complete,revise,reject',
+            'reason' => [
+                'exclude_unless:selectedAction,reject',
+                'required',
+                'string',
+                "min:{$minChars}",
+                'max:5000',
+            ],
+            'revise_note' => [
+                'exclude_unless:selectedAction,revise',
+                'required',
+                'string',
+                'min:5',
+                'max:5000',
+            ],
+        ];
+
+        $fields = $this->fields();
+
+        if (empty($fields)) {
+            $rules['resolution.manual_result'] = [
+                'exclude_unless:selectedAction,complete',
+                'required',
+                'string',
+                'max:10000',
+            ];
+        } else {
+            foreach ($fields as $field) {
+                $key = (string) ($field['key'] ?? '');
+                if ($key === '') {
+                    continue;
+                }
+
+                $fieldRequired = (bool) ($field['required'] ?? false);
+
+                if (! $fieldRequired) {
+                    $rules["resolution.{$key}"] = 'nullable';
+
+                    continue;
+                }
+
+                $base = [
+                    'exclude_unless:selectedAction,complete',
+                    'required',
+                ];
+
+                $rules["resolution.{$key}"] = array_merge($base, match ($field['type'] ?? 'string') {
+                    'number' => ['numeric'],
+                    'email' => ['email', 'max:255'],
+                    'date' => ['date'],
+                    'select' => ! empty($field['options'])
+                        ? ['string', 'in:'.implode(',', $field['options'])]
+                        : ['string'],
+                    'checkbox' => ['boolean'],
+                    default => ['string', 'max:10000'],
+                });
+            }
+        }
+
+        return $rules;
+    }
+
+    protected function messages(): array
+    {
         return [
-            'admin_response' => 'required|string|min:10|max:5000',
+            'selectedAction.required' => __('Pilih aksi tiket terlebih dahulu.'),
+            'selectedAction.in' => __('Aksi tiket tidak valid.'),
+            'reason.required' => __('Alasan penolakan wajib diisi.'),
+            'reason.min' => __('Alasan penolakan minimal :min karakter.'),
+            'revise_note.required' => __('Catatan revisi wajib diisi.'),
+            'revise_note.min' => __('Catatan revisi minimal :min karakter.'),
+            'resolution.manual_result.required' => __('Hasil layanan wajib diisi untuk menyelesaikan tiket.'),
         ];
     }
 
-    public function review(): void
+    protected function validationAttributes(): array
     {
-        if (!auth()->user()->can('submission.update')) {
-            abort(403);
+        $attributes = [
+            'selectedAction' => __('Aksi Tiket'),
+            'reason' => __('Alasan Penolakan'),
+            'revise_note' => __('Catatan Revisi'),
+        ];
+
+        foreach ($this->fields() as $field) {
+            $attributes["resolution.{$field['key']}"] = $field['label'] ?? $field['key'];
         }
 
-        if ($this->submission->status !== 'pending') {
-            abort(403, __('Hanya pengajuan pending yang bisa direview.'));
-        }
-
-        $this->submission->update([
-            'status' => 'review',
-            'processed_at' => now(),
-            'processed_by' => auth()->user()->uuid,
-        ]);
-
-        $this->dispatch('toast', message: __('Pengajuan diproses (review).'), type: 'success');
-
-        $this->redirectRoute('rakaca.landlord.submission.index', navigate: true);
+        return $attributes;
     }
 
-    public function approve(): void
+    public function selectAction(string $action): void
     {
-        if (!auth()->user()->can('submission.update')) {
-            abort(403);
+        if ($this->selectedAction === $action) {
+            $this->selectedAction = '';
+        } else {
+            $this->selectedAction = $action;
         }
 
-        if ($this->submission->status !== 'review') {
-            abort(403, __('Hanya pengajuan yang sedang direview yang bisa disetujui.'));
-        }
-
-        $this->admin_response = Sanitize::text($this->admin_response);
-        $this->validate();
-
-        $this->submission->update([
-            'status' => 'approved',
-            'admin_response' => $this->admin_response,
-            'processed_at' => now(),
-            'processed_by' => auth()->user()->uuid,
-        ]);
-
-        $this->dispatch('toast', message: __('Pengajuan disetujui.'), type: 'success');
-
-        $this->redirectRoute('rakaca.landlord.submission.index', navigate: true);
+        $this->resetValidation();
     }
 
-    public function reject(): void
+    public function mount(RakacaSubmission $submission): void
     {
-        if (!auth()->user()->can('submission.update')) {
+        if (! auth()->user()->can('submission.read')) {
             abort(403);
         }
 
-        if (!in_array($this->submission->status, ['pending', 'review'])) {
-            abort(403, __('Hanya pengajuan pending atau review yang bisa ditolak.'));
-        }
-
-        $this->admin_response = Sanitize::text($this->admin_response);
-        $this->validate();
-
-        $this->submission->update([
-            'status' => 'rejected',
-            'admin_response' => $this->admin_response,
-            'processed_at' => now(),
-            'processed_by' => auth()->user()->uuid,
+        $this->submission = $submission->load([
+            'form.service',
+            'user',
+            'uploads',
+            'response.processedBy',
+            'response.resolvedBy',
         ]);
 
-        $this->dispatch('toast', message: __('Pengajuan ditolak.'), type: 'success');
-
-        $this->redirectRoute('rakaca.landlord.submission.index', navigate: true);
+        $this->resolution = $this->submission->response?->resolution_data ?? [];
+        $this->reason = $this->submission->response?->rejection_reason ?? '';
+        $this->revise_note = $this->submission->response?->revise_note ?? '';
     }
 
-    public function close(): void
+    public function getStatusAttr(): SubmissionStatus
     {
-        if (!auth()->user()->can('submission.update')) {
+        $status = $this->submission->status;
+
+        return $status instanceof SubmissionStatus
+            ? $status
+            : SubmissionStatus::fromLegacy((string) $this->submission->getRawOriginal('status'));
+    }
+
+    public function fields(): array
+    {
+        return $this->submission->form?->response_form_schema ?? [];
+    }
+
+    public function canTakeOver(): bool
+    {
+        return $this->getStatusAttr() === SubmissionStatus::SiapDireview;
+    }
+
+    public function canReject(): bool
+    {
+        return in_array($this->getStatusAttr(), [SubmissionStatus::SiapDireview, SubmissionStatus::Diproses], true);
+    }
+
+    public function canRequestRevision(): bool
+    {
+        return $this->getStatusAttr() === SubmissionStatus::Diproses;
+    }
+
+    public function canComplete(): bool
+    {
+        return $this->getStatusAttr() === SubmissionStatus::Diproses;
+    }
+
+    public function takeOver(): void
+    {
+        if (! auth()->user()->can('submission.update')) {
             abort(403);
         }
 
-        if ($this->submission->status === 'ditutup') {
-            abort(403, __('Pengajuan sudah ditutup.'));
+        app(TicketWorkflowService::class, ['submission' => $this->submission])->takeOver();
+
+        $this->dispatch('toast', message: __('Tiket diambil alih (diproses).'), type: 'success');
+        $this->redirectRoute('rakaca.landlord.submission.detail', ['submission' => $this->submission->id], navigate: true);
+    }
+
+    public function executeAction(): void
+    {
+        if (! auth()->user()->can('submission.update')) {
+            abort(403);
         }
 
-        $this->admin_response = Sanitize::text($this->admin_response);
         $this->validate();
 
-        $this->submission->update([
-            'status' => 'ditutup',
-            'admin_response' => $this->admin_response,
-            'processed_at' => now(),
-            'processed_by' => auth()->user()->uuid,
-        ]);
+        $service = app(TicketWorkflowService::class, ['submission' => $this->submission]);
 
-        $this->dispatch('toast', message: __('Pengajuan ditutup.'), type: 'success');
+        if ($this->selectedAction === 'complete') {
+            if (! $this->canComplete()) {
+                abort(403, __('Hanya tiket diproses yang bisa diselesaikan.'));
+            }
 
-        $this->redirectRoute('rakaca.landlord.submission.index', navigate: true);
+            $resolution = [];
+            foreach ($this->resolution as $key => $value) {
+                $resolution[$key] = is_string($value) ? Sanitize::text($value) : $value;
+            }
+
+            $service->complete($resolution);
+            $this->dispatch('toast', message: __('Tiket diselesaikan.'), type: 'success');
+        } elseif ($this->selectedAction === 'revise') {
+            if (! $this->canRequestRevision()) {
+                abort(403, __('Hanya tiket diproses yang bisa diminta revisi.'));
+            }
+
+            $note = Sanitize::text($this->revise_note);
+            $service->requestRevision($note);
+            $this->dispatch('toast', message: __('Permintaan revisi dikirim.'), type: 'success');
+        } elseif ($this->selectedAction === 'reject') {
+            if (! $this->canReject()) {
+                abort(403, __('Hanya tiket siap-direview atau diproses yang bisa ditolak.'));
+            }
+
+            $reason = Sanitize::text($this->reason);
+            $service->reject($reason);
+            $this->dispatch('toast', message: __('Tiket ditolak.'), type: 'success');
+        }
+
+        $this->redirectRoute('rakaca.landlord.submission.detail', ['submission' => $this->submission->id], navigate: true);
     }
 
     public function back(): void

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Analytic\Create as AnalyticCreate;
+use Paparee\Rakaca\Livewire\Pages\Landlord\Analytic\Edit;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Analytic\Index as AnalyticIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\BaleList\Create as BaleListCreate;
 use Paparee\Rakaca\Livewire\Pages\Landlord\BaleList\Index as BaleListIndex;
@@ -247,7 +248,7 @@ it('analytic edit toggle enabled dapat diupdate', function () {
     ]);
     // Give update permission and test edit component
     $user = otherUser(['analytic.update', 'analytic.read']);
-    $editClass = \Paparee\Rakaca\Livewire\Pages\Landlord\Analytic\Edit::class;
+    $editClass = Edit::class;
 
     Livewire::actingAs($user)
         ->test($editClass, ['analytic' => $analytic->id])

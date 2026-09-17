@@ -30,7 +30,7 @@ class SubmissionStatus extends Component
     #[Computed()]
     public function submissions()
     {
-        return RakacaSubmission::with('form.service')
+        return RakacaSubmission::with(['form.service', 'uploads'])
             ->whereUserUuid(auth()->user()->uuid)
             ->orderBy('created_at', 'desc')
             ->get();

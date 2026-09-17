@@ -48,7 +48,7 @@
         <span
             class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-{{ $record->statusColor }}-50 text-{{ $record->statusColor }}-700 ring-1 ring-inset ring-{{ $record->statusColor }}-600/20 dark:bg-{{ $record->statusColor }}-900/30 dark:text-{{ $record->statusColor }}-400">
             <span class="relative flex h-2 w-2">
-                @if($record->status === 'pending' || $record->status === 'review')
+                @if(in_array($record->status?->value, ['siap-direview', 'diproses']))
                     <span
                         class="animate-ping absolute inline-flex h-full w-full rounded-full bg-{{ $record->statusColor }}-400 opacity-75"></span>
                 @endif

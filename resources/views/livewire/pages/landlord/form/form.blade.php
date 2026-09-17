@@ -9,6 +9,7 @@
             formSlug: $wire.entangle('slug'),
             actived: $wire.entangle('actived').live,
             fields: $wire.entangle('fields'),
+            responseFields: $wire.entangle('response_fields'),
             previewData: {},
             addField() {
                 $wire.addField();
@@ -29,6 +30,24 @@
             }
         }">
 
+        {{-- Form Name Header (live from name field) --}}
+        <div
+            class="mb-6 flex items-center gap-4 p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-xl">
+            <div
+                class="shrink-0 p-3 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/20">
+                <x-lucide-file-text class="w-6 h-6 text-white" />
+            </div>
+            <div class="min-w-0">
+                <p class="text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider font-medium mb-0.5">
+                    {{ $isEdit ? __('Form Builder') : __('New Form Builder') }}
+                </p>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white truncate"
+                    x-text="formName || '{{ __('Untitled Form') }}'"></h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 font-mono truncate"
+                    x-text="'/' + (formSlug || 'untitled')"></p>
+            </div>
+        </div>
+
         {{-- Tab Bar --}}
         <div class="mb-6 flex items-center gap-1 p-1 bg-gray-100 dark:bg-slate-800 rounded-xl w-fit">
             <button type="button" @click="activeTab = 'builder'; $event.preventDefault()"
@@ -36,6 +55,12 @@
                 class="inline-flex items-center gap-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200">
                 <x-lucide-hammer class="w-4 h-4" />
                 {{ __('Builder') }}
+            </button>
+            <button type="button" @click="activeTab = 'response'; $event.preventDefault()"
+                :class="activeTab === 'response' ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                class="inline-flex items-center gap-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200">
+                <x-lucide-clipboard-check class="w-4 h-4" />
+                {{ __('Response Schema') }}
             </button>
             <button type="button" @click="activeTab = 'preview'; initPreview(); $event.preventDefault()"
                 :class="activeTab === 'preview' ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
@@ -48,10 +73,12 @@
         <div class="flex flex-col lg:flex-row gap-6">
 
             {{-- Main Content --}}
-            <div class="flex-1 min-w-0 bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-xl overflow-hidden">
+            <div
+                class="flex-1 min-w-0 bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-xl overflow-hidden">
 
                 {{-- ==================== BUILDER TAB ==================== --}}
-                <div x-show="activeTab === 'builder'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                <div x-show="activeTab === 'builder'" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
                     <form wire:submit="save" class="p-8 space-y-6">
 
                         {{-- Section: Basic Info --}}
@@ -84,7 +111,8 @@
                                     <x-core::label for="slug" :value="__('Slug')" />
                                     <x-core::input id="slug" type="text" class="block w-full mt-1" wire:model="slug"
                                         x-model="formSlug" x-slug="formName" required placeholder="formulir-vps" />
-                                    <p class="mt-1 text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider">
+                                    <p
+                                        class="mt-1 text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider">
                                         {{ $isEdit ? __('Unique identifier for the form') : __('Auto-generated from form name') }}
                                     </p>
                                     <x-core::input-error for="slug" class="mt-2" />
@@ -123,24 +151,30 @@
 
                         {{-- Section: Status --}}
                         <div>
-                            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800">
+                            <div
+                                class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800">
                                 <div class="flex items-center gap-3">
                                     <div class="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
                                         <x-lucide-toggle-right class="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <div>
-                                        <label for="form-active-toggle" class="text-sm font-bold text-gray-900 dark:text-white cursor-pointer">
+                                        <label for="form-active-toggle"
+                                            class="text-sm font-bold text-gray-900 dark:text-white cursor-pointer">
                                             {{ __('Enable Form') }}
                                         </label>
-                                        <p class="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider">
+                                        <p
+                                            class="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider">
                                             {{ __('Show this form in the customer portal') }}
                                         </p>
                                     </div>
                                 </div>
                                 <label for="form-active-toggle" class="relative inline-block w-12 h-6 cursor-pointer">
-                                    <input type="checkbox" id="form-active-toggle" x-model="actived" class="peer sr-only">
-                                    <span class="absolute inset-0 bg-gray-300 dark:bg-slate-700 rounded-full transition-colors duration-300 peer-checked:bg-emerald-500"></span>
-                                    <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-300 peer-checked:translate-x-6"></span>
+                                    <input type="checkbox" id="form-active-toggle" x-model="actived"
+                                        class="peer sr-only">
+                                    <span
+                                        class="absolute inset-0 bg-gray-300 dark:bg-slate-700 rounded-full transition-colors duration-300 peer-checked:bg-emerald-500"></span>
+                                    <span
+                                        class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-300 peer-checked:translate-x-6"></span>
                                 </label>
                             </div>
                             <x-core::input-error for="actived" class="mt-2" />
@@ -153,7 +187,8 @@
                                     <x-lucide-list class="w-5 h-5 text-amber-600 dark:text-amber-400" />
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-bold text-gray-900 dark:text-white">{{ __('Form Fields') }}</h4>
+                                    <h4 class="text-sm font-bold text-gray-900 dark:text-white">{{ __('Form Fields') }}
+                                    </h4>
                                     <p class="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider">
                                         {{ __('Define the input fields for this form') }}
                                     </p>
@@ -162,9 +197,11 @@
 
                             <div class="space-y-4">
                                 <template x-for="(field, index) in fields" :key="index">
-                                    <div class="p-4 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-200 dark:border-slate-700">
+                                    <div
+                                        class="p-4 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-200 dark:border-slate-700">
                                         <div class="flex items-center justify-between mb-3">
-                                            <span class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider"
+                                            <span
+                                                class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider"
                                                 x-text="'Field #' + (index + 1)"></span>
                                             <button type="button" @click="removeField(index)"
                                                 class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors">
@@ -208,21 +245,49 @@
                                                         const found = this.types.find(t => t.value === fields[index].type);
                                                         return found ? found.label : '{{ __("Pilih...") }}';
                                                     }
-                                                }" class="w-full relative" @keydown.escape="open = false" @click.outside="open = false">
+                                                }" class="w-full relative" @keydown.escape="open = false"
+                                                    @click.outside="open = false">
                                                     <button type="button" @click="open = !open" :aria-expanded="open"
                                                         class="w-full flex items-center justify-between px-4 py-3 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white transition-all duration-200 hover:border-purple-400 dark:hover:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 disabled:pointer-events-none"
                                                         :class="open ? 'border-purple-500 ring-2 ring-purple-500/30 dark:border-purple-500' : ''">
-                                                        <span class="truncate" :class="fields[index].type ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'" x-text="selectedLabel"></span>
-                                                        <svg class="w-4 h-4 shrink-0 text-gray-400 dark:text-gray-500 transition-transform duration-200 ml-2" :class="open ? 'rotate-180 text-purple-500' : ''" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                                        <span class="truncate"
+                                                            :class="fields[index].type ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'"
+                                                            x-text="selectedLabel"></span>
+                                                        <svg class="w-4 h-4 shrink-0 text-gray-400 dark:text-gray-500 transition-transform duration-200 ml-2"
+                                                            :class="open ? 'rotate-180 text-purple-500' : ''"
+                                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                            fill="none" stroke="currentColor" stroke-width="2"
+                                                            stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="m6 9 6 6 6-6" />
+                                                        </svg>
                                                     </button>
-                                                    <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 translate-y-1 scale-[0.98]" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 translate-y-1 scale-[0.98]" class="absolute z-50 mt-1.5 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl shadow-gray-200/50 dark:shadow-black/30 overflow-hidden" style="display: none;">
-                                                        <div class="p-1.5 space-y-0.5 max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
-                                                            <template x-for="(type, typeIndex) in types" :key="typeIndex">
-                                                                <button type="button" @click="fields[index].type = type.value; open = false;"
+                                                    <div x-show="open"
+                                                        x-transition:enter="transition ease-out duration-150"
+                                                        x-transition:enter-start="opacity-0 translate-y-1 scale-[0.98]"
+                                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                                        x-transition:leave="transition ease-in duration-100"
+                                                        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                                        x-transition:leave-end="opacity-0 translate-y-1 scale-[0.98]"
+                                                        class="absolute z-50 mt-1.5 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl shadow-gray-200/50 dark:shadow-black/30 overflow-hidden"
+                                                        style="display: none;">
+                                                        <div
+                                                            class="p-1.5 space-y-0.5 max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                                                            <template x-for="(type, typeIndex) in types"
+                                                                :key="typeIndex">
+                                                                <button type="button"
+                                                                    @click="fields[index].type = type.value; open = false;"
                                                                     class="w-full flex items-center justify-between px-3 py-2.5 text-sm rounded-lg text-gray-700 dark:text-gray-300 transition-colors duration-150 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-700 dark:hover:text-purple-400"
                                                                     :class="fields[index].type === type.value ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 font-semibold' : ''">
                                                                     <span x-text="type.label"></span>
-                                                                    <svg x-show="fields[index].type === type.value" class="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M20 6 9 17l-5-5"/></svg>
+                                                                    <svg x-show="fields[index].type === type.value"
+                                                                        class="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        viewBox="0 0 24 24" fill="none"
+                                                                        stroke="currentColor" stroke-width="2.5"
+                                                                        stroke-linecap="round" stroke-linejoin="round"
+                                                                        style="display: none;">
+                                                                        <path d="M20 6 9 17l-5-5" />
+                                                                    </svg>
                                                                 </button>
                                                             </template>
                                                         </div>
@@ -234,37 +299,48 @@
                                             <div class="flex items-center gap-2 mt-6">
                                                 <label class="relative inline-flex items-center cursor-pointer">
                                                     <x-core::checkbox x-model="fields[index].required" />
-                                                    <span class="text-sm text-gray-700 dark:text-gray-300 ml-2 select-none cursor-pointer">{{ __('Required') }}</span>
+                                                    <span
+                                                        class="text-sm text-gray-700 dark:text-gray-300 ml-2 select-none cursor-pointer">{{ __('Required') }}</span>
                                                 </label>
                                             </div>
 
                                             {{-- Options (only for select) --}}
-                                            <div x-show="fields[index].type === 'select'" x-cloak class="mt-3 p-3 bg-white dark:bg-slate-700 rounded-lg border border-amber-200 dark:border-amber-800/40">
+                                            <div x-show="fields[index].type === 'select'" x-cloak
+                                                class="mt-3 p-3 bg-white dark:bg-slate-700 rounded-lg border border-amber-200 dark:border-amber-800/40">
                                                 <div class="flex items-center justify-between mb-2">
-                                                    <span class="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">{{ __('Select Options') }}</span>
-                                                    <button type="button" @click="$wire.call('addOption', index)" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 rounded-md hover:bg-amber-100 transition-colors">
+                                                    <span
+                                                        class="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">{{ __('Select Options') }}</span>
+                                                    <button type="button" @click="$wire.call('addOption', index)"
+                                                        class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 rounded-md hover:bg-amber-100 transition-colors">
                                                         <x-lucide-plus class="w-3 h-3" /> {{ __('Add') }}
                                                     </button>
                                                 </div>
-                                                <template x-for="(opt, optIndex) in (fields[index].options || [])" :key="optIndex">
+                                                <template x-for="(opt, optIndex) in (fields[index].options || [])"
+                                                    :key="optIndex">
                                                     <div class="flex items-center gap-2 mb-1.5">
-                                                        <input type="text" x-model="fields[index].options[optIndex]" placeholder="e.g. Option A" class="block w-full py-2 px-3 text-sm bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500" />
-                                                        <button type="button" @click="$wire.call('removeOption', index, optIndex)" class="shrink-0 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors">
+                                                        <input type="text" x-model="fields[index].options[optIndex]"
+                                                            placeholder="e.g. Option A"
+                                                            class="block w-full py-2 px-3 text-sm bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500" />
+                                                        <button type="button"
+                                                            @click="$wire.call('removeOption', index, optIndex)"
+                                                            class="shrink-0 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors">
                                                             <x-lucide-x class="w-4 h-4" />
                                                         </button>
                                                     </div>
                                                 </template>
-                                                <p x-show="!fields[index].options || fields[index].options.length === 0" class="text-xs text-gray-400 dark:text-gray-500 italic">{{ __('Belum ada opsi. Klik Add untuk menambah.') }}</p>
+                                                <p x-show="!fields[index].options || fields[index].options.length === 0"
+                                                    class="text-xs text-gray-400 dark:text-gray-500 italic">
+                                                    {{ __('Belum ada opsi. Klik Add untuk menambah.') }}</p>
                                             </div>
 
-                                        {{-- Placeholder --}}
-                                        <div class="mt-3">
-                                            <x-core::label :value="__('Placeholder')" />
-                                            <x-core::input type="text" class="block w-full mt-1"
-                                                x-model="fields[index].placeholder"
-                                                placeholder="e.g. Masukkan nama lengkap..." />
+                                            {{-- Placeholder --}}
+                                            <div class="mt-3">
+                                                <x-core::label :value="__('Placeholder')" />
+                                                <x-core::input type="text" class="block w-full mt-1"
+                                                    x-model="fields[index].placeholder"
+                                                    placeholder="e.g. Masukkan nama lengkap..." />
+                                            </div>
                                         </div>
-                                    </div>
                                 </template>
 
                                 {{-- Add Field Button --}}
@@ -277,7 +353,8 @@
                         </div>
 
                         {{-- Actions --}}
-                        <div class="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-slate-800">
+                        <div
+                            class="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-slate-800">
                             <x-core::secondary-button link href="{{ route('rakaca.landlord.form.index') }}"
                                 label="{{ __('Cancel') }}" />
 
@@ -296,7 +373,8 @@
                 </div>
 
                 {{-- ==================== PREVIEW TAB ==================== --}}
-                <div x-show="activeTab === 'preview'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                <div x-show="activeTab === 'preview'" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
                     <div class="p-8">
 
                         {{-- Preview Header --}}
@@ -315,18 +393,23 @@
                         </div>
 
                         {{-- Preview Form Card --}}
-                        <div class="bg-linear-to-br from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-xl border border-indigo-100 dark:border-indigo-800/30 p-6">
+                        <div
+                            class="bg-linear-to-br from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-xl border border-indigo-100 dark:border-indigo-800/30 p-6">
                             <div class="mb-6">
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white" x-text="formName || '{{ __('Untitled Form') }}'"></h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400" x-text="'/' + (formSlug || 'untitled')"></p>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white"
+                                    x-text="formName || '{{ __('Untitled Form') }}'"></h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400"
+                                    x-text="'/' + (formSlug || 'untitled')"></p>
                             </div>
 
                             {{-- No Fields Warning --}}
                             <div x-show="!fields || fields.length === 0" class="text-center py-8">
-                                <div class="flex items-center justify-center w-12 h-12 mx-auto bg-gray-200 dark:bg-slate-700 rounded-full mb-3">
+                                <div
+                                    class="flex items-center justify-center w-12 h-12 mx-auto bg-gray-200 dark:bg-slate-700 rounded-full mb-3">
                                     <x-lucide-inbox class="w-6 h-6 text-gray-400 dark:text-gray-500" />
                                 </div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('No fields defined yet. Add fields in the Builder tab.') }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    {{ __('No fields defined yet. Add fields in the Builder tab.') }}</p>
                             </div>
 
                             {{-- Dynamic Preview Fields --}}
@@ -341,52 +424,42 @@
 
                                         {{-- String --}}
                                         <div x-show="field.type === 'string'">
-                                            <input type="text"
-                                                x-model="previewData[field.key]"
-                                                :placeholder="field.placeholder || ''"
-                                                :required="field.required"
+                                            <input type="text" x-model="previewData[field.key]"
+                                                :placeholder="field.placeholder || ''" :required="field.required"
                                                 class="block w-full py-3 px-4 text-gray-900 placeholder-gray-500 transition-all duration-200 bg-white border border-gray-300 form-input rounded-xl dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
                                         </div>
 
                                         {{-- Textarea --}}
                                         <div x-show="field.type === 'textarea'">
-                                            <textarea
-                                                x-model="previewData[field.key]"
-                                                :placeholder="field.placeholder || ''"
-                                                rows="3"
+                                            <textarea x-model="previewData[field.key]"
+                                                :placeholder="field.placeholder || ''" rows="3"
                                                 class="block w-full py-3 px-4 text-gray-900 placeholder-gray-500 transition-all duration-200 bg-white border border-gray-300 form-input rounded-xl dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
                                         </div>
 
                                         {{-- Number --}}
                                         <div x-show="field.type === 'number'">
-                                            <input type="number"
-                                                x-model="previewData[field.key]"
-                                                :placeholder="field.placeholder || ''"
-                                                :required="field.required"
+                                            <input type="number" x-model="previewData[field.key]"
+                                                :placeholder="field.placeholder || ''" :required="field.required"
                                                 class="block w-full py-3 px-4 text-gray-900 placeholder-gray-500 transition-all duration-200 bg-white border border-gray-300 form-input rounded-xl dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
                                         </div>
 
                                         {{-- Email --}}
                                         <div x-show="field.type === 'email'">
-                                            <input type="email"
-                                                x-model="previewData[field.key]"
-                                                :placeholder="field.placeholder || ''"
-                                                :required="field.required"
+                                            <input type="email" x-model="previewData[field.key]"
+                                                :placeholder="field.placeholder || ''" :required="field.required"
                                                 class="block w-full py-3 px-4 text-gray-900 placeholder-gray-500 transition-all duration-200 bg-white border border-gray-300 form-input rounded-xl dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
                                         </div>
 
                                         {{-- Date --}}
                                         <div x-show="field.type === 'date'">
-                                            <input type="date"
-                                                x-model="previewData[field.key]"
+                                            <input type="date" x-model="previewData[field.key]"
                                                 :required="field.required"
                                                 class="block w-full py-3 px-4 text-gray-900 placeholder-gray-500 transition-all duration-200 bg-white border border-gray-300 form-input rounded-xl dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
                                         </div>
 
                                         {{-- Select --}}
                                         <div x-show="field.type === 'select'">
-                                            <select x-model="previewData[field.key]"
-                                                :required="field.required"
+                                            <select x-model="previewData[field.key]" :required="field.required"
                                                 class="block w-full py-3 px-4 text-gray-900 transition-all duration-200 bg-white border border-gray-300 form-input rounded-xl dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                                                 <option value="">{{ __('-- Select --') }}</option>
                                                 <template x-for="opt in (field.options || [])" :key="opt">
@@ -398,10 +471,10 @@
                                         {{-- Checkbox --}}
                                         <div x-show="field.type === 'checkbox'">
                                             <div class="flex items-center gap-2">
-                                                <input type="checkbox"
-                                                    x-model="previewData[field.key]"
+                                                <input type="checkbox" x-model="previewData[field.key]"
                                                     class="peer sr-only" />
-                                                <span class="shrink-0 flex items-center justify-center size-4.5 rounded-md border-2 transition-all duration-200 border-gray-300 dark:border-gray-600 peer-checked:border-purple-500 peer-checked:bg-purple-500 dark:peer-checked:border-purple-500 dark:peer-checked:bg-purple-500 text-transparent peer-checked:text-white">
+                                                <span
+                                                    class="shrink-0 flex items-center justify-center size-4.5 rounded-md border-2 transition-all duration-200 border-gray-300 dark:border-gray-600 peer-checked:border-purple-500 peer-checked:bg-purple-500 dark:peer-checked:border-purple-500 dark:peer-checked:bg-purple-500 text-transparent peer-checked:text-white">
                                                     <x-lucide-check class="size-2.5" />
                                                 </span>
                                                 <label class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
@@ -421,16 +494,19 @@
 
                         {{-- JSON Output --}}
                         <div class="mt-6">
-                            <div class="bg-gray-900 dark:bg-slate-800 rounded-xl border border-gray-700 dark:border-slate-700 overflow-hidden">
+                            <div
+                                class="bg-gray-900 dark:bg-slate-800 rounded-xl border border-gray-700 dark:border-slate-700 overflow-hidden">
                                 {{-- Code Block Header --}}
-                                <div class="flex items-center justify-between px-4 py-2.5 bg-gray-800 dark:bg-slate-700/50 border-b border-gray-700 dark:border-slate-700">
+                                <div
+                                    class="flex items-center justify-between px-4 py-2.5 bg-gray-800 dark:bg-slate-700/50 border-b border-gray-700 dark:border-slate-700">
                                     <div class="flex items-center gap-2">
                                         <div class="flex gap-1.5">
                                             <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
                                             <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
                                             <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
                                         </div>
-                                        <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-medium ml-2">
+                                        <span
+                                            class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-medium ml-2">
                                             {{ __('Test Data Output') }}
                                         </span>
                                     </div>
@@ -448,16 +524,162 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- ==================== RESPONSE SCHEMA TAB ==================== --}}
+                <div x-show="activeTab === 'response'" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                    <form wire:submit="save" class="p-8 space-y-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                                    <x-lucide-clipboard-check class="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-900 dark:text-white">
+                                        {{ __('Response Schema') }}</h4>
+                                    <p class="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider">
+                                        {{ __('Fields admin mengisi saat menyelesaikan tiket (hasil layanan)') }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <template x-for="(field, index) in responseFields" :key="'resp-' + index">
+                                    <div
+                                        class="p-4 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-200 dark:border-slate-700">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span
+                                                class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider"
+                                                x-text="'Response #' + (index + 1)"></span>
+                                            <button type="button" @click="$wire.removeResponseField(index)"
+                                                class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                                                <x-lucide-trash-2 class="w-4 h-4" />
+                                            </button>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {{-- Label --}}
+                                            <div>
+                                                <x-core::label :value="__('Label')" />
+                                                <x-core::input type="text" class="block w-full mt-1"
+                                                    x-model="responseFields[index].label"
+                                                    x-on:input="responseFields[index].key = $event.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')"
+                                                    placeholder="e.g. Nama Server" />
+                                            </div>
+
+                                            {{-- Key --}}
+                                            <div>
+                                                <x-core::label :value="__('Key')" />
+                                                <x-core::input type="text" class="block w-full mt-1"
+                                                    x-model="responseFields[index].key" placeholder="nama_server" />
+                                            </div>
+
+                                            {{-- Type --}}
+                                            <div>
+                                                <x-core::label :value="__('Type')" />
+                                                <select x-model="responseFields[index].type"
+                                                    class="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-emerald-500 dark:focus:border-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 rounded-md shadow-sm">
+                                                    <option value="string">String</option>
+                                                    <option value="textarea">Textarea</option>
+                                                    <option value="number">Number</option>
+                                                    <option value="email">Email</option>
+                                                    <option value="select">Select</option>
+                                                    <option value="checkbox">Checkbox</option>
+                                                    <option value="date">Date</option>
+                                                </select>
+                                            </div>
+
+                                            {{-- Required --}}
+                                            <div class="flex items-center gap-2 mt-6">
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <x-core::checkbox x-model="responseFields[index].required" />
+                                                    <span
+                                                        class="text-sm text-gray-700 dark:text-gray-300 ml-2 select-none cursor-pointer">{{ __('Required') }}</span>
+                                                </label>
+                                            </div>
+
+                                            {{-- Options (only for select) --}}
+                                            <div x-show="responseFields[index].type === 'select'" x-cloak
+                                                class="mt-3 p-3 bg-white dark:bg-slate-700 rounded-lg border border-emerald-200 dark:border-emerald-800/40">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <span
+                                                        class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">{{ __('Select Options') }}</span>
+                                                    <button type="button" @click="$wire.addResponseOption(index)"
+                                                        class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 rounded-md hover:bg-emerald-100 transition-colors">
+                                                        <x-lucide-plus class="w-3 h-3" /> {{ __('Add') }}
+                                                    </button>
+                                                </div>
+                                                <template
+                                                    x-for="(opt, optIndex) in (responseFields[index].options || [])"
+                                                    :key="optIndex">
+                                                    <div class="flex items-center gap-2 mb-1.5">
+                                                        <input type="text"
+                                                            x-model="responseFields[index].options[optIndex]"
+                                                            placeholder="e.g. Option A"
+                                                            class="block w-full py-2 px-3 text-sm bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" />
+                                                        <button type="button"
+                                                            @click="$wire.removeResponseOption(index, optIndex)"
+                                                            class="shrink-0 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors">
+                                                            <x-lucide-x class="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </template>
+                                                <p x-show="!responseFields[index].options || responseFields[index].options.length === 0"
+                                                    class="text-xs text-gray-400 dark:text-gray-500 italic">
+                                                    {{ __('Belum ada opsi. Klik Add untuk menambah.') }}</p>
+                                            </div>
+
+                                            {{-- Placeholder --}}
+                                            <div class="mt-3">
+                                                <x-core::label :value="__('Placeholder')" />
+                                                <x-core::input type="text" class="block w-full mt-1"
+                                                    x-model="responseFields[index].placeholder"
+                                                    placeholder="e.g. Masukkan nama server..." />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                {{-- Add Response Field Button --}}
+                                <button type="button" @click="$wire.addResponseField()"
+                                    class="inline-flex items-center gap-x-2 px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors">
+                                    <x-lucide-plus class="w-4 h-4" />
+                                    {{ __('Add Response Field') }}
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Actions --}}
+                        <div
+                            class="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-slate-800">
+                            <x-core::secondary-button link href="{{ route('rakaca.landlord.form.index') }}"
+                                label="{{ __('Cancel') }}" />
+
+                            <x-core::button type="submit" spinner="save"
+                                label="{{ $isEdit ? __('Update Form') : __('Create Form') }}">
+                                <x-slot name="icon">
+                                    @if ($isEdit)
+                                        <x-lucide-check class="w-4 h-4" />
+                                    @else
+                                        <x-lucide-plus class="w-4 h-4" />
+                                    @endif
+                                </x-slot>
+                            </x-core::button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             {{-- Sidebar --}}
             <div class="w-full lg:w-80 shrink-0">
-                <div class="bg-linear-to-b from-indigo-50/80 to-purple-50/80 dark:from-indigo-900/15 dark:to-purple-900/15 rounded-2xl border border-indigo-100 dark:border-indigo-800/30 shadow-xl overflow-hidden lg:sticky lg:top-6">
+                <div
+                    class="bg-linear-to-b from-indigo-50/80 to-purple-50/80 dark:from-indigo-900/15 dark:to-purple-900/15 rounded-2xl border border-indigo-100 dark:border-indigo-800/30 shadow-xl overflow-hidden lg:sticky lg:top-6">
 
                     {{-- Sidebar Header --}}
                     <div class="p-6 border-b border-indigo-100/60 dark:border-indigo-800/20">
                         <div class="flex items-center gap-3">
-                            <div class="p-2.5 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/25">
+                            <div
+                                class="p-2.5 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/25">
                                 @if ($isEdit)
                                     <x-lucide-settings class="w-5 h-5 text-white" />
                                 @else
@@ -468,7 +690,8 @@
                                 <h3 class="text-base font-bold text-gray-900 dark:text-white">
                                     {{ $isEdit ? __('Edit Form') : __('New Form') }}
                                 </h3>
-                                <p class="text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider font-medium">
+                                <p
+                                    class="text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider font-medium">
                                     {{ $isEdit ? __('Updating existing') : __('Creating new') }}
                                 </p>
                             </div>
@@ -521,13 +744,19 @@
                                 {{ __('Field Stats') }}
                             </h4>
                             <div class="grid grid-cols-2 gap-2">
-                                <div class="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
-                                    <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400" x-text="fields ? fields.length : 0"></p>
-                                    <p class="text-[10px] text-gray-500 dark:text-gray-500 uppercase">{{ __('Total Fields') }}</p>
+                                <div
+                                    class="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
+                                    <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400"
+                                        x-text="fields ? fields.length : 0"></p>
+                                    <p class="text-[10px] text-gray-500 dark:text-gray-500 uppercase">
+                                        {{ __('Total Fields') }}</p>
                                 </div>
-                                <div class="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
-                                    <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" x-text="fields ? fields.filter(f => f.required).length : 0"></p>
-                                    <p class="text-[10px] text-gray-500 dark:text-gray-500 uppercase">{{ __('Required') }}</p>
+                                <div
+                                    class="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
+                                    <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400"
+                                        x-text="fields ? fields.filter(f => f.required).length : 0"></p>
+                                    <p class="text-[10px] text-gray-500 dark:text-gray-500 uppercase">
+                                        {{ __('Required') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -536,7 +765,8 @@
                     {{-- Sidebar Footer --}}
                     <div class="px-6 py-4 border-t border-indigo-100/60 dark:border-indigo-800/20">
                         <div class="flex items-center gap-2">
-                            <div class="shrink-0 w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                            <div
+                                class="shrink-0 w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
                                 <x-lucide-shield-check class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                             </div>
                             <p class="text-xs text-gray-500 dark:text-gray-500">

@@ -2,6 +2,7 @@
 
 namespace Paparee\Rakaca\Tests;
 
+use Bale\Api\ApiServiceProvider;
 use Bale\Cms\CmsServiceProvider;
 use Bale\Core\CoreServiceProvider;
 use Illuminate\Support\Facades\Schema;
@@ -20,6 +21,7 @@ class TestCase extends Orchestra
             CoreServiceProvider::class,
             CmsServiceProvider::class,
             RakacaServiceProvider::class,
+            ApiServiceProvider::class,
         ];
     }
 
@@ -47,6 +49,7 @@ class TestCase extends Orchestra
         $this->createActivityLogTable();
         $this->createBaleTables();
         $this->createRakacaTables();
+        $this->createApiTokensTable();
     }
 
     protected function createUsersTable(): void
@@ -211,8 +214,10 @@ class TestCase extends Orchestra
             $table->string('name');
             $table->string('slug')->unique();
             $table->json('meta')->nullable();
+            $table->json('response_form_schema')->nullable();
             $table->boolean('actived')->default(true);
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('rakaca_service_id')->references('id')->on('rakaca_services')->cascadeOnDelete();
         });
 
@@ -221,14 +226,13 @@ class TestCase extends Orchestra
             $table->uuid('user_uuid');
             $table->uuid('rakaca_form_id');
             $table->string('code')->unique();
-            $table->string('status')->default('pending');
+            $table->string('status')->default('menunggu-berkas');
             $table->json('items')->nullable();
-            $table->text('admin_response')->nullable();
-            $table->timestamp('processed_at')->nullable();
-            $table->uuid('processed_by')->nullable();
+            $table->timestamp('status_changed_at')->nullable();
+            $table->timestamp('files_finalized_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('rakaca_form_id')->references('id')->on('rakaca_forms')->cascadeOnDelete();
-            $table->foreign('processed_by')->references('uuid')->on('users')->nullOnDelete();
         });
 
         Schema::create('rakaca_submission_uploads', function ($table) {
@@ -244,6 +248,26 @@ class TestCase extends Orchestra
             $table->foreign('user_uuid')->references('uuid')->on('users')->cascadeOnDelete();
         });
 
+        Schema::create('rakaca_form_responses', function ($table) {
+            $table->uuid('id')->primary();
+            $table->uuid('rakaca_submission_id')->unique();
+            $table->timestamp('processed_at')->nullable();
+            $table->uuid('processed_by')->nullable();
+            $table->text('rejection_reason')->nullable();
+            $table->timestamp('rejected_at')->nullable();
+            $table->text('revise_note')->nullable();
+            $table->timestamp('requested_revision_at')->nullable();
+            $table->json('resolution_data')->nullable();
+            $table->timestamp('resolved_at')->nullable();
+            $table->uuid('resolved_by')->nullable();
+            $table->string('cancelled_reason')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('rakaca_submission_id')->references('id')->on('rakaca_submissions')->cascadeOnDelete();
+            $table->foreign('processed_by')->references('uuid')->on('users')->nullOnDelete();
+            $table->foreign('resolved_by')->references('uuid')->on('users')->nullOnDelete();
+        });
+
         Schema::create('person_has_services', function ($table) {
             $table->uuid('id')->primary();
             $table->uuid('user_uuid');
@@ -252,6 +276,22 @@ class TestCase extends Orchestra
             $table->timestamps();
             $table->foreign('user_uuid')->references('uuid')->on('users')->cascadeOnDelete();
             $table->foreign('rakaca_service_id')->references('id')->on('rakaca_services')->cascadeOnDelete();
+        });
+    }
+
+    protected function createApiTokensTable(): void
+    {
+        Schema::create('api_tokens', function ($table) {
+            $table->uuid('id')->primary();
+            $table->string('name');
+            $table->string('token', 64)->unique();
+            $table->json('abilities')->nullable();
+            $table->json('allowed_ips')->nullable();
+            $table->json('allowed_hosts')->nullable();
+            $table->timestamp('expires_at')->nullable();
+            $table->timestamp('last_used_at')->nullable();
+            $table->timestamp('revoked_at')->nullable();
+            $table->timestamps();
         });
     }
 }

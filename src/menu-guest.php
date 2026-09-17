@@ -7,62 +7,62 @@
  * via MenuRegistry fallback (tanpa ubah bale-core) dan difilter permission.
  */
 return [
-    'type'   => 'guest',
+    'type' => 'guest',
     'groups' => [
         [
-            'key'   => 'guest-home',
+            'key' => 'guest-home',
             'label' => 'Beranda',
-            'icon'  => 'layout-dashboard',
+            'icon' => 'layout-dashboard',
             'items' => [
                 [
-                    'label'      => 'Dashboard',
-                    'url'        => 'guest',
-                    'icon'       => 'layout-dashboard',
+                    'label' => 'Dashboard',
+                    'url' => 'guest',
+                    'icon' => 'layout-dashboard',
                     'permission' => 'guest.dashboard',
                 ],
             ],
         ],
         [
-            'key'   => 'guest-pengajuan',
+            'key' => 'guest-pengajuan',
             'label' => 'Pengajuan',
-            'icon'  => 'file-text',
+            'icon' => 'file-text',
             'items' => [
                 [
-                    'label'      => 'Daftar Pengajuan',
-                    'url'        => 'guest/submissions',
-                    'icon'       => 'list',
+                    'label' => 'Daftar Pengajuan',
+                    'url' => 'guest/submissions',
+                    'icon' => 'list',
                     'permission' => null,
                 ],
                 [
-                    'label'      => 'Buat Pengajuan',
-                    'url'        => 'guest/submissions/create',
-                    'icon'       => 'plus',
+                    'label' => 'Buat Pengajuan',
+                    'url' => 'guest/submissions/create',
+                    'icon' => 'plus',
                     'permission' => null,
                 ],
             ],
         ],
         [
-            'key'   => 'guest-bantuan',
+            'key' => 'guest-bantuan',
             'label' => 'Bantuan',
-            'icon'  => 'help-circle',
+            'icon' => 'help-circle',
             'items' => [
                 [
-                    'label'      => 'Pusat Bantuan',
-                    'url'        => 'bantuan',
-                    'icon'       => 'help-circle',
+                    'label' => 'Pusat Bantuan',
+                    'url' => 'bantuan',
+                    'icon' => 'help-circle',
                     'permission' => null,
                 ],
             ],
         ],
         [
-            'key'   => 'guest-bale',
+            'key' => 'guest-bale',
             'label' => 'Bale',
-            'icon'  => 'building-2',
+            'icon' => 'building-2',
             'items' => [
                 [
-                    'label'      => 'Pilih Bale',
-                    'url'        => 'select-bale',
-                    'icon'       => 'building-2',
+                    'label' => 'Pilih Bale',
+                    'url' => 'select-bale',
+                    'icon' => 'building-2',
                     'permission' => 'select-bale',
                 ],
             ],

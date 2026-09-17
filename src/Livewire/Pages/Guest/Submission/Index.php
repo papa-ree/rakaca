@@ -6,7 +6,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\RakacaSubmission;
+use Paparee\Rakaca\Services\TicketWorkflowService;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('My Submissions')]
@@ -17,22 +19,29 @@ class Index extends Component
         return view('rakaca::livewire.pages.guest.submission.index');
     }
 
-    #[On('deleteSubmission')]
-    public function deleteSubmission($id)
+    #[On('cancelSubmission')]
+    public function cancelSubmission(string $id): void
     {
         $submission = RakacaSubmission::where('id', $id)
             ->where('user_uuid', auth()->user()->uuid)
             ->firstOrFail();
 
-        if (!in_array($submission->status, ['pending', 'rejected'])) {
-            $msg = $submission->status === 'ditutup' ? 'Pengajuan sudah ditutup dan tidak dapat dihapus.' : 'Hanya pengajuan menunggu atau ditolak yang bisa dihapus.';
-            session()->flash('error', $msg);
+        $status = $submission->status instanceof SubmissionStatus
+            ? $submission->status
+            : SubmissionStatus::fromLegacy($submission->status);
+
+        if (! $status->cancellableByUser()) {
+            $this->dispatch('toast', message: 'Status tiket ini tidak bisa dibatalkan.', type: 'error');
+
             return;
         }
 
-        $submission->delete();
-
-        $this->dispatch('toast', message: 'Pengajuan berhasil dihapus.', type: 'success');
-        $this->dispatch('paginated');
+        try {
+            app(TicketWorkflowService::class, ['submission' => $submission])->userCancel();
+            $this->dispatch('toast', message: 'Tiket berhasil dibatalkan.', type: 'success');
+            $this->dispatch('paginated');
+        } catch (\Throwable $e) {
+            $this->dispatch('toast', message: $e->getMessage(), type: 'error');
+        }
     }
 }

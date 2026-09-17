@@ -4,6 +4,7 @@ namespace Paparee\Rakaca\Tests\Feature;
 
 use App\Models\User;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
     foreach ([
@@ -56,7 +57,7 @@ it('mengizinkan akses landlord route dengan permission yang benar', function () 
 it('guest sidebar hanya untuk role guest', function () {
     // Create guest permission
     $guestPerm = Permission::firstOrCreate(['name' => 'guest.sidebar', 'guard_name' => 'web']);
-    $guestRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'guest', 'guard_name' => 'web']);
+    $guestRole = Role::firstOrCreate(['name' => 'guest', 'guard_name' => 'web']);
     $guestRole->givePermissionTo($guestPerm);
 
     $guestUser = User::factory()->create();

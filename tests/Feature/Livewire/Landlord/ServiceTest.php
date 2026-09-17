@@ -3,6 +3,7 @@
 namespace Paparee\Rakaca\Tests\Feature\Livewire\Landlord;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Form as ServiceForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Index as ServiceIndex;
@@ -74,7 +75,7 @@ it('berhasil membuat service baru', function () {
 
 it('menolak duplikat slug saat create', function () {
     RakacaService::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'name' => 'Existing',
         'slug' => 'duplicate-slug',
         'actived' => true,
@@ -92,7 +93,7 @@ it('menolak duplikat slug saat create', function () {
 
 it('berhasil mengupdate service', function () {
     $service = RakacaService::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'name' => 'Old Name',
         'slug' => 'old-name',
         'actived' => true,
@@ -114,7 +115,7 @@ it('berhasil mengupdate service', function () {
 
 it('berhasil menghapus service via deleteItem', function () {
     $service = RakacaService::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'name' => 'To Delete',
         'slug' => 'to-delete',
         'actived' => true,
@@ -132,7 +133,7 @@ it('berhasil menghapus service via deleteItem', function () {
 
 it('menolak hapus tanpa permission delete', function () {
     $service = RakacaService::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'name' => 'Protected',
         'slug' => 'protected',
         'actived' => true,

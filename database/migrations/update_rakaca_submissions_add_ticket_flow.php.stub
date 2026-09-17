@@ -1,0 +1,52 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        if (Schema::hasTable('rakaca_submissions')) {
+            Schema::table('rakaca_submissions', function (Blueprint $table) {
+                if (! Schema::hasColumn('rakaca_submissions', 'status_changed_at')) {
+                    $table->timestamp('status_changed_at')->nullable()->after('status');
+                }
+
+                if (! Schema::hasColumn('rakaca_submissions', 'files_finalized_at')) {
+                    $table->timestamp('files_finalized_at')->nullable()->after('status_changed_at');
+                }
+
+                if (! Schema::hasColumn('rakaca_submissions', 'deleted_at')) {
+                    $table->softDeletes();
+                }
+            });
+
+            if (Schema::hasColumn('rakaca_submissions', 'status')) {
+                Schema::table('rakaca_submissions', function (Blueprint $table) {
+                    $table->string('status')->default('menunggu-berkas')->change();
+                });
+            }
+        }
+    }
+
+    public function down(): void
+    {
+        if (Schema::hasTable('rakaca_submissions')) {
+            Schema::table('rakaca_submissions', function (Blueprint $table) {
+                if (Schema::hasColumn('rakaca_submissions', 'files_finalized_at')) {
+                    $table->dropColumn('files_finalized_at');
+                }
+
+                if (Schema::hasColumn('rakaca_submissions', 'status_changed_at')) {
+                    $table->dropColumn('status_changed_at');
+                }
+
+                if (Schema::hasColumn('rakaca_submissions', 'deleted_at')) {
+                    $table->dropSoftDeletes();
+                }
+            });
+        }
+    }
+};

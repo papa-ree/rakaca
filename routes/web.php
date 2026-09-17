@@ -7,6 +7,7 @@ use Paparee\Rakaca\Livewire\Pages\Guest\SelectBale\Index as SelectBaleIndex;
 use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Create as GuestSubmissionCreate;
 use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Edit as GuestSubmissionEdit;
 use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Index as GuestSubmissionIndex;
+use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Show as GuestSubmissionShow;
 use Paparee\Rakaca\Livewire\Pages\Landlord\BaleUser\Form;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Dashboard\Index as LandlordDashboardIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Form\Form as RakacaForm;
@@ -16,9 +17,7 @@ use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Edit as PersonalServi
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Index as PersonalServiceIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Form as RakacaServiceForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Index as RakacaServiceIndex;
-use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Create;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Detail as SubmissionDetail;
-use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Edit;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Index;
 
 Route::middleware(['web'])->group(function () {
@@ -47,11 +46,9 @@ Route::middleware(['web'])->group(function () {
                 Route::get('forms/{form}/edit', RakacaForm::class)->name('landlord.form.edit');
             });
 
-            // Submission Management
+            // Submission Management (Index + Detail only; create/edit deprecated via ticket flow)
             Route::group(['prefix' => 'rakaca', 'middleware' => ['permission:submission.read']], function () {
                 Route::get('submissions', Index::class)->name('landlord.submission.index');
-                Route::get('submissions/create', Create::class)->name('landlord.submission.create');
-                Route::get('submissions/{submission}/edit', Edit::class)->name('landlord.submission.edit');
                 Route::get('submissions/{submission}/detail', SubmissionDetail::class)->name('landlord.submission.detail');
             });
 
@@ -106,7 +103,8 @@ Route::middleware(['web'])->group(function () {
         Route::group(['prefix' => 'guest/submissions', 'as' => 'guest.submission.'], function () {
             Route::get('/', GuestSubmissionIndex::class)->name('index');
             Route::get('/create', GuestSubmissionCreate::class)->name('create');
-            Route::get('/{submission}/edit', GuestSubmissionEdit::class)->name('edit');
+            Route::get('/{submission}/upload', GuestSubmissionEdit::class)->name('edit');
+            Route::get('/{submission}', GuestSubmissionShow::class)->name('show');
         });
 
     });

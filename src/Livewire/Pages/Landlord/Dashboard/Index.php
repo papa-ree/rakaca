@@ -2,10 +2,12 @@
 
 namespace Paparee\Rakaca\Livewire\Pages\Landlord\Dashboard;
 
+use App\Models\User;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\RakacaService;
 use Paparee\Rakaca\Models\RakacaSubmission;
 
@@ -28,13 +30,16 @@ class Index extends Component
     #[Computed]
     public function pendingSubmissions(): int
     {
-        return RakacaSubmission::where('status', 'pending')->count();
+        return RakacaSubmission::whereIn('status', [
+            SubmissionStatus::SiapDireview->value,
+            SubmissionStatus::Diproses->value,
+        ])->count();
     }
 
     #[Computed]
     public function totalUsers(): int
     {
-        return \App\Models\User::count();
+        return User::count();
     }
 
     #[Computed]

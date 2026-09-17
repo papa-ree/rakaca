@@ -3,15 +3,18 @@
 namespace Paparee\Rakaca\Livewire\Pages\Guest\Submission;
 
 use Bale\Core\Support\Sanitize;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\RakacaSubmission;
 use Paparee\Rakaca\Models\RakacaSubmissionUpload;
+use Paparee\Rakaca\Services\TicketWorkflowService;
 
 #[Layout('rakaca::layouts.app')]
-#[Title('Edit Submission')]
+#[Title('Upload Berkas')]
 class Edit extends Component
 {
     use WithFileUploads;
@@ -22,15 +25,6 @@ class Edit extends Component
 
     public array $uploads = [];
 
-    /**
-     * Temporary file upload disk.
-     *
-     * - Local environment  → 'local'  (server filesystem, simplest)
-     * - Production (APP_ENV=production) → 's3'
-     *
-     * Pair this with LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK=s3 in production .env
-     * so Livewire's chunk-upload endpoints also target the same disk.
-     */
     public function temporaryFileUploadDisk(): string
     {
         return app()->isProduction() ? 's3' : 'local';
@@ -42,12 +36,10 @@ class Edit extends Component
             abort(403);
         }
 
-        if (! in_array($submission->status, ['pending', 'rejected'])) {
-            $msg = $submission->status === 'ditutup'
-                ? 'Pengajuan sudah ditutup dan tidak dapat diedit.'
-                : ($submission->status === 'review' ? 'Pengajuan sedang direview dan tidak dapat diedit.' : 'Hanya pengajuan dengan status menunggu atau ditolak yang bisa diedit.');
-            session()->flash('error', $msg);
+        if ($submission->status !== SubmissionStatus::MenungguBerkas) {
+            session()->flash('error', 'Hanya tiket dengan status Menunggu Berkas yang bisa dilengkapi.');
             $this->redirectRoute('rakaca.guest.submission.index', navigate: true);
+
             return;
         }
 
@@ -68,34 +60,28 @@ class Edit extends Component
                 $required = $field['required'] ?? false;
 
                 if ($type === 'file') {
-                    // For file fields, allow existing path string (nullable) or new upload
                     $current = $this->items[$field['key']] ?? null;
-                    $isExistingPath = is_string($current) && !empty($current);
-                    if ($required && !$isExistingPath) {
+                    $isExistingPath = is_string($current) && ! empty($current);
+                    if ($required && ! $isExistingPath) {
                         $rule = 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,zip';
                     } elseif ($isExistingPath) {
-                        $rule = 'nullable|string|max:10000';
-                        // If new file uploaded, it will be TemporaryUploadedFile, validate as file
-                        if (is_object($current)) {
-                            $rule = 'nullable|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,zip';
-                        }
+                        $rule = is_object($current)
+                            ? 'nullable|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,zip'
+                            : 'nullable|string|max:10000';
                     } else {
                         $rule = 'nullable|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,zip';
                     }
                 } elseif ($type === 'select') {
                     $options = $field['options'] ?? [];
-                    if (!empty($options)) {
-                        $rule = $required ? 'required|string|in:' . implode(',', $options) : 'nullable|string|in:' . implode(',', $options);
-                    } else {
-                        $rule = $required ? 'required|string|max:10000' : 'nullable|string|max:10000';
-                    }
+                    $rule = ! empty($options)
+                        ? ($required ? 'required|string|in:'.implode(',', $options) : 'nullable|string|in:'.implode(',', $options))
+                        : ($required ? 'required|string|max:10000' : 'nullable|string|max:10000');
                 } else {
-                    $rule = $required ? 'required|string|max:10000' : 'nullable|string|max:10000';
-                    if ($type === 'number') {
-                        $rule = $required ? 'required|numeric' : 'nullable|numeric';
-                    } elseif ($type === 'email') {
-                        $rule = $required ? 'required|email|max:255' : 'nullable|email|max:255';
-                    }
+                    $rule = match ($type) {
+                        'number' => $required ? 'required|numeric' : 'nullable|numeric',
+                        'email' => $required ? 'required|email|max:255' : 'nullable|email|max:255',
+                        default => $required ? 'required|string|max:10000' : 'nullable|string|max:10000',
+                    };
                 }
 
                 $rules["items.{$field['key']}"] = $rule;
@@ -118,14 +104,8 @@ class Edit extends Component
         return $attributes;
     }
 
-    public function save()
+    public function saveItems()
     {
-        if (! in_array($this->submission->status, ['pending', 'rejected'])) {
-            session()->flash('error', 'Pengajuan tidak dapat diperbarui pada status ini.');
-            $this->redirectRoute('rakaca.guest.submission.index', navigate: true);
-            return;
-        }
-
         $this->validate();
 
         $itemsToSave = $this->items;
@@ -140,15 +120,11 @@ class Edit extends Component
             $key = $field['key'] ?? null;
             if (($field['type'] ?? null) === 'file' && isset($itemsToSave[$key]) && is_object($itemsToSave[$key])) {
                 $file = $itemsToSave[$key];
-                if ($file instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
-                    $itemsToSave[$key] = $file->store('rakaca-submissions', 'public');
-                } elseif (method_exists($file, 'store')) {
+                if (method_exists($file, 'store')) {
                     $itemsToSave[$key] = $file->store('rakaca-submissions', 'public');
                 }
             }
         }
-
-        $wasRejected = $this->submission->status === 'rejected';
 
         $this->submission->update([
             'items' => [
@@ -157,15 +133,12 @@ class Edit extends Component
                 'updated_at' => now()->toISOString(),
                 'data' => $itemsToSave,
             ],
-            'status' => $wasRejected ? 'pending' : $this->submission->status,
-            'admin_response' => $wasRejected ? null : $this->submission->admin_response,
         ]);
 
-        // Handle multi-upload zone (pdf, max 3, 5MB each) — check current count
         $existingCount = $this->submission->uploads()->count();
         $remaining = 3 - $existingCount;
         foreach (array_slice($this->uploads, 0, $remaining) as $file) {
-            if ($file instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+            if (method_exists($file, 'store')) {
                 $path = $file->store('rakaca-submission-uploads', 'public');
                 RakacaSubmissionUpload::create([
                     'rakaca_submission_id' => $this->submission->id,
@@ -178,7 +151,20 @@ class Edit extends Component
             }
         }
 
-        session()->flash('success', 'Pengajuan berhasil diperbarui.');
+        $this->dispatch('toast', message: 'Data berhasil disimpan.', type: 'success');
+    }
+
+    public function submitFiles()
+    {
+        if ($this->submission->status !== SubmissionStatus::MenungguBerkas) {
+            abort(403);
+        }
+
+        $this->saveItems();
+
+        app(TicketWorkflowService::class, ['submission' => $this->submission])->submitFiles();
+
+        $this->dispatch('toast', message: 'Berkas berhasil dikirim untuk review.', type: 'success');
         $this->redirectRoute('rakaca.guest.submission.index', navigate: true);
     }
 
@@ -198,7 +184,7 @@ class Edit extends Component
             ->first();
 
         if ($upload) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($upload->file_path);
+            Storage::disk('public')->delete($upload->file_path);
             $upload->delete();
         }
     }

@@ -120,34 +120,6 @@
     {{-- Submission Status Section --}}
     <livewire:rakaca.pages.guest.dashboard.section.submission-status />
 
-    {{-- History Pengajuan Terakhir (own) --}}
-    <div class="mb-8" data-aos="fade-up" data-aos-delay="200">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-md p-6">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">History Pengajuan Terakhir</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">5 pengajuan terbaru Anda — Total: {{ $this->totalSubmissionsOwn }} | Pending: {{ $this->pendingSubmissionsOwn }}</p>
-                </div>
-                <a href="{{ route('rakaca.guest.submission.index') }}" wire:navigate class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Lihat semua</a>
-            </div>
-            @if($this->lastSubmissions->isEmpty())
-                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-6">Belum ada pengajuan.</p>
-            @else
-                <div class="space-y-2">
-                    @foreach($this->lastSubmissions as $item)
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                            <div>
-                                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $item->code }} — {{ $item->form?->name ?? '' }} ({{ $item->form?->service?->name ?? '' }})</p>
-                                <p class="text-xs text-gray-500">{{ $item->created_at->format('d M Y H:i') }} · <span class="px-2 py-0.5 rounded-full text-xs bg-{{ $item->statusColor }}-100 text-{{ $item->statusColor }}-700">{{ $item->statusLabel }}</span> · {{ $item->uploads->count() }} berkas</p>
-                            </div>
-                            <a href="{{ route('rakaca.guest.submission.index') }}" class="text-xs text-indigo-600 hover:underline">Detail</a>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </div>
-
     {{-- CTA Section --}}
     <div class="p-8 mb-8 bg-linear-to-br from-purple-50 to-purple-50 dark:from-purple-900/20 dark:to-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-2xl"
         data-aos="fade-up" data-aos-delay="250">

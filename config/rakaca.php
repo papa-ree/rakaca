@@ -12,4 +12,9 @@ return [
         'max_attempts' => (int) env('RAKACA_ADUAN_MAX_ATTEMPTS', 5),
         'decay_seconds' => (int) env('RAKACA_ADUAN_DECAY_SECONDS', 60),
     ],
+
+    'ticket' => [
+        'auto_cancel_hours' => (int) env('RAKACA_TICKET_AUTO_CANCEL_HOURS', 72),
+        'rejection_min_chars' => (int) env('RAKACA_TICKET_REJECTION_MIN_CHARS', 10),
+    ],
 ];
