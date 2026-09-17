@@ -14,7 +14,7 @@ use Paparee\Rakaca\Http\Controllers\Api\V1\SubmissionController;
 |
 */
 
-Route::middleware('bale.api')->prefix('api/rakaca/v1')->name('api.rakaca.v1.')->group(function () {
+Route::middleware('bale.api')->prefix('api/v1/rakaca')->name('api.rakaca.v1.')->group(function () {
     Route::get('forms', [FormController::class, 'index'])
         ->middleware('scope:rakaca.form.read')
         ->name('forms.index');

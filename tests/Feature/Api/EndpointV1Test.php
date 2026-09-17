@@ -37,7 +37,7 @@ test('valid token with form.read ability can list active forms', function () {
 
     $issued = $this->tokens->issue('Client', ['rakaca.form.read']);
 
-    $this->getJson('/api/rakaca/v1/forms', ['Authorization' => 'Bearer '.$issued['plain']])
+    $this->getJson('/api/v1/rakaca/forms', ['Authorization' => 'Bearer '.$issued['plain']])
         ->assertOk()
         ->assertJsonStructure(['data', 'meta'])
         ->assertJsonCount(2, 'data');
@@ -48,7 +48,7 @@ test('form listing returns paginated metadata', function () {
 
     $issued = $this->tokens->issue('Client', ['rakaca.form.read']);
 
-    $this->getJson('/api/rakaca/v1/forms', ['Authorization' => 'Bearer '.$issued['plain']])
+    $this->getJson('/api/v1/rakaca/forms', ['Authorization' => 'Bearer '.$issued['plain']])
         ->assertOk()
         ->assertJsonPath('meta.total', 1)
         ->assertJsonPath('meta.per_page', 20)
@@ -60,7 +60,7 @@ test('show returns single form with response form schema', function () {
 
     $issued = $this->tokens->issue('Client', ['rakaca.form.read']);
 
-    $this->getJson('/api/rakaca/v1/forms/'.$form->id, ['Authorization' => 'Bearer '.$issued['plain']])
+    $this->getJson('/api/v1/rakaca/forms/'.$form->id, ['Authorization' => 'Bearer '.$issued['plain']])
         ->assertOk()
         ->assertJsonPath('data.id', $form->id)
         ->assertJsonCount(1, 'data.response_form_schema');
@@ -71,19 +71,19 @@ test('inactive form is not found', function () {
 
     $issued = $this->tokens->issue('Client', ['rakaca.form.read']);
 
-    $this->getJson('/api/rakaca/v1/forms/'.$form->id, ['Authorization' => 'Bearer '.$issued['plain']])
+    $this->getJson('/api/v1/rakaca/forms/'.$form->id, ['Authorization' => 'Bearer '.$issued['plain']])
         ->assertNotFound();
 });
 
 test('token without form.read ability is forbidden', function () {
     $issued = $this->tokens->issue('Client', ['rakaca.submission.read']);
 
-    $this->getJson('/api/rakaca/v1/forms', ['Authorization' => 'Bearer '.$issued['plain']])
+    $this->getJson('/api/v1/rakaca/forms', ['Authorization' => 'Bearer '.$issued['plain']])
         ->assertForbidden();
 });
 
 test('missing token is unauthorized', function () {
-    $this->getJson('/api/rakaca/v1/forms')->assertUnauthorized();
+    $this->getJson('/api/v1/rakaca/forms')->assertUnauthorized();
 });
 
 test('can create submission with submission.write ability', function () {
@@ -91,7 +91,7 @@ test('can create submission with submission.write ability', function () {
 
     $issued = $this->tokens->issue('Client', ['rakaca.submission.write']);
 
-    $this->postJson('/api/rakaca/v1/submissions', [
+    $this->postJson('/api/v1/rakaca/submissions', [
         'rakaca_form_id' => $form->id,
         'items' => [
             'summary' => 'Laptop rusak',
@@ -113,7 +113,7 @@ test('cannot create submission without submission.write ability', function () {
 
     $issued = $this->tokens->issue('Client', ['rakaca.form.read']);
 
-    $this->postJson('/api/rakaca/v1/submissions', [
+    $this->postJson('/api/v1/rakaca/submissions', [
         'rakaca_form_id' => $form->id,
         'items' => ['summary' => 'x'],
     ], ['Authorization' => 'Bearer '.$issued['plain']])
@@ -123,7 +123,7 @@ test('cannot create submission without submission.write ability', function () {
 test('submission list requires submission.read ability', function () {
     $issued = $this->tokens->issue('Client', ['rakaca.submission.read']);
 
-    $this->getJson('/api/rakaca/v1/submissions', ['Authorization' => 'Bearer '.$issued['plain']])
+    $this->getJson('/api/v1/rakaca/submissions', ['Authorization' => 'Bearer '.$issued['plain']])
         ->assertOk()
         ->assertJsonStructure(['data', 'meta']);
 });
@@ -141,7 +141,7 @@ test('list submissions returns existing submissions', function () {
 
     $issued = $this->tokens->issue('Client', ['rakaca.submission.read']);
 
-    $this->getJson('/api/rakaca/v1/submissions', ['Authorization' => 'Bearer '.$issued['plain']])
+    $this->getJson('/api/v1/rakaca/submissions', ['Authorization' => 'Bearer '.$issued['plain']])
         ->assertOk()
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.code', 'SUB-TEST-001');
@@ -150,11 +150,11 @@ test('list submissions returns existing submissions', function () {
 test('token immediately blocks requests after revocation', function () {
     $issued = $this->tokens->issue('Client', ['rakaca.form.read']);
 
-    $this->getJson('/api/rakaca/v1/forms', ['Authorization' => 'Bearer '.$issued['plain']])
+    $this->getJson('/api/v1/rakaca/forms', ['Authorization' => 'Bearer '.$issued['plain']])
         ->assertOk();
 
     $this->tokens->revoke($issued['model']);
 
-    $this->getJson('/api/rakaca/v1/forms', ['Authorization' => 'Bearer '.$issued['plain']])
+    $this->getJson('/api/v1/rakaca/forms', ['Authorization' => 'Bearer '.$issued['plain']])
         ->assertUnauthorized();
 });
