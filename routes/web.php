@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Paparee\Rakaca\Livewire\Pages\Guest\Aduan\Index as AduanIndex;
 use Paparee\Rakaca\Livewire\Pages\Guest\Dashboard\Index as GuestDashboardIndex;
 use Paparee\Rakaca\Livewire\Pages\Guest\SelectBale\Index as SelectBaleIndex;
 use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Create as GuestSubmissionCreate;
@@ -12,6 +11,8 @@ use Paparee\Rakaca\Livewire\Pages\Landlord\BaleUser\Form;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Dashboard\Index as LandlordDashboardIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Form\Form as RakacaForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Form\Index as RakacaFormIndex;
+use Paparee\Rakaca\Livewire\Pages\Landlord\Organization\Create;
+use Paparee\Rakaca\Livewire\Pages\Landlord\Organization\Edit;
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Create as PersonalServiceCreate;
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Edit as PersonalServiceEdit;
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Index as PersonalServiceIndex;
@@ -22,10 +23,8 @@ use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Index;
 
 Route::middleware(['web'])->group(function () {
 
-    // Public: Aduan / Bantuan (tanpa login)
-    Route::get('bantuan', AduanIndex::class)
-        ->middleware('throttle:30,1')
-        ->name('rakaca.aduan.index');
+    // Catatan: route publik /bantuan (aduan) kini dimiliki bale/frasasti
+    // sebagai route bernama `frasasti.aduan.index`.
 
     Route::middleware(['auth'])->as('rakaca.')->group(function () {
 
@@ -62,8 +61,8 @@ Route::middleware(['web'])->group(function () {
             // Organization Management
             Route::group(['prefix' => 'rakaca', 'middleware' => ['permission:organization.read']], function () {
                 Route::get('organizations', Paparee\Rakaca\Livewire\Pages\Landlord\Organization\Index::class)->name('landlord.organization.index');
-                Route::get('organizations/create', Paparee\Rakaca\Livewire\Pages\Landlord\Organization\Create::class)->name('landlord.organization.create');
-                Route::get('organizations/{organization}/edit', Paparee\Rakaca\Livewire\Pages\Landlord\Organization\Edit::class)->name('landlord.organization.edit');
+                Route::get('organizations/create', Create::class)->name('landlord.organization.create');
+                Route::get('organizations/{organization}/edit', Edit::class)->name('landlord.organization.edit');
             });
 
             // Bale List Management

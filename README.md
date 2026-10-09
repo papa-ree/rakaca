@@ -1,115 +1,88 @@
-# Package GUI for Aptika Services
+# paparee/rakaca
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/papa-ree/rakaca.svg?style=flat-square)](https://packagist.org/packages/papa-ree/rakaca)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/papa-ree/rakaca/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/papa-ree/rakaca/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/papa-ree/rakaca/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/papa-ree/rakaca/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/papa-ree/rakaca.svg?style=flat-square)](https://packagist.org/packages/papa-ree/rakaca)
+Lapisan **service management** (GUI) untuk layanan Aptika. Package ini berada di
+atas `bale/cms` dan menjadi service aktif untuk tenant — mengelola pengajuan
+layanan pengguna, formulir dinamis, dan data organisasi.
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+> **Catatan:** fitur Aduan Masuk sudah diekstrak menjadi package mandiri
+> [`bale/frasasti`](../frasasti). Tabel `rakaca_aduans` dan
+> `rakaca_aduan_categories` sengaja **dipertahankan** di database sebagai arsip
+> data lama; kode(fitur) Aduan sudah tidak ada di package ini. Gunakan
+> `php artisan frasasti:import-legacy-aduan` untuk memindahkan data tersebut.
 
-## Support us
+## Kebutuhan
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/rakaca.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/rakaca)
+| Dependency | Alasan |
+|------------|--------|
+| `bale/core` | Auth, permission, komponen UI, layout |
+| `bale/cms` | Multi-tenancy, tenant connection, form dinamis |
+| `bale/api` | Endpoint API dan token scope |
+| `awssat/laravel-visits` | Pencatatan visitor |
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
-
-## Installation
-
-You can install the package via composer:
+## Instalasi
 
 ```bash
-composer require papa-ree/rakaca
+composer require paparee/rakaca
 ```
-
-You can publish and run the migrations with:
 
 ```bash
 php artisan vendor:publish --tag="rakaca:migrations"
 php artisan migrate
 ```
 
-### Migration Publisher (Recommended)
-
-Alternatively, you can use the interactive migration publisher which provides more control:
-
 ```bash
-php artisan rakaca:publish-migration
+php artisan vendor:publish --tag="rakaca:config"
 ```
 
-This command allows you to:
-- **All**: Publish all migrations.
-- **Auto (Only missing)**: Publish only migrations that don't exist yet in your application.
-- **Specific Migration**: Select specific migrations from a list.
+## Command
 
-You can publish the config file with:
+| Command | Fungsi |
+|---------|--------|
+| `rakaca:install` | Seed permission bawaan |
+| `rakaca:publish-migration` | Publish migration stub ke aplikasi (opsi All/Auto/Specific) |
+| `rakaca:make-form` | Generate form dinamis baru dan menempelkannya ke service |
+| `rakaca:make-service` | Generate service baru, opsional menempelkannya ke user |
+| `rakaca:make-person-service` | Menautkan user ke service yang sudah ada (mode interaktif) |
+| `rakaca:make-user-submission` | Membuat pengajuan baru untuk seorang user |
+| `rakaca:auto-cancel` | Batalkan otomatis tiket menunggu-berkas yang belum difinalisasi dalam 3x24 jam |
 
-```bash
-php artisan vendor:publish --tag="rakaca-config"
-```
+## Modul
 
-Optionally, you can publish the views using
+### Guest (publik)
 
-```bash
-php artisan vendor:publish --tag="rakaca-views"
-```
+| Komponen | Keterangan |
+|----------|------------|
+| `Guest\Dashboard\Index` | Dashboard layanan aktif & pengajuan berjalan |
+| `Guest\SelectBale\Index` | Pemilihan tenant sebelum mengakses layanan |
+| `Guest\Submission\Index` | Daftar pengajuan milik pengguna |
+| `Guest\Submission\Create` | Membuat pengajuan baru |
+| `Guest\Submission\Edit` | Editing pengajuan yang masih bisa diubah |
+| `Guest\Submission\Show` | Detail pengajuan |
 
-## Artisan Commands
+### Landlord (admin)
 
-Rakaca provides several artisan commands to manage services, user-service relations, and submissions.
-
-### Create Service
-
-Generate a new service and optionally attach it to a user.
-
-```bash
-php artisan rakaca:make-service --name="Bale CMS" --slug="bale-cms" --user="user-uuid-here"
-```
-
-### Link User to Service (Interactive)
-
-Interactive command to link an existing user to an active service.
-
-```bash
-php artisan rakaca:make-person-service
-```
-
-### Create User Submission
-
-Generate a new submission record for a specific user and service.
-
-```bash
-php artisan rakaca:make-user-submission --username="john_doe" --service_slug="bale-cms"
-```
-
-## Usage
-
-The package provides a GUI for managing services and submissions. Ensure you have run the migrations and configured any necessary services via the commands above or the provided UI.
+| Komponen | Keterangan |
+|----------|------------|
+| `Landlord\Dashboard\Index` | Dashboard ringkasan |
+| `Landlord\BaleList\*` | Manajemen daftar tenant (Bale) |
+| `Landlord\Organization\*` | Manajemen organisasi |
+| `Landlord\Service\Index` / `Form` | Manajemen layanan |
+| `Landlord\Form\Index` / `Form` | Manajemen form dinamis |
+| `Landlord\Submission\Index` / `Detail` | Monitoring pengajuan masuk |
+| `Landlord\PersonalService\*` | Manajemen layanan personal |
+| `Landlord\Analytic\*` | Analitik layanan |
+| `Landlord\BaleUser\Index` / `Form` | Manajemen pengguna tenant |
 
 ## Testing
 
 ```bash
-composer test
+vendor\bin\pest packages\rakaca
 ```
 
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [Papa Ree](https://github.com/papa-ree)
-- [All Contributors](../../contributors)
+> Saat ini terdapat 2 test yang gagal pada `SubmissionDetailTest`
+> (`public method [reject] not found`) — warisan dari refactor, belum
+> diperbaiki dan tidak berkaitan dengan fitur Aduan.
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+MIT. Lihat [LICENSE.md](LICENSE.md).

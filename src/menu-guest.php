@@ -3,8 +3,11 @@
 /**
  * Menu definisi untuk package paparee/rakaca (Guest Layout).
  *
- * Beranda + Pengajuan + Bantuan + Bale — dibaca oleh RakacaGuestSidebar
+ * Beranda + Pengajuan + Bale — dibaca oleh RakacaGuestSidebar
  * via MenuRegistry fallback (tanpa ubah bale-core) dan difilter permission.
+ *
+ * Catatan: menu "Bantuan" (/bantuan) sudah dipindahkan ke bale/frasasti
+ * dan tidak lagi terdaftar di sini.
  */
 return [
     'type' => 'guest',
@@ -37,19 +40,6 @@ return [
                     'label' => 'Buat Pengajuan',
                     'url' => 'guest/submissions/create',
                     'icon' => 'plus',
-                    'permission' => null,
-                ],
-            ],
-        ],
-        [
-            'key' => 'guest-bantuan',
-            'label' => 'Bantuan',
-            'icon' => 'help-circle',
-            'items' => [
-                [
-                    'label' => 'Pusat Bantuan',
-                    'url' => 'bantuan',
-                    'icon' => 'help-circle',
                     'permission' => null,
                 ],
             ],

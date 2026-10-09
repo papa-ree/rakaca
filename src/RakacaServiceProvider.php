@@ -149,10 +149,6 @@ class RakacaServiceProvider extends ServiceProvider
 
         $this->publishes($this->getMigrations(), 'rakaca:migrations');
 
-        $this->publishes([
-            __DIR__.'/../src/Database/Seeders/AduanCategorySeeder.php' => database_path('seeders/AduanCategorySeeder.php'),
-        ], 'rakaca:seeders');
-
     }
 
     /**

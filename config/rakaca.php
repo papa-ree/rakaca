@@ -1,18 +1,10 @@
 <?php
 
 // config for Paparee/Rakaca
+//
+// Catatan: blok config `whatsapp` dan `aduan` sudah dipindahkan ke
+// bale/frasasti (config/frasasti.php) bersama fitur aduan.
 return [
-    'whatsapp' => [
-        'support_number' => env('RAKACA_WA_SUPPORT_NUMBER', '6285126061182'),
-    ],
-
-    'aduan' => [
-        'recaptcha_action' => env('RAKACA_ADUAN_RECAPTCHA_ACTION', 'aduan'),
-        'min_score' => (float) env('RAKACA_ADUAN_RECAPTCHA_MIN_SCORE', 0.5),
-        'max_attempts' => (int) env('RAKACA_ADUAN_MAX_ATTEMPTS', 5),
-        'decay_seconds' => (int) env('RAKACA_ADUAN_DECAY_SECONDS', 60),
-    ],
-
     'ticket' => [
         'auto_cancel_hours' => (int) env('RAKACA_TICKET_AUTO_CANCEL_HOURS', 72),
         'rejection_min_chars' => (int) env('RAKACA_TICKET_REJECTION_MIN_CHARS', 10),

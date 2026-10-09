@@ -70,7 +70,7 @@ it('guest sidebar hanya untuk role guest', function () {
     expect($plainUser->can('guest.sidebar'))->toBeFalse();
 });
 
-it('menolak aduan submission tanpa login di guest submission routes', function () {
+it('menolak akses tanpa login di guest submission routes', function () {
     // Guest submission routes require auth (since they are under auth middleware) — prefix guest/
     $this->get('/guest/submissions')
         ->assertRedirect(route('login'));

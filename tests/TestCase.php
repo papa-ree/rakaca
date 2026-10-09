@@ -188,26 +188,6 @@ class TestCase extends Orchestra
             $table->timestamps();
         });
 
-        Schema::create('rakaca_aduan_categories', function ($table) {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->timestamps();
-        });
-
-        Schema::create('rakaca_aduans', function ($table) {
-            $table->uuid('id')->primary();
-            $table->string('ref_code')->unique();
-            $table->text('nama_lengkap');
-            $table->text('nip');
-            $table->text('wa_number');
-            $table->uuid('aduan_category_id');
-            $table->text('deskripsi');
-            $table->string('status')->default('pending');
-            $table->string('ip_address')->nullable();
-            $table->timestamps();
-            $table->foreign('aduan_category_id')->references('id')->on('rakaca_aduan_categories')->cascadeOnDelete();
-        });
-
         Schema::create('rakaca_forms', function ($table) {
             $table->uuid('id')->primary();
             $table->uuid('rakaca_service_id');
