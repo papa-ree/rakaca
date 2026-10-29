@@ -43,7 +43,9 @@ class RakacaGuestSidebar extends Component
         return $menu;
     }
 
-    #[Computed(persist: true)]
+    // Tanpa persist: key cache Livewire hanya memakai id komponen (tanpa user),
+    // sehingga menu satu user bisa tampil ke user lain selama TTL.
+    #[Computed]
     public function menuGroups(): array
     {
         // Coba baca dari MenuRegistry (guest) yang sudah di-register via menu-guest.php
