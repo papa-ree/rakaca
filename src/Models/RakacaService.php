@@ -31,6 +31,12 @@ class RakacaService extends Model
         'updated_at' => 'datetime:d M Y',
     ];
 
+    /**
+     * Indikator "sudah punya form" di tabel Service butuh jumlah form tanpa
+     * N+1; satu subquery per baris ditangani Eloquent.
+     */
+    protected $withCount = ['forms'];
+
     public function persons()
     {
         return $this->hasMany(PersonHasService::class, 'rakaca_service_id', 'id');

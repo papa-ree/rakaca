@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Form as ServiceForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Index as ServiceIndex;
+use Paparee\Rakaca\Models\Form;
 use Paparee\Rakaca\Models\RakacaService;
 use Spatie\Permission\Models\Permission;
 
@@ -147,4 +148,39 @@ it('menolak hapus tanpa permission delete', function () {
         ->assertForbidden();
 
     expect(RakacaService::where('id', $service->id)->exists())->toBeTrue();
+});
+
+it('menampilkan indikator sudah dan belum punya form pada tabel service', function () {
+    $withForm = RakacaService::create([
+        'id' => (string) Str::uuid(),
+        'name' => 'Punya Form',
+        'slug' => 'punya-form',
+        'actived' => true,
+    ]);
+
+    RakacaService::create([
+        'id' => (string) Str::uuid(),
+        'name' => 'Tanpa Form',
+        'slug' => 'tanpa-form',
+        'actived' => true,
+    ]);
+
+    Form::create([
+        'id' => (string) Str::uuid(),
+        'rakaca_service_id' => $withForm->id,
+        'name' => 'Form Layanan',
+        'slug' => 'form-layanan',
+        'meta' => ['fields' => []],
+        'response_form_schema' => [],
+        'actived' => true,
+    ]);
+
+    $user = serviceUser(['service.read']);
+
+    Livewire::actingAs($user)
+        ->test(ServiceIndex::class)
+        ->assertSee('Sudah ada form')
+        ->assertSee('Belum ada form');
+
+    expect($withForm->fresh()->forms_count)->toBe(1);
 });

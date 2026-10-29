@@ -13,11 +13,13 @@ use Paparee\Rakaca\Livewire\Pages\Landlord\Form\Form as RakacaForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Form\Index as RakacaFormIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Organization\Create;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Organization\Edit;
+use Paparee\Rakaca\Livewire\Pages\Landlord\Overview\Index as OverviewIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Create as PersonalServiceCreate;
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Edit as PersonalServiceEdit;
 use Paparee\Rakaca\Livewire\Pages\Landlord\PersonalService\Index as PersonalServiceIndex;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Form as RakacaServiceForm;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Service\Index as RakacaServiceIndex;
+use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Create as SubmissionCreate;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Detail as SubmissionDetail;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Submission\Index;
 
@@ -30,6 +32,11 @@ Route::middleware(['web'])->group(function () {
 
         Route::group(['middleware' => ['permission:dashboard']], function () {
             Route::get('landlord-dashboard', LandlordDashboardIndex::class)->name('landlord-dashboard.index');
+
+            // Overview pengajuan
+            Route::get('rakaca/overview', OverviewIndex::class)
+                ->middleware('permission:submission.read')
+                ->name('landlord.overview.index');
 
             // Service Management
             Route::group(['prefix' => 'rakaca', 'middleware' => ['permission:service.read']], function () {
@@ -50,6 +57,11 @@ Route::middleware(['web'])->group(function () {
                 Route::get('submissions', Index::class)->name('landlord.submission.index');
                 Route::get('submissions/{submission}/detail', SubmissionDetail::class)->name('landlord.submission.detail');
             });
+
+            // Tambah pengajuan manual oleh admin (atas nama user terdaftar)
+            Route::get('rakaca/submissions/create', SubmissionCreate::class)
+                ->middleware('permission:submission.create')
+                ->name('landlord.submission.create');
 
             // Personal Service Management (Customer)
             Route::group(['prefix' => 'rakaca', 'middleware' => ['permission:personal-service.read']], function () {

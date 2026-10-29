@@ -7,7 +7,7 @@
         }" @keydown.escape.window="close()">
 
         {{-- Primary Sidebar --}}
-        <aside id="application-sidebar-guest" class="hs-overlay hs-overlay-open:translate-x-0 -translate-x-full
+        <aside id="application-sidebar" class="hs-overlay hs-overlay-open:translate-x-0 -translate-x-full
                    transition-all duration-300 transform
                    fixed top-0 left-0 bottom-0 z-50
                    w-64
@@ -35,6 +35,21 @@
             </div>
 
             <div class="mx-3 mb-3 h-px bg-slate-700/60"></div>
+
+            {{-- Switch ke layout landlord: hanya untuk user yang punya akses panel admin. --}}
+            @can('dashboard')
+                <div class="px-3 pb-2">
+                    <a href="{{ route('rakaca.landlord-dashboard.index') }}" wire:navigate.hover
+                        class="group flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium
+                               text-slate-400 hover:text-teal-300 hover:bg-teal-500/10 transition-all duration-150">
+                        <span class="shrink-0 text-slate-500 group-hover:text-teal-400">
+                            <x-lucide-shield-check class="w-5 h-5" />
+                        </span>
+                        <span class="flex-1 text-left tracking-wide">{{ __('Mode Admin') }}</span>
+                        <x-lucide-arrow-up-right class="w-3.5 h-3.5 text-slate-600 group-hover:text-teal-400" />
+                    </a>
+                </div>
+            @endcan
 
             {{-- Group Buttons --}}
             <nav class="flex-1 flex flex-col gap-0.5 px-3 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">

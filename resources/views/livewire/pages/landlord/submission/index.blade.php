@@ -1,5 +1,15 @@
 <div>
-    <x-core::page-header gradient :title="__('Submission Management')" :subtitle="__('Manage service submissions')" />
+    <x-core::page-header gradient :title="__('Submission Management')" :subtitle="__('Manage service submissions')">
+        <x-slot name="action">
+            @can('submission.create')
+                <x-core::button link href="{{ route('rakaca.landlord.submission.create') }}" label="{{ __('Tambah Pengajuan') }}">
+                    <x-slot name="icon">
+                        <x-lucide-plus class="w-5 h-5" />
+                    </x-slot>
+                </x-core::button>
+            @endcan
+        </x-slot>
+    </x-core::page-header>
 
     <livewire:core-shared-components::data-table
         model="Paparee\Rakaca\Models\RakacaSubmission"

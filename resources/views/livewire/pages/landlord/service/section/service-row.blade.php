@@ -25,6 +25,21 @@
         </p>
     </td>
     <td class="px-3 py-4 text-sm text-gray-500">
+        @if ($record->forms_count > 0)
+            <span
+                class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-600/20 dark:bg-teal-900/30 dark:text-teal-400">
+                <x-lucide-check-circle-2 class="w-3.5 h-3.5" />
+                {{ __('Sudah ada form') }} ({{ $record->forms_count }})
+            </span>
+        @else
+            <span
+                class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400">
+                <x-lucide-alert-circle class="w-3.5 h-3.5" />
+                {{ __('Belum ada form') }}
+            </span>
+        @endif
+    </td>
+    <td class="px-3 py-4 text-sm text-gray-500">
         @if($record->actived)
             <span
                 class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-600/20 dark:bg-teal-900/30 dark:text-teal-400">

@@ -40,13 +40,19 @@
 
     <livewire:core.shared-components.topbar />
 
-    @can('dashboard')
-        <livewire:core.shared-components.landlord-sidebar />
-    @endcan
+    @php
+        // Layout dipilih dari area route, bukan dari permission saja: user yang
+        // punya `dashboard` sekaligus `guest.sidebar` akan melihat dua sidebar
+        // bertumpuk kalau keduanya dirender.
+        $isGuestArea = request()->routeIs('rakaca.guest*', 'rakaca.select-bale');
+        $layoutUser = auth()->user();
+    @endphp
 
-    @can('guest.sidebar')
+    @if ($isGuestArea && $layoutUser?->can('guest.sidebar'))
         <livewire:rakaca.shared-components.rakaca-guest-sidebar />
-    @endcan
+    @elseif ($layoutUser?->can('dashboard'))
+        <livewire:core.shared-components.landlord-sidebar />
+    @endif
 
     <div class="w-full px-4 pt-5 pb-10 sm:px-6 md:px-8 lg:pl-72">
         <main>

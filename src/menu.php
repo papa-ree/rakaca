@@ -17,6 +17,12 @@ return [
             'icon' => 'layers',
             'items' => [
                 [
+                    'label' => 'Overview',
+                    'url' => 'rakaca/overview',
+                    'icon' => 'layout-dashboard',
+                    'permission' => 'submission.read',
+                ],
+                [
                     'label' => 'Service',
                     'url' => 'rakaca/services',
                     'icon' => 'layers',

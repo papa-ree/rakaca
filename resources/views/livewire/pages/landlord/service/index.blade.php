@@ -31,6 +31,11 @@
                 'sortable' => false,
             ],
             [
+                'key'      => 'forms_count',
+                'label'    => __('Form'),
+                'sortable' => false,
+            ],
+            [
                 'key'      => 'actived',
                 'label'    => __('Status'),
                 'sortable' => true,

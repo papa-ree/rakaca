@@ -174,7 +174,7 @@ class Create extends Component
         }
 
         $submission = RakacaSubmission::create([
-            'user_uuid' => auth()->user()->uuid,
+            'user_uuid' => $this->applicantUuid(),
             'rakaca_form_id' => $this->form_id,
             'code' => strtoupper(uniqid('sub_')),
             'status' => SubmissionStatus::MenungguBerkas->value,
@@ -192,7 +192,7 @@ class Create extends Component
                 $path = $file->store('rakaca-submission-uploads', 'public');
                 RakacaSubmissionUpload::create([
                     'rakaca_submission_id' => $submission->id,
-                    'user_uuid' => auth()->user()->uuid,
+                    'user_uuid' => $this->applicantUuid(),
                     'file_path' => $path,
                     'original_name' => Sanitize::text($file->getClientOriginalName()),
                     'mime_type' => $file->getMimeType(),
@@ -201,6 +201,20 @@ class Create extends Component
             }
         }
 
+        $this->afterSave($submission);
+    }
+
+    /**
+     * Pemilik pengajuan. Halaman guest memakai user yang login; halaman admin
+     * meng-override agar pengajuan dibuat atas nama user terdaftar.
+     */
+    protected function applicantUuid(): string
+    {
+        return (string) auth()->user()->uuid;
+    }
+
+    protected function afterSave(RakacaSubmission $submission): void
+    {
         session()->flash('success', 'Pengajuan berhasil dikirim.');
         $this->redirectRoute('rakaca.guest-dashboard.index', navigate: true);
     }

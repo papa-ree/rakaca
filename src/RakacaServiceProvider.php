@@ -106,6 +106,19 @@ class RakacaServiceProvider extends ServiceProvider
             } catch (\Throwable $e) {
                 // diam
             }
+
+            // Tombol "Mode Guest" di sidebar landlord. Visibilitasnya diperiksa
+            // di view lewat `permission`, jadi aman untuk package lain.
+            try {
+                $this->app->make(MenuRegistry::class)->setSwitcher([
+                    'label' => 'Mode Guest',
+                    'icon' => 'user-round',
+                    'route' => 'rakaca.guest-dashboard.index',
+                    'permission' => 'guest.sidebar',
+                ]);
+            } catch (\Throwable $e) {
+                // diam
+            }
         });
 
         $this->registerViews();
