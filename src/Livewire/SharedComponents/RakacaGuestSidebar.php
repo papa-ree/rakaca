@@ -40,14 +40,6 @@ class RakacaGuestSidebar extends Component
             ];
         }
 
-        if ($this->user->hasService('wago')) {
-            $menu[] = [
-                'label' => __('Wago'),
-                'url' => 'select-bale',
-                'icon' => 'message-square',
-            ];
-        }
-
         return $menu;
     }
 
@@ -147,18 +139,68 @@ class RakacaGuestSidebar extends Component
         }
 
         // Fallback terakhir: pakai hardcoded availableMenus dalam format groups
-        return [
+        return $this->enrichWithBadge([
             [
                 'key' => 'guest-fallback',
                 'label' => 'Guest',
                 'icon' => 'user',
                 'items' => $this->availableMenus(),
             ],
-        ];
+        ]);
+    }
+
+    /**
+     * Buang item yang mensyaratkan layanan yang tidak dimiliki user.
+     *
+     * `permission` menjawab "boleh atau tidak"; `service` menjawab "layanan
+     * ini aktif untuk organisasi ini atau tidak". Keduanya berbeda: operator
+     * organisasi A tidak boleh melihat menu Wara hanya karena role-nya sama
+     * dengan operator organisasi B.
+     *
+     * @param  array<int, array>  $groups
+     * @return array<int, array>
+     */
+    protected function filterByService(array $groups): array
+    {
+        $user = Auth::user();
+
+        if ($user === null || ! method_exists($user, 'hasService')) {
+            return $groups;
+        }
+
+        $result = [];
+
+        foreach ($groups as $group) {
+            $items = array_values(array_filter(
+                $group['items'] ?? [],
+                function (array $item) use ($user): bool {
+                    $service = $item['service'] ?? null;
+
+                    if ($service === null || $service === '') {
+                        return true;
+                    }
+
+                    return $user->hasService((string) $service);
+                }
+            ));
+
+            if ($items === []) {
+                continue;
+            }
+
+            $group['items'] = $items;
+            $result[] = $group;
+        }
+
+        return $result;
     }
 
     protected function enrichWithBadge(array $groups): array
     {
+        // Filter layanan dilakukan di sini supaya semua jalur (registry,
+        // menu-guest lokal, dan fallback) melewati aturan yang sama.
+        $groups = $this->filterByService($groups);
+
         // Tambah badge pending own untuk Pengajuan
         try {
             $pending = 0;

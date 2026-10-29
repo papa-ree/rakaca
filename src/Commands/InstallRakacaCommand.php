@@ -2,6 +2,7 @@
 
 namespace Paparee\Rakaca\Commands;
 
+use Bale\Core\Support\RootPermissions;
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -89,7 +90,7 @@ class InstallRakacaCommand extends Command
         $rootRole = Role::where('name', 'root')->first();
         if ($rootRole) {
             $this->info('Force syncing ALL permissions to root role...');
-            $rootRole->syncPermissions(Permission::where('name', '!=', 'guest.sidebar')->get());
+            $rootRole->syncPermissions(RootPermissions::assignable());
 
             // Clear cache
             app(PermissionRegistrar::class)->forgetCachedPermissions();
