@@ -28,3 +28,15 @@ it('membuat url berkas sesuai disk aktif dan null untuk path kosong', function (
         ->and(SubmissionStorage::url(null))->toBeNull()
         ->and(SubmissionStorage::url(''))->toBeNull();
 });
+
+it('membuat url preview lewat CDN di production', function () {
+    app()['env'] = 'production';
+    config([
+        'core.cdn.enabled' => true,
+        'core.cdn.base_url' => 'https://cdn.example.test',
+        'core.cdn.prefix' => 'bale',
+    ]);
+
+    expect(SubmissionStorage::url('rakaca-submission-uploads/a.pdf'))
+        ->toBe('https://cdn.example.test/bale/rakaca-submission-uploads/a.pdf');
+});

@@ -2,6 +2,7 @@
 
 namespace Paparee\Rakaca\Support;
 
+use Bale\Core\Support\Cdn;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -18,12 +19,18 @@ final class SubmissionStorage
         return app()->isProduction() ? 's3' : 'public';
     }
 
+    /**
+     * Preview berkas di production lewat CDN, karena URL S3 mentah tidak bisa
+     * di-embed (bucket privat / beda domain). Di lokal tetap pakai /storage.
+     */
     public static function url(?string $path): ?string
     {
         if ($path === null || $path === '') {
             return null;
         }
 
-        return Storage::disk(self::disk())->url($path);
+        return app()->isProduction()
+            ? Cdn::url($path)
+            : Storage::disk('public')->url($path);
     }
 }
