@@ -51,7 +51,7 @@
                                             <dd class="text-sm font-medium text-gray-900 dark:text-white break-words">
                                                 @php $val = $items[$field['key']] ?? null; @endphp
                                                 @if(($field['type'] ?? '') === 'file' && is_string($val) && $val)
-                                                    <a href="{{ Storage::url($val) }}" target="_blank" class="inline-flex items-center gap-1.5 text-purple-600 dark:text-purple-400 hover:underline">
+                                                    <a href="{{ \Paparee\Rakaca\Support\SubmissionStorage::url($val) }}" target="_blank" class="inline-flex items-center gap-1.5 text-purple-600 dark:text-purple-400 hover:underline">
                                                         <x-lucide-download class="w-4 h-4" /> {{ __('Berkas') }}
                                                     </a>
                                                 @elseif(is_array($val))
@@ -78,7 +78,7 @@
                             </h3>
                             <div class="grid gap-2.5">
                                 @foreach($submission->uploads as $up)
-                                    <a href="{{ Storage::url($up->file_path) }}" target="_blank"
+                                    <a href="{{ \Paparee\Rakaca\Support\SubmissionStorage::url($up->file_path) }}" target="_blank"
                                         class="flex items-center justify-between gap-3 p-3 bg-amber-50/50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/20 hover:border-purple-300 dark:hover:border-purple-700 transition">
                                         <span class="flex items-center gap-2.5 min-w-0">
                                             <x-lucide-file-text class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />

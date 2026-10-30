@@ -12,6 +12,7 @@ use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\RakacaSubmission;
 use Paparee\Rakaca\Models\RakacaSubmissionUpload;
 use Paparee\Rakaca\Services\TicketWorkflowService;
+use Paparee\Rakaca\Support\SubmissionStorage;
 
 #[Layout('rakaca::layouts.app')]
 #[Title('Upload Berkas')]
@@ -121,7 +122,7 @@ class Edit extends Component
             if (($field['type'] ?? null) === 'file' && isset($itemsToSave[$key]) && is_object($itemsToSave[$key])) {
                 $file = $itemsToSave[$key];
                 if (method_exists($file, 'store')) {
-                    $itemsToSave[$key] = $file->store('rakaca-submissions', 'public');
+                    $itemsToSave[$key] = $file->store('rakaca-submissions', SubmissionStorage::disk());
                 }
             }
         }
@@ -139,7 +140,7 @@ class Edit extends Component
         $remaining = 3 - $existingCount;
         foreach (array_slice($this->uploads, 0, $remaining) as $file) {
             if (method_exists($file, 'store')) {
-                $path = $file->store('rakaca-submission-uploads', 'public');
+                $path = $file->store('rakaca-submission-uploads', SubmissionStorage::disk());
                 RakacaSubmissionUpload::create([
                     'rakaca_submission_id' => $this->submission->id,
                     'user_uuid' => auth()->user()->uuid,
@@ -184,7 +185,7 @@ class Edit extends Component
             ->first();
 
         if ($upload) {
-            Storage::disk('public')->delete($upload->file_path);
+            Storage::disk(SubmissionStorage::disk())->delete($upload->file_path);
             $upload->delete();
         }
     }

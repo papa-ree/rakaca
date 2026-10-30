@@ -68,7 +68,7 @@
                                         @if(is_array($val))
                                             {{ json_encode($val) }}
                                         @elseif(Str::startsWith($val, 'rakaca-submissions/') || Str::startsWith($val, 'rakaca-submission-uploads/'))
-                                            <a href="{{ Storage::disk('public')->url($val) }}" target="_blank" class="text-indigo-600 dark:text-indigo-400 hover:underline">{{ basename($val) }}</a>
+                                            <a href="{{ \Paparee\Rakaca\Support\SubmissionStorage::url($val) }}" target="_blank" class="text-indigo-600 dark:text-indigo-400 hover:underline">{{ basename($val) }}</a>
                                         @else
                                             {{ $val }}
                                         @endif
@@ -96,12 +96,12 @@
                                         <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $up->original_name }}</p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($up->size/1024, 1) }} KB · {{ $up->mime_type }} · {{ $up->created_at->format('d M Y H:i') }}</p>
                                     </div>
-                                    <a href="{{ Storage::disk('public')->url($up->file_path) }}" target="_blank" class="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-800/40 rounded-lg hover:bg-indigo-50 dark:hover:bg-slate-700">
+                                    <a href="{{ \Paparee\Rakaca\Support\SubmissionStorage::url($up->file_path) }}" target="_blank" class="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-800/40 rounded-lg hover:bg-indigo-50 dark:hover:bg-slate-700">
                                         <x-lucide-eye class="w-3 h-3" /> {{ __('Preview') }}
                                     </a>
                                 </div>
                                 @if(Str::endsWith($up->file_path, '.pdf'))
-                                    <iframe src="{{ Storage::disk('public')->url($up->file_path) }}" class="w-full h-[400px] rounded-lg border border-gray-200 dark:border-slate-800" loading="lazy"></iframe>
+                                    <iframe src="{{ \Paparee\Rakaca\Support\SubmissionStorage::url($up->file_path) }}" class="w-full h-[400px] rounded-lg border border-gray-200 dark:border-slate-800" loading="lazy"></iframe>
                                 @endif
                             @endforeach
                         </div>
