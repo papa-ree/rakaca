@@ -84,28 +84,9 @@ class RakacaServiceProvider extends ServiceProvider
             }
 
             Schedule::command('rakaca:auto-cancel')->everyTenMinutes();
-            // Register guest menu terpisah (tanpa ubah bale-core)
-            try {
-                $registry = $this->app->make(MenuRegistry::class);
-                // Coba pakai registerFromProvider untuk menu-guest.php via refleksi manual
-                $menuGuestPath = __DIR__.'/menu-guest.php';
-                if (file_exists($menuGuestPath) && method_exists($registry, 'flush')) {
-                    // Fallback: langsung include dan push ke groups via reflection (tidak ubah core)
-                    $config = include $menuGuestPath;
-                    if (is_array($config) && isset($config['type'], $config['groups'])) {
-                        $ref = new \ReflectionClass($registry);
-                        $prop = $ref->getProperty('groups');
-                        $prop->setAccessible(true);
-                        $existing = $prop->getValue($registry);
-                        foreach ($config['groups'] as $group) {
-                            $existing[] = array_merge($group, ['_type' => $config['type']]);
-                        }
-                        $prop->setValue($registry, $existing);
-                    }
-                }
-            } catch (\Throwable $e) {
-                // diam
-            }
+
+            // menu-guest.php sudah didaftarkan otomatis oleh bale/core
+            // (MenuRegistry::registerFromProvider), jadi jangan di-push manual lagi.
 
             // Tombol "Mode Guest" di sidebar landlord. Visibilitasnya diperiksa
             // di view lewat `permission`, jadi aman untuk package lain.
