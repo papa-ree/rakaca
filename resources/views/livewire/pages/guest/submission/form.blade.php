@@ -122,16 +122,17 @@
                                 @endforeach
                             </div>
 
-                            {{-- Sumber Berkas: pilih salah satu --}}
-                            <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700 space-y-4">
+                            {{-- Sumber Berkas: pilih salah satu. Alpine memberi respons instan, server tetap sumber kebenaran. --}}
+                            <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700 space-y-4" x-data="{ mode: '{{ $source }}' }">
                                 <div>
                                     <h4 class="text-sm font-bold text-gray-900 dark:text-white">{{ __('Sumber Berkas') }}</h4>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Pilih salah satu: unggah berkas sendiri atau gunakan surat dari Srikandi.') }}</p>
                                 </div>
 
                                 <div class="grid gap-3 sm:grid-cols-2">
-                                    <button type="button" wire:click="pilihUpload"
-                                        class="flex items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200 cursor-pointer {{ $source === 'upload' ? 'border-purple-500 bg-purple-50/60 ring-2 ring-purple-500/20 dark:bg-purple-900/10' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700' }}">
+                                    <button type="button" x-on:click="mode = 'upload'; $wire.pilihUpload()"
+                                        class="flex items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200 cursor-pointer"
+                                        x-bind:class="mode === 'upload' ? 'border-purple-500 bg-purple-50/60 ring-2 ring-purple-500/20 dark:bg-purple-900/10' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700'">
                                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
                                             <x-lucide-upload class="w-5 h-5" />
                                         </span>
@@ -141,8 +142,9 @@
                                         </span>
                                     </button>
 
-                                    <button type="button" wire:click="pilihSrikandi"
-                                        class="flex items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200 cursor-pointer {{ $source === 'srikandi' ? 'border-purple-500 bg-purple-50/60 ring-2 ring-purple-500/20 dark:bg-purple-900/10' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700' }}">
+                                    <button type="button" x-on:click="mode = 'srikandi'; $wire.pilihSrikandi()"
+                                        class="flex items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200 cursor-pointer"
+                                        x-bind:class="mode === 'srikandi' ? 'border-purple-500 bg-purple-50/60 ring-2 ring-purple-500/20 dark:bg-purple-900/10' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700'">
                                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300">
                                             <x-lucide-search class="w-5 h-5" />
                                         </span>
@@ -155,8 +157,7 @@
 
                                 <x-core::input-error for="source" class="mt-1" />
 
-                                @if ($source === 'srikandi')
-                                    <div class="space-y-3 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                                <div x-show="mode === 'srikandi'" class="space-y-3 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                                         <x-core::label for="nomor_naskah" class="text-sm font-medium">
                                             {{ __('Nomor Naskah') }} <span class="text-red-500">*</span>
                                         </x-core::label>
@@ -208,10 +209,9 @@
                                             </div>
                                         @endif
                                     </div>
-                                @endif
 
                                 {{-- Zona upload selalu ada di DOM agar scope Alpine tidak rusak saat ganti mode. --}}
-                                <div class="{{ $source === 'srikandi' ? 'hidden' : '' }}">
+                                <div x-show="mode !== 'srikandi'">
                                     <x-core::upload-zone
                                         wire:model.live="uploads"
                                         accept="application/pdf,.pdf"
