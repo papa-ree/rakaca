@@ -23,6 +23,8 @@ class Form extends Component
 
     public string $description = '';
 
+    public string $sla_days = '';
+
     public bool $actived = true;
 
     public function mount(?RakacaService $service = null): void
@@ -38,6 +40,7 @@ class Form extends Component
             $this->slug = $service->slug;
             $this->icon = $service->icon ?? '';
             $this->description = $service->description ?? '';
+            $this->sla_days = $service->sla_days ? (string) $service->sla_days : '';
             $this->actived = $service->actived;
         } else {
             if (! auth()->user()->can('service.create')) {
@@ -78,6 +81,7 @@ class Form extends Component
             'slug' => $uniqueRule,
             'icon' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
+            'sla_days' => 'nullable|integer|min:1|max:365',
             'actived' => 'boolean',
         ];
     }
@@ -96,6 +100,7 @@ class Form extends Component
             'slug' => $this->slug,
             'icon' => $this->icon,
             'description' => $this->description,
+            'sla_days' => $this->sla_days === '' ? null : (int) $this->sla_days,
             'actived' => $this->actived,
         ];
 

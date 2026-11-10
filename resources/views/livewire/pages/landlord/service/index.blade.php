@@ -36,6 +36,11 @@
                 'sortable' => false,
             ],
             [
+                'key'      => 'sla_days',
+                'label'    => __('SLA'),
+                'sortable' => false,
+            ],
+            [
                 'key'      => 'actived',
                 'label'    => __('Status'),
                 'sortable' => true,

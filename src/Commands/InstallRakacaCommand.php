@@ -57,6 +57,7 @@ class InstallRakacaCommand extends Command
             'submission.read',
             'submission.update',
             'submission.delete',
+            'submission.export',
             'personal-service.create',
             'personal-service.read',
             'personal-service.update',

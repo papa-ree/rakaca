@@ -5,6 +5,7 @@ namespace Paparee\Rakaca\Services;
 use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\RakacaFormResponse;
 use Paparee\Rakaca\Models\RakacaSubmission;
+use Paparee\Rakaca\Support\WorkdayCalendar;
 
 final class TicketWorkflowService
 {
@@ -16,7 +17,12 @@ final class TicketWorkflowService
     {
         $this->transitionTo(
             SubmissionStatus::SiapDireview,
-            fn () => $this->submission->update(['files_finalized_at' => now()])
+            function () {
+                $this->submission->update(['files_finalized_at' => now()]);
+
+                $this->resumeSla();
+                $this->snapshotSla();
+            }
         );
     }
 
@@ -48,6 +54,10 @@ final class TicketWorkflowService
             'revise_note' => $note,
             'requested_revision_at' => now(),
         ]);
+
+        if ($this->submission->sla_due_at !== null && $this->submission->sla_paused_at === null) {
+            $this->submission->update(['sla_paused_at' => now()]);
+        }
 
         $this->transitionTo(SubmissionStatus::MenungguRevisi);
     }
@@ -104,6 +114,49 @@ final class TicketWorkflowService
     {
         return $this->submission->response()->firstOrCreate([
             'rakaca_submission_id' => $this->submission->id,
+        ]);
+    }
+
+    /**
+     * Bekukan target SLA layanan pada pengajuan saat berkas final pertama.
+     * Pengajuan lama (tanpa SLA) tidak di-backfill.
+     */
+    private function snapshotSla(): void
+    {
+        if ($this->submission->sla_started_at !== null) {
+            return;
+        }
+
+        $days = $this->submission->form?->service?->sla_days;
+
+        if (! $days) {
+            return;
+        }
+
+        $start = now();
+
+        $this->submission->update([
+            'sla_target_days' => $days,
+            'sla_started_at' => $start,
+            'sla_due_at' => WorkdayCalendar::deadline($start, $days),
+        ]);
+    }
+
+    /**
+     * Lanjutkan SLA setelah revisi: tenggat digeser sebesar jam kerja
+     * selama status Menunggu Revisi.
+     */
+    private function resumeSla(): void
+    {
+        if ($this->submission->sla_paused_at === null || $this->submission->sla_due_at === null) {
+            return;
+        }
+
+        $pausedMinutes = WorkdayCalendar::workingMinutes($this->submission->sla_paused_at, now());
+
+        $this->submission->update([
+            'sla_due_at' => WorkdayCalendar::addWorkingMinutes($this->submission->sla_due_at, $pausedMinutes),
+            'sla_paused_at' => null,
         ]);
     }
 }

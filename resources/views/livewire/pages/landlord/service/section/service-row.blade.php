@@ -40,6 +40,17 @@
         @endif
     </td>
     <td class="px-3 py-4 text-sm text-gray-500">
+        @if ($record->sla_days)
+            <span
+                class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-400">
+                <x-lucide-clock class="w-3.5 h-3.5" />
+                {{ __(':days hari kerja', ['days' => $record->sla_days]) }}
+            </span>
+        @else
+            <span class="text-xs text-gray-400 dark:text-gray-500">{{ __('Tanpa SLA') }}</span>
+        @endif
+    </td>
+    <td class="px-3 py-4 text-sm text-gray-500">
         @if($record->actived)
             <span
                 class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-600/20 dark:bg-teal-900/30 dark:text-teal-400">

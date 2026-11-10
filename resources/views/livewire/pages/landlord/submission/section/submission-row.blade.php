@@ -58,6 +58,27 @@
         </span>
     </td>
     <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+        @php
+            $sla = $record->slaState();
+            $slaMeta = [
+                'berjalan' => [__('Berjalan'), 'bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-400'],
+                'jeda' => [__('Jeda'), 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400'],
+                'tepat-waktu' => [__('Tepat waktu'), 'bg-teal-50 text-teal-700 ring-teal-600/20 dark:bg-teal-900/30 dark:text-teal-400'],
+                'terlambat' => [__('Terlambat'), 'bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-900/30 dark:text-rose-400'],
+            ][$sla] ?? null;
+        @endphp
+        @if ($slaMeta)
+            <span class="inline-flex items-center gap-x-1.5 py-1 px-2.5 rounded-full text-xs font-medium ring-1 ring-inset {{ $slaMeta[1] }}">
+                {{ $slaMeta[0] }}
+            </span>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {{ __('Tenggat :date', ['date' => $record->sla_due_at->format('d M Y H:i')]) }}
+            </p>
+        @else
+            <span class="text-xs text-gray-400 dark:text-gray-500">-</span>
+        @endif
+    </td>
+    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
         <span class="text-sm text-gray-600 dark:text-gray-400">{{ $record->created_at->format('d M Y') }}</span>
         <p class="text-xs text-gray-400">{{ $record->created_at->format('H:i') }} WIB</p>
     </td>

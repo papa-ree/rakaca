@@ -150,6 +150,32 @@ it('menolak hapus tanpa permission delete', function () {
     expect(RakacaService::where('id', $service->id)->exists())->toBeTrue();
 });
 
+it('menyimpan SLA hari kerja pada service', function () {
+    $user = serviceUser(['service.create', 'service.read']);
+
+    Livewire::actingAs($user)
+        ->test(ServiceForm::class)
+        ->set('name', 'Layanan SLA')
+        ->set('slug', 'layanan-sla')
+        ->set('sla_days', '5')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(RakacaService::where('slug', 'layanan-sla')->first()->sla_days)->toBe(5);
+});
+
+it('menolak SLA di luar rentang 1 sampai 365 hari', function (string $value) {
+    $user = serviceUser(['service.create', 'service.read']);
+
+    Livewire::actingAs($user)
+        ->test(ServiceForm::class)
+        ->set('name', 'Layanan SLA')
+        ->set('slug', 'layanan-sla')
+        ->set('sla_days', $value)
+        ->call('save')
+        ->assertHasErrors(['sla_days']);
+})->with(['0', '366', '1.5']);
+
 it('menampilkan indikator sudah dan belum punya form pada tabel service', function () {
     $withForm = RakacaService::create([
         'id' => (string) Str::uuid(),

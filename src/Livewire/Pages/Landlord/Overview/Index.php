@@ -90,6 +90,7 @@ class Index extends Component
                 ->addDays(OverviewPeriod::MAX_DAYS - 1)
                 ->toDateString(),
             'stats' => $this->stats(),
+            'sla' => $this->slaStats($period),
             'recent' => RakacaSubmission::with(['form.service', 'user'])
                 ->latest('created_at')
                 ->limit(8)
@@ -126,6 +127,32 @@ class Index extends Component
             'status' => $status,
             'total' => $counts[$status->value] ?? 0,
         ], self::UNFINISHED);
+    }
+
+    /**
+     * Kepatuhan SLA: hanya pengajuan yang selesai (resolved_at) dalam periode.
+     *
+     * @return array{total: int, on_time: int, late: int, compliance: ?int}
+     */
+    protected function slaStats(OverviewPeriod $period): array
+    {
+        $base = RakacaSubmission::query()
+            ->join('rakaca_form_responses', 'rakaca_form_responses.rakaca_submission_id', '=', 'rakaca_submissions.id')
+            ->whereNull('rakaca_form_responses.deleted_at')
+            ->whereNotNull('rakaca_submissions.sla_due_at')
+            ->whereBetween('rakaca_form_responses.resolved_at', [$period->start, $period->end]);
+
+        $total = (clone $base)->count();
+        $late = (clone $base)
+            ->whereColumn('rakaca_form_responses.resolved_at', '>', 'rakaca_submissions.sla_due_at')
+            ->count();
+
+        return [
+            'total' => $total,
+            'on_time' => $total - $late,
+            'late' => $late,
+            'compliance' => $total > 0 ? (int) round(($total - $late) / $total * 100) : null,
+        ];
     }
 
     /**

@@ -18,6 +18,7 @@ class RakacaService extends Model
         'slug',
         'icon',
         'description',
+        'sla_days',
         'actived',
     ];
 
@@ -26,6 +27,7 @@ class RakacaService extends Model
     public $incrementing = false;
 
     protected $casts = [
+        'sla_days' => 'integer',
         'actived' => 'boolean',
         'created_at' => 'datetime:d M Y',
         'updated_at' => 'datetime:d M Y',

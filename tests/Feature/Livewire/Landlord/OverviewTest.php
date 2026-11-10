@@ -9,6 +9,7 @@ use Livewire\Livewire;
 use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Livewire\Pages\Landlord\Overview\Index as OverviewIndex;
 use Paparee\Rakaca\Models\Form;
+use Paparee\Rakaca\Models\RakacaFormResponse;
 use Paparee\Rakaca\Models\RakacaService;
 use Paparee\Rakaca\Models\RakacaSubmission;
 use Spatie\Permission\Models\Permission;
@@ -75,6 +76,31 @@ function overviewSubmission(
 
     return $submission;
 }
+
+it('menghitung kepatuhan SLA dari pengajuan selesai dalam periode', function () {
+    $admin = overviewAdmin();
+    $form = overviewForm(overviewService());
+    $applicant = User::factory()->create();
+
+    $onTime = overviewSubmission($form, $applicant, SubmissionStatus::Selesai);
+    $onTime->update(['sla_target_days' => 2, 'sla_due_at' => now()->addDay()]);
+    RakacaFormResponse::create(['rakaca_submission_id' => $onTime->id, 'resolved_at' => now()]);
+
+    $late = overviewSubmission($form, $applicant, SubmissionStatus::Selesai);
+    $late->update(['sla_target_days' => 2, 'sla_due_at' => now()->subDay()]);
+    RakacaFormResponse::create(['rakaca_submission_id' => $late->id, 'resolved_at' => now()]);
+
+    // Tanpa SLA: tidak masuk hitungan.
+    $noSla = overviewSubmission($form, $applicant, SubmissionStatus::Selesai);
+    RakacaFormResponse::create(['rakaca_submission_id' => $noSla->id, 'resolved_at' => now()]);
+
+    $sla = Livewire::actingAs($admin)->test(OverviewIndex::class)->viewData('sla');
+
+    expect($sla['total'])->toBe(2)
+        ->and($sla['on_time'])->toBe(1)
+        ->and($sla['late'])->toBe(1)
+        ->and($sla['compliance'])->toBe(50);
+});
 
 it('menolak akses overview tanpa permission submission.read', function () {
     Livewire::actingAs(User::factory()->create())

@@ -3,6 +3,7 @@
 namespace Paparee\Rakaca\Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\Form;
@@ -12,13 +13,14 @@ use Paparee\Rakaca\Models\RakacaSubmission;
 use Paparee\Rakaca\Services\TicketWorkflowService;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-function rakacaSubmission(): RakacaSubmission
+function rakacaSubmission(?int $slaDays = null): RakacaSubmission
 {
     $service = RakacaService::create([
         'id' => (string) Str::uuid(),
         'name' => 'Service Testing',
         'slug' => 'service-testing',
         'actived' => true,
+        'sla_days' => $slaDays,
     ]);
 
     $form = Form::create([
@@ -161,6 +163,54 @@ it('autoCancel membatalkan tiket menunggu berkas', function () {
 
     $response = RakacaFormResponse::where('rakaca_submission_id', $submission->id)->first();
     expect($response->cancelled_reason)->toContain('auto-cancel');
+});
+
+it('membekukan snapshot SLA saat berkas final pertama', function () {
+    Carbon::setTestNow(Carbon::parse('2026-11-09 14:00:00', 'Asia/Jakarta'));
+
+    $submission = rakacaSubmission(2);
+    app(TicketWorkflowService::class, ['submission' => $submission])->submitFiles();
+
+    $fresh = $submission->fresh();
+
+    expect($fresh->sla_target_days)->toBe(2)
+        ->and($fresh->sla_started_at?->format('Y-m-d H:i'))->toBe('2026-11-09 14:00')
+        ->and($fresh->sla_due_at?->format('Y-m-d H:i'))->toBe('2026-11-11 15:45');
+
+    Carbon::setTestNow();
+});
+
+it('tidak membuat snapshot SLA untuk layanan tanpa SLA', function () {
+    $submission = rakacaSubmission();
+
+    app(TicketWorkflowService::class, ['submission' => $submission])->submitFiles();
+
+    expect($submission->fresh()->sla_due_at)->toBeNull();
+});
+
+it('menjeda SLA saat revisi dan menggeser tenggat saat kirim ulang', function () {
+    Carbon::setTestNow(Carbon::parse('2026-11-09 14:00:00', 'Asia/Jakarta'));
+
+    $submission = rakacaSubmission(2);
+    app(TicketWorkflowService::class, ['submission' => $submission])->submitFiles();
+
+    $submission = $submission->fresh();
+    $submission->update(['status' => SubmissionStatus::Diproses]);
+
+    Carbon::setTestNow(Carbon::parse('2026-11-11 09:00:00', 'Asia/Jakarta'));
+    app(TicketWorkflowService::class, ['submission' => $submission])->requestRevision('Lengkapi berkas.');
+
+    expect($submission->fresh()->sla_paused_at)->not->toBeNull();
+
+    Carbon::setTestNow(Carbon::parse('2026-11-12 09:00:00', 'Asia/Jakarta'));
+    app(TicketWorkflowService::class, ['submission' => $submission->fresh()])->submitFiles();
+
+    $fresh = $submission->fresh();
+
+    expect($fresh->sla_due_at?->format('Y-m-d H:i'))->toBe('2026-11-12 15:45')
+        ->and($fresh->sla_paused_at)->toBeNull();
+
+    Carbon::setTestNow();
 });
 
 it('memblokir transisi ilegal dengan 403', function () {

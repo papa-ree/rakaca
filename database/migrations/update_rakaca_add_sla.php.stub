@@ -1,0 +1,56 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        if (Schema::hasTable('rakaca_services') && ! Schema::hasColumn('rakaca_services', 'sla_days')) {
+            Schema::table('rakaca_services', function (Blueprint $table) {
+                $table->unsignedSmallInteger('sla_days')->nullable()->after('description');
+            });
+        }
+
+        if (Schema::hasTable('rakaca_submissions')) {
+            Schema::table('rakaca_submissions', function (Blueprint $table) {
+                if (! Schema::hasColumn('rakaca_submissions', 'sla_target_days')) {
+                    $table->unsignedSmallInteger('sla_target_days')->nullable()->after('files_finalized_at');
+                }
+
+                if (! Schema::hasColumn('rakaca_submissions', 'sla_started_at')) {
+                    $table->timestamp('sla_started_at')->nullable()->after('sla_target_days');
+                }
+
+                if (! Schema::hasColumn('rakaca_submissions', 'sla_due_at')) {
+                    $table->timestamp('sla_due_at')->nullable()->after('sla_started_at');
+                }
+
+                if (! Schema::hasColumn('rakaca_submissions', 'sla_paused_at')) {
+                    $table->timestamp('sla_paused_at')->nullable()->after('sla_due_at');
+                }
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        if (Schema::hasTable('rakaca_services') && Schema::hasColumn('rakaca_services', 'sla_days')) {
+            Schema::table('rakaca_services', function (Blueprint $table) {
+                $table->dropColumn('sla_days');
+            });
+        }
+
+        if (Schema::hasTable('rakaca_submissions')) {
+            Schema::table('rakaca_submissions', function (Blueprint $table) {
+                foreach (['sla_paused_at', 'sla_due_at', 'sla_started_at', 'sla_target_days'] as $column) {
+                    if (Schema::hasColumn('rakaca_submissions', $column)) {
+                        $table->dropColumn($column);
+                    }
+                }
+            });
+        }
+    }
+};

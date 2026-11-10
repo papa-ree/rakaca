@@ -184,6 +184,7 @@ class TestCase extends Orchestra
             $table->string('slug')->unique();
             $table->string('icon')->nullable();
             $table->text('description')->nullable();
+            $table->unsignedSmallInteger('sla_days')->nullable();
             $table->boolean('actived')->default(true);
             $table->timestamps();
         });
@@ -210,6 +211,10 @@ class TestCase extends Orchestra
             $table->json('items')->nullable();
             $table->timestamp('status_changed_at')->nullable();
             $table->timestamp('files_finalized_at')->nullable();
+            $table->unsignedSmallInteger('sla_target_days')->nullable();
+            $table->timestamp('sla_started_at')->nullable();
+            $table->timestamp('sla_due_at')->nullable();
+            $table->timestamp('sla_paused_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('rakaca_form_id')->references('id')->on('rakaca_forms')->cascadeOnDelete();

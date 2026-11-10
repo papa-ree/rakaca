@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Paparee\Rakaca\Http\Controllers\SubmissionExportController;
 use Paparee\Rakaca\Livewire\Pages\Guest\Dashboard\Index as GuestDashboardIndex;
 use Paparee\Rakaca\Livewire\Pages\Guest\SelectBale\Index as SelectBaleIndex;
 use Paparee\Rakaca\Livewire\Pages\Guest\Submission\Create as GuestSubmissionCreate;
@@ -57,6 +58,12 @@ Route::middleware(['web'])->group(function () {
                 Route::get('submissions', Index::class)->name('landlord.submission.index');
                 Route::get('submissions/{submission}/detail', SubmissionDetail::class)->name('landlord.submission.detail');
             });
+
+            // Ekspor pengajuan (CSV / XLSX)
+            Route::get('rakaca/submissions/export/{format}', [SubmissionExportController::class, 'download'])
+                ->whereIn('format', ['csv', 'xlsx'])
+                ->middleware('permission:submission.export')
+                ->name('landlord.submission.export');
 
             // Tambah pengajuan manual oleh admin (atas nama user terdaftar)
             Route::get('rakaca/submissions/create', SubmissionCreate::class)

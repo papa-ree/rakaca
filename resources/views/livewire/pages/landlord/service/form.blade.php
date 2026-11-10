@@ -72,6 +72,17 @@
                                 placeholder="e.g. Layanan internet desa untuk meningkatkan konektivitas masyarakat..." />
                             <x-core::input-error for="description" class="mt-2" />
                         </div>
+
+                        <div class="mt-6">
+                            <x-core::label for="sla_days" :value="__('SLA (hari kerja)')" />
+                            <x-core::input id="sla_days" type="number" min="1" max="365" step="1"
+                                class="block w-full mt-1" wire:model="sla_days"
+                                placeholder="e.g. 3" />
+                            <p class="mt-1 text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider">
+                                {{ __('Kosongkan bila layanan tanpa SLA. Dihitung dari berkas final hingga selesai, Senin–Jumat 07.30–15.45.') }}
+                            </p>
+                            <x-core::input-error for="sla_days" class="mt-2" />
+                        </div>
                     </div>
 
                     {{-- Section: Visual Identity --}}

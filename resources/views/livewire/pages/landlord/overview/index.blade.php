@@ -181,6 +181,89 @@
             @endforeach
         </div>
 
+        {{-- ========== Kepatuhan SLA ========== --}}
+        @php
+            $slaCards = [
+                [
+                    'label' => __('Selesai'),
+                    'hint' => __('Pengajuan selesai dengan SLA'),
+                    'value' => number_format($sla['total']),
+                    'icon' => 'check-circle',
+                    'iconBg' => 'bg-gradient-to-br from-teal-500 to-emerald-600 shadow-teal-500/25',
+                    'pill' => 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',
+                    'blob' => 'bg-teal-500/5',
+                ],
+                [
+                    'label' => __('Tepat waktu'),
+                    'hint' => __('Selesai sebelum tenggat'),
+                    'value' => number_format($sla['on_time']),
+                    'icon' => 'clock',
+                    'iconBg' => 'bg-gradient-to-br from-sky-500 to-sky-600 shadow-sky-500/25',
+                    'pill' => 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300',
+                    'blob' => 'bg-sky-500/5',
+                ],
+                [
+                    'label' => __('Terlambat'),
+                    'hint' => __('Selesai melewati tenggat'),
+                    'value' => number_format($sla['late']),
+                    'icon' => 'alarm-clock',
+                    'iconBg' => 'bg-gradient-to-br from-rose-500 to-rose-600 shadow-rose-500/25',
+                    'pill' => 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300',
+                    'blob' => 'bg-rose-500/5',
+                ],
+                [
+                    'label' => __('Kepatuhan SLA'),
+                    'hint' => __('Persentase tepat waktu'),
+                    'value' => $sla['compliance'] === null ? '-' : $sla['compliance'].'%',
+                    'icon' => 'percent',
+                    'iconBg' => 'bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-indigo-500/25',
+                    'pill' => 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
+                    'blob' => 'bg-indigo-500/5',
+                ],
+            ];
+        @endphp
+
+        <div>
+            <div class="mb-3 flex items-center gap-2">
+                <x-lucide-gauge class="size-4 text-gray-400 dark:text-gray-500" />
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('Kepatuhan SLA') }}</h2>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{ $periodeLabel }}</span>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                @foreach ($slaCards as $card)
+                    <div
+                        class="group relative overflow-hidden rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-white/[0.06] dark:bg-gray-900">
+                        <div class="flex items-start justify-between">
+                            <div class="flex h-11 w-11 items-center justify-center rounded-xl {{ $card['iconBg'] }}">
+                                <x-dynamic-component :component="'lucide-'.$card['icon']" class="size-5 text-white" />
+                            </div>
+                            <span
+                                class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider {{ $card['pill'] }}">
+                                {{ $card['label'] }}
+                            </span>
+                        </div>
+
+                        <div class="mt-4">
+                            <div class="text-3xl font-bold tracking-tight text-gray-900 tabular-nums dark:text-white">
+                                {{ $card['value'] }}
+                            </div>
+                            <div class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-400">
+                                {{ $card['label'] }}
+                            </div>
+                            <div class="mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
+                                {{ $card['hint'] }}
+                            </div>
+                        </div>
+
+                        <div
+                            class="pointer-events-none absolute -bottom-4 -right-4 h-20 w-20 rounded-full transition-all duration-300 group-hover:scale-150 {{ $card['blob'] }}">
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         {{-- ========== Grafik ========== --}}
         <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 

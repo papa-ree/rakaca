@@ -23,6 +23,35 @@
                         </span>
                         <span class="text-xs text-gray-500 dark:text-gray-400">{{ $submission->created_at->format('d M Y H:i') }} WIB</span>
                     </div>
+
+                    @if ($submission->sla_due_at)
+                        @php
+                            $sla = $submission->slaState();
+                            $slaMeta = [
+                                'berjalan' => [__('Berjalan'), 'bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-400'],
+                                'jeda' => [__('Jeda'), 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400'],
+                                'tepat-waktu' => [__('Tepat waktu'), 'bg-teal-50 text-teal-700 ring-teal-600/20 dark:bg-teal-900/30 dark:text-teal-400'],
+                                'terlambat' => [__('Terlambat'), 'bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-900/30 dark:text-rose-400'],
+                            ][$sla] ?? null;
+                        @endphp
+                        <div class="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-slate-800 dark:bg-slate-800/50">
+                            <x-lucide-clock class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                                    {{ __('SLA: :days hari kerja', ['days' => $submission->sla_target_days]) }}
+                                </p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ __('Tenggat :date', ['date' => $submission->sla_due_at->format('d M Y H:i')]) }}
+                                </p>
+                            </div>
+                            @if ($slaMeta)
+                                <span class="inline-flex items-center py-1 px-2.5 rounded-full text-xs font-medium ring-1 ring-inset {{ $slaMeta[1] }}">
+                                    {{ $slaMeta[0] }}
+                                </span>
+                            @endif
+                        </div>
+                    @endif
+
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div>
                             <p class="text-xs text-gray-500 uppercase tracking-wide">{{ __('Nama Pemohon') }}</p>

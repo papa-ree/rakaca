@@ -27,6 +27,10 @@ class RakacaSubmission extends Model
         'items',
         'status_changed_at',
         'files_finalized_at',
+        'sla_target_days',
+        'sla_started_at',
+        'sla_due_at',
+        'sla_paused_at',
     ];
 
     protected $casts = [
@@ -34,6 +38,10 @@ class RakacaSubmission extends Model
         'status' => SubmissionStatusCast::class,
         'status_changed_at' => 'datetime',
         'files_finalized_at' => 'datetime',
+        'sla_target_days' => 'integer',
+        'sla_started_at' => 'datetime',
+        'sla_due_at' => 'datetime',
+        'sla_paused_at' => 'datetime',
         'created_at' => 'datetime:d M Y',
         'updated_at' => 'datetime:d M Y',
     ];
@@ -87,5 +95,43 @@ class RakacaSubmission extends Model
     public function getStatusLabelAttribute(): string
     {
         return $this->status?->label() ?? 'Unknown';
+    }
+
+    /**
+     * Status SLA untuk badge petugas. Null bila pengajuan tanpa SLA atau
+     * sudah berakhir tanpa penilaian (ditolak/dibatalkan).
+     */
+    public function slaState(): ?string
+    {
+        if ($this->sla_due_at === null) {
+            return null;
+        }
+
+        if ($this->sla_paused_at !== null) {
+            return 'jeda';
+        }
+
+        if ($this->status === SubmissionStatus::Selesai) {
+            $resolved = $this->response?->resolved_at;
+
+            return $resolved !== null && $resolved->gt($this->sla_due_at) ? 'terlambat' : 'tepat-waktu';
+        }
+
+        if (in_array($this->status, [SubmissionStatus::Ditolak, SubmissionStatus::Dibatalkan], true)) {
+            return null;
+        }
+
+        return now()->gt($this->sla_due_at) ? 'terlambat' : 'berjalan';
+    }
+
+    public function slaLabel(): ?string
+    {
+        return match ($this->slaState()) {
+            'berjalan' => __('Berjalan'),
+            'jeda' => __('Jeda'),
+            'tepat-waktu' => __('Tepat waktu'),
+            'terlambat' => __('Terlambat'),
+            default => null,
+        };
     }
 }
