@@ -47,7 +47,8 @@ it('membatalkan pengajuan dari daftar pengajuan', function () {
     expect($component->html())->toContain("\$dispatch('cancelSubmission'");
 
     $component->call('cancelSubmission', $submission->id)
-        ->assertDispatched('toast');
+        ->assertDispatched('toast')
+        ->assertDispatched('refresh');
 
     expect($submission->fresh()->status)->toBe(SubmissionStatus::Dibatalkan);
 });

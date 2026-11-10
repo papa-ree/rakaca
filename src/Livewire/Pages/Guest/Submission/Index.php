@@ -39,7 +39,7 @@ class Index extends Component
         try {
             app(TicketWorkflowService::class, ['submission' => $submission])->userCancel();
             $this->dispatch('toast', message: 'Tiket berhasil dibatalkan.', type: 'success');
-            $this->dispatch('paginated');
+            $this->dispatch('refresh');
         } catch (\Throwable $e) {
             $this->dispatch('toast', message: $e->getMessage(), type: 'error');
         }
