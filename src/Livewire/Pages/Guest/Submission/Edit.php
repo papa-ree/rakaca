@@ -26,6 +26,8 @@ class Edit extends Component
 
     public array $uploads = [];
 
+    public ?array $surat = null;
+
     public function temporaryFileUploadDisk(): string
     {
         return app()->isProduction() ? 's3' : 'local';
@@ -46,6 +48,7 @@ class Edit extends Component
 
         $this->submission = $submission->load(['form', 'uploads']);
         $this->items = $submission->items['data'] ?? [];
+        $this->surat = $submission->items['srikandi'] ?? null;
     }
 
     protected function rules(): array
@@ -61,6 +64,11 @@ class Edit extends Component
                 $required = $field['required'] ?? false;
 
                 if ($type === 'file') {
+                    // Surat Srikandi sudah mewakili berkas, jadi field file tidak diminta.
+                    if ($this->surat) {
+                        continue;
+                    }
+
                     $current = $this->items[$field['key']] ?? null;
                     $isExistingPath = is_string($current) && ! empty($current);
                     if ($required && ! $isExistingPath) {
@@ -127,14 +135,19 @@ class Edit extends Component
             }
         }
 
-        $this->submission->update([
-            'items' => [
-                'id' => $this->submission->items['id'] ?? $this->submission->id,
-                'created_at' => $this->submission->items['created_at'] ?? $this->submission->created_at->toISOString(),
-                'updated_at' => now()->toISOString(),
-                'data' => $itemsToSave,
-            ],
-        ]);
+        $items = [
+            'id' => $this->submission->items['id'] ?? $this->submission->id,
+            'created_at' => $this->submission->items['created_at'] ?? $this->submission->created_at->toISOString(),
+            'updated_at' => now()->toISOString(),
+            'data' => $itemsToSave,
+        ];
+
+        // Snapshot surat jangan hilang saat form disimpan ulang.
+        if ($this->surat) {
+            $items['srikandi'] = $this->surat;
+        }
+
+        $this->submission->update(['items' => $items]);
 
         $existingCount = $this->submission->uploads()->count();
         $remaining = 3 - $existingCount;

@@ -3,6 +3,8 @@
 namespace Paparee\Rakaca\Tests\Feature\Livewire\Landlord;
 
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Paparee\Rakaca\Enums\SubmissionStatus;
@@ -72,11 +74,14 @@ it('membuat pengajuan atas nama pemohon dan mengarahkan ke detail', function () 
 
     $applicant = User::factory()->create();
     $form = manualSubmissionForm();
+    Storage::fake('public');
+    Storage::fake('local');
 
     $component = Livewire::actingAs($admin)
         ->test(LandlordSubmissionCreate::class)
         ->set('form_id', $form->id)
         ->set('user_uuid', $applicant->uuid)
+        ->set('uploads', [UploadedFile::fake()->create('berkas.pdf', 10, 'application/pdf')])
         ->call('save')
         ->assertHasNoErrors();
 
@@ -94,10 +99,13 @@ it('membuat pengajuan atas nama pemohon dan mengarahkan ke detail', function () 
 it('pengajuan guest tetap memakai user yang login', function () {
     $user = User::factory()->create();
     $form = manualSubmissionForm();
+    Storage::fake('public');
+    Storage::fake('local');
 
     Livewire::actingAs($user)
         ->test(GuestSubmissionCreate::class)
         ->set('form_id', $form->id)
+        ->set('uploads', [UploadedFile::fake()->create('berkas.pdf', 10, 'application/pdf')])
         ->call('save')
         ->assertHasNoErrors()
         ->assertRedirect(route('rakaca.guest-dashboard.index'));

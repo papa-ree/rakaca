@@ -81,6 +81,23 @@
                     @endif
                 </div>
 
+                {{-- Surat Srikandi --}}
+                @if(!empty($submission->items['srikandi']))
+                    @php $surat = $submission->items['srikandi']; @endphp
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow p-6">
+                        <h3 class="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                            <x-lucide-mail class="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> {{ __('Surat Srikandi') }}
+                        </h3>
+                        <div class="space-y-2 text-sm">
+                            <p class="font-mono font-semibold text-gray-900 dark:text-white break-all">{{ $surat['nomor_naskah'] ?? '-' }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ !empty($surat['tanggal_naskah']) ? \Illuminate\Support\Carbon::parse($surat['tanggal_naskah'])->translatedFormat('d M Y') : '-' }}</p>
+                            <p class="font-medium text-gray-900 dark:text-white">{{ $surat['hal'] ?? '-' }}</p>
+                            <p class="text-gray-600 dark:text-gray-400">{{ $surat['ringkasan'] ?? '-' }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Pengirim') }}: {{ $surat['pengirim'] ?? '-' }}</p>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Uploads Preview Multi --}}
                 <div class="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow p-6">
                     <h3 class="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">

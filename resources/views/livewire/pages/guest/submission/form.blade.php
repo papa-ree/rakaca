@@ -106,6 +106,7 @@
                                             </label>
 
                                         @elseif ($field['type'] === 'file')
+                                            @continue($source === 'srikandi')
                                             <input
                                                 type="file"
                                                 id="items_{{ $field['key'] }}"
@@ -121,17 +122,105 @@
                                 @endforeach
                             </div>
 
-                            <x-core::upload-zone
-                                wire:model.live="uploads"
-                                accept="application/pdf,.pdf"
-                                :maxSize="5120"
-                                multiple
-                                label="Tap untuk pilih PDF atau drag & drop"
-                                hint="PDF, maksimal 3 file, 5 MB per file, opsional — dapat diisi belakangan"
-                                class="mt-6"
-                            />
-                            <x-core::input-error for="uploads" class="mt-2" />
-                            <x-core::input-error for="uploads.*" class="mt-1" />
+                            {{-- Sumber Berkas: pilih salah satu --}}
+                            <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700 space-y-4">
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-900 dark:text-white">{{ __('Sumber Berkas') }}</h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Pilih salah satu: unggah berkas sendiri atau gunakan surat dari Srikandi.') }}</p>
+                                </div>
+
+                                <div class="grid gap-3 sm:grid-cols-2">
+                                    <button type="button" wire:click="pilihUpload"
+                                        class="flex items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200 cursor-pointer {{ $source === 'upload' ? 'border-purple-500 bg-purple-50/60 ring-2 ring-purple-500/20 dark:bg-purple-900/10' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700' }}">
+                                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
+                                            <x-lucide-upload class="w-5 h-5" />
+                                        </span>
+                                        <span class="min-w-0">
+                                            <span class="block text-sm font-semibold text-gray-900 dark:text-white">{{ __('Unggah Berkas Sendiri') }}</span>
+                                            <span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ __('PDF, maksimal 3 file, 5 MB per file.') }}</span>
+                                        </span>
+                                    </button>
+
+                                    <button type="button" wire:click="pilihSrikandi"
+                                        class="flex items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200 cursor-pointer {{ $source === 'srikandi' ? 'border-purple-500 bg-purple-50/60 ring-2 ring-purple-500/20 dark:bg-purple-900/10' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700' }}">
+                                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300">
+                                            <x-lucide-search class="w-5 h-5" />
+                                        </span>
+                                        <span class="min-w-0">
+                                            <span class="block text-sm font-semibold text-gray-900 dark:text-white">{{ __('Cari Surat Srikandi') }}</span>
+                                            <span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ __('Gunakan nomor naskah surat masuk dari Srikandi.') }}</span>
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <x-core::input-error for="source" class="mt-1" />
+
+                                @if ($source === 'srikandi')
+                                    <div class="space-y-3 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                                        <x-core::label for="nomor_naskah" class="text-sm font-medium">
+                                            {{ __('Nomor Naskah') }} <span class="text-red-500">*</span>
+                                        </x-core::label>
+                                        <div class="flex flex-col sm:flex-row gap-2">
+                                            <x-core::input id="nomor_naskah" type="text" class="block w-full"
+                                                wire:model="nomor_naskah" wire:keydown.enter.prevent="cariSurat"
+                                                placeholder="000.8.3.4/KH/271/405.03.2/2026" />
+                                            <x-core::button type="button" wire:click="cariSurat" spinner="cariSurat"
+                                                label="{{ __('Cari') }}" class="w-full sm:w-auto justify-center shrink-0">
+                                                <x-slot name="icon"><x-lucide-search class="w-4 h-4" /></x-slot>
+                                            </x-core::button>
+                                        </div>
+                                        <x-core::input-error for="nomor_naskah" />
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Tulis nomor naskah lengkap termasuk tahun. Pencarian harus sama persis.') }}</p>
+
+                                        @if ($suratError)
+                                            <div class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-300">
+                                                {{ $suratError }}
+                                            </div>
+                                        @endif
+
+                                        @foreach ($suratResults as $hasil)
+                                            <div class="space-y-1 rounded-xl border border-gray-200 dark:border-gray-700 p-3">
+                                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                                    <p class="font-mono text-sm font-semibold text-gray-900 dark:text-white break-all">{{ $hasil['nomor_naskah'] }}</p>
+                                                    <x-core::button type="button" variant="secondary" wire:click="gunakanSurat('{{ $hasil['id'] }}')"
+                                                        label="{{ __('Gunakan surat ini') }}" class="justify-center">
+                                                        <x-slot name="icon"><x-lucide-check class="w-4 h-4" /></x-slot>
+                                                    </x-core::button>
+                                                </div>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ $hasil['tanggal_naskah'] ? \Illuminate\Support\Carbon::parse($hasil['tanggal_naskah'])->translatedFormat('d M Y') : '-' }}
+                                                </p>
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $hasil['hal'] ?? '-' }}</p>
+                                                <p class="text-xs text-gray-600 dark:text-gray-400">{{ $hasil['ringkasan'] ?? '-' }}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Pengirim') }}: {{ $hasil['pengirim'] ?? '-' }}</p>
+                                            </div>
+                                        @endforeach
+
+                                        @if ($surat)
+                                            <div class="rounded-xl border border-teal-200 bg-teal-50/60 p-3 dark:border-teal-800/40 dark:bg-teal-900/10">
+                                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                                    <p class="text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-300">{{ __('Surat terpilih') }}</p>
+                                                    <button type="button" wire:click="gantiSurat" class="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-400 cursor-pointer">{{ __('Ganti') }}</button>
+                                                </div>
+                                                <p class="mt-1 font-mono text-sm text-gray-900 dark:text-white break-all">{{ $surat['nomor_naskah'] }}</p>
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $surat['hal'] ?? '-' }}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Pengirim') }}: {{ $surat['pengirim'] ?? '-' }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @else
+                                    <x-core::upload-zone
+                                        wire:model.live="uploads"
+                                        accept="application/pdf,.pdf"
+                                        :maxSize="5120"
+                                        multiple
+                                        label="Tap untuk pilih PDF atau drag & drop"
+                                        hint="PDF, maksimal 3 file, 5 MB per file"
+                                    />
+                                    <x-core::input-error for="uploads" class="mt-2" />
+                                    <x-core::input-error for="uploads.*" class="mt-1" />
+                                @endif
+                            </div>
                         </div>
                     @endif
 

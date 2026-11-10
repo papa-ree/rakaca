@@ -3,6 +3,7 @@
 namespace Paparee\Rakaca\Livewire\Pages\Guest\Submission;
 
 use Bale\Core\Support\Sanitize;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -14,6 +15,7 @@ use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\Form;
 use Paparee\Rakaca\Models\RakacaSubmission;
 use Paparee\Rakaca\Models\RakacaSubmissionUpload;
+use Paparee\Rakaca\Services\TicketWorkflowService;
 use Paparee\Rakaca\Support\SubmissionStorage;
 
 #[Layout('rakaca::layouts.app')]
@@ -29,6 +31,17 @@ class Create extends Component
     public array $items = [];
 
     public array $uploads = [];
+
+    /** Sumber berkas: `upload` (berkas sendiri) atau `srikandi` (surat masuk). */
+    public string $source = 'upload';
+
+    public string $nomor_naskah = '';
+
+    public array $suratResults = [];
+
+    public ?array $surat = null;
+
+    public string $suratError = '';
 
     /**
      * Temporary file upload disk.
@@ -90,10 +103,78 @@ class Create extends Component
         }
     }
 
+    public function pilihUpload(): void
+    {
+        $this->source = 'upload';
+        $this->resetSurat();
+    }
+
+    public function pilihSrikandi(): void
+    {
+        $this->source = 'srikandi';
+        $this->uploads = [];
+    }
+
+    public function cariSurat(): void
+    {
+        $this->resetSurat();
+
+        $nomor = trim($this->nomor_naskah);
+
+        if ($nomor === '') {
+            $this->addError('nomor_naskah', __('Nomor naskah wajib diisi.'));
+
+            return;
+        }
+
+        // Nomor harus persis: pencarian LIKE akan membocorkan surat ke siapa pun
+        // yang menebak sebagian nomor.
+        $this->suratResults = DB::table('srikandi_naskah')
+            ->where('sumber', 'rak-srikandi')
+            ->where('nomor_naskah', $nomor)
+            ->orderByDesc('tanggal_naskah')
+            ->limit(3)
+            ->get(['id', 'nomor_naskah', 'tanggal_naskah', 'hal', 'ringkasan', 'pengirim'])
+            ->map(fn ($row) => (array) $row)
+            ->all();
+
+        if ($this->suratResults === []) {
+            $this->suratError = __('Surat tidak ditemukan. Pastikan nomor naskah lengkap, atau coba beberapa saat lagi.');
+        }
+    }
+
+    public function gunakanSurat(string $id): void
+    {
+        foreach ($this->suratResults as $row) {
+            if ((string) $row['id'] === $id) {
+                $this->surat = $row + [
+                    'sumber' => 'rak-srikandi',
+                    'dipilih_pada' => now()->toISOString(),
+                ];
+
+                return;
+            }
+        }
+    }
+
+    public function gantiSurat(): void
+    {
+        $this->resetSurat();
+    }
+
+    private function resetSurat(): void
+    {
+        $this->surat = null;
+        $this->suratResults = [];
+        $this->suratError = '';
+    }
+
     protected function rules(): array
     {
         $rules = [
             'form_id' => 'required|uuid|exists:rakaca_forms,id',
+            'source' => 'required|in:upload,srikandi',
+            'nomor_naskah' => 'nullable|string|max:191',
             'uploads' => 'nullable|array|max:3',
             'uploads.*' => 'file|mimes:pdf|max:5120',
         ];
@@ -104,6 +185,11 @@ class Create extends Component
                 $required = $field['required'] ?? false;
 
                 if ($type === 'file') {
+                    // Surat Srikandi sudah mewakili berkas, jadi field file tidak diminta.
+                    if ($this->source === 'srikandi') {
+                        continue;
+                    }
+
                     $rule = $required
                         ? 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,zip'
                         : 'nullable|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,zip';
@@ -150,6 +236,18 @@ class Create extends Component
     {
         $this->validate();
 
+        if ($this->source === 'srikandi' && ! $this->surat) {
+            $this->addError('source', __('Pilih salah satu surat yang ditemukan.'));
+
+            return;
+        }
+
+        if ($this->source === 'upload' && $this->uploads === []) {
+            $this->addError('source', __('Unggah minimal satu berkas atau gunakan surat Srikandi.'));
+
+            return;
+        }
+
         $itemsToSave = $this->items;
 
         // Sanitize all string inputs
@@ -174,17 +272,24 @@ class Create extends Component
             }
         }
 
+        $items = [
+            'id' => Str::uuid()->toString(),
+            'created_at' => now()->toISOString(),
+            'updated_at' => now()->toISOString(),
+            'data' => $itemsToSave,
+        ];
+
+        // Salinan metadata surat; baris Srikandi bisa berubah/hilang kapan saja.
+        if ($this->surat) {
+            $items['srikandi'] = $this->surat;
+        }
+
         $submission = RakacaSubmission::create([
             'user_uuid' => $this->applicantUuid(),
             'rakaca_form_id' => $this->form_id,
             'code' => strtoupper(uniqid('sub_')),
             'status' => SubmissionStatus::MenungguBerkas->value,
-            'items' => [
-                'id' => Str::uuid()->toString(),
-                'created_at' => now()->toISOString(),
-                'updated_at' => now()->toISOString(),
-                'data' => $itemsToSave,
-            ],
+            'items' => $items,
         ]);
 
         // Handle multi-upload zone (pdf, max 3, 5MB each) — separate table
@@ -200,6 +305,11 @@ class Create extends Component
                     'size' => $file->getSize(),
                 ]);
             }
+        }
+
+        // Surat Srikandi sudah final, jadi tidak perlu tahap "lengkapi berkas".
+        if ($this->surat) {
+            app(TicketWorkflowService::class, ['submission' => $submission])->submitFiles();
         }
 
         $this->afterSave($submission);

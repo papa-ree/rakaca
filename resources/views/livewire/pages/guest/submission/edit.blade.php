@@ -89,6 +89,7 @@
                                         </label>
 
                                     @elseif ($field['type'] === 'file')
+                                        @continue($surat)
                                         <input type="file" id="items_{{ $field['key'] }}" wire:model="items.{{ $field['key'] }}" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="block w-full text-sm file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 dark:file:bg-amber-900/30 dark:file:text-amber-300 hover:file:bg-amber-100 file:cursor-pointer cursor-pointer py-1" />
                                         <p class="text-xs text-gray-500 dark:text-gray-400">PDF/JPG/PNG/DOC, max 10MB</p>
                                     @endif
@@ -98,7 +99,30 @@
                             @endforeach
                         </div>
 
+                        {{-- Surat Srikandi (salinan, hanya baca) --}}
+                        @if ($surat)
+                            <div class="mt-6 p-5 bg-linear-to-r from-indigo-50/70 to-purple-50/70 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-2xl border border-indigo-200 dark:border-indigo-800">
+                                <div class="flex items-start gap-3 mb-4">
+                                    <div class="p-2.5 bg-indigo-600 rounded-xl shadow-md shrink-0">
+                                        <x-lucide-mail class="w-5 h-5 text-white" />
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <h5 class="text-base font-bold text-gray-900 dark:text-white leading-tight">{{ __('Surat Srikandi') }}</h5>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ __('Surat ini dipakai sebagai sumber berkas pengajuan.') }}</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="font-mono text-sm font-semibold text-gray-900 dark:text-white break-all">{{ $surat['nomor_naskah'] }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $surat['tanggal_naskah'] ? \Illuminate\Support\Carbon::parse($surat['tanggal_naskah'])->translatedFormat('d M Y') : '-' }}</p>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $surat['hal'] ?? '-' }}</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">{{ $surat['ringkasan'] ?? '-' }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Pengirim') }}: {{ $surat['pengirim'] ?? '-' }}</p>
+                                </div>
+                            </div>
+                        @endif
+
                         {{-- Upload Berkas Pendukung --}}
+                        @unless ($surat)
                         <div class="mt-6 p-5 bg-linear-to-r from-amber-50/70 to-orange-50/70 dark:from-amber-900/10 dark:to-orange-900/10 rounded-2xl border border-amber-200 dark:border-amber-800">
                             <div class="flex items-start gap-3 mb-4">
                                 <div class="p-2.5 bg-amber-600 rounded-xl shadow-md shrink-0">
@@ -130,6 +154,7 @@
                                 <p class="text-xs text-amber-600 dark:text-amber-400 font-medium">{{ __('Maksimal 3 file tercapai.') }}</p>
                             @endif
                         </div>
+                        @endunless
                     @endif
 
                     {{-- Actions --}}
