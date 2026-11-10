@@ -59,8 +59,8 @@
             @endif
             @if($status->cancellableByUser())
                 <button type="button"
-                    wire:click="cancelSubmission('{{ $record->id }}')"
-                    wire:confirm="{{ __('Yakin ingin membatalkan tiket ini?') }}"
+                    wire:click="$dispatch('cancelSubmission', { id: '{{ $record->id }}' })"
+                    wire:confirm="{{ __('Yakin ingin membatalkan tiket ini?') }}
                     class="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 rounded-lg transition">
                     <x-lucide-x class="w-4 h-4" />
                 </button>
