@@ -1,16 +1,15 @@
                 <form wire:submit="save" class="p-6 sm:p-8 space-y-6">
                     {{-- Select Form --}}
                     <div class="space-y-1.5">
-                        <x-core::label for="form_id" class="text-sm font-medium">
+                        <x-core::label>
                             {{ __('Pilih Formulir') }} <span class="text-red-500">*</span>
                         </x-core::label>
-                        <select wire:model.live="form_id" id="form_id"
-                            class="block w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base py-3 px-4 transition-all duration-200 shadow-xs">
-                            <option value="">-- {{ __('Pilih Formulir') }} --</option>
-                            @foreach ($forms as $form)
-                                <option value="{{ $form->id }}">{{ $form->name }} — {{ $form->service?->name ?? '-' }}</option>
-                            @endforeach
-                        </select>
+                        <x-core::select-dropdown
+                            model="form_id"
+                            :items="$forms->map(fn ($form) => ['id' => $form->id, 'label' => $form->name . ' — ' . ($form->service?->name ?? '-')])->values()->all()"
+                            labelField="label"
+                            valueField="id"
+                            :placeholder="__('Pilih Formulir')" />
                         <x-core::input-error for="form_id" />
                         <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Form akan menyesuaikan layanan (misal Zoom Meeting).') }}</p>
                     </div>
