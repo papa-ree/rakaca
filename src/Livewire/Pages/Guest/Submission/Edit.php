@@ -188,6 +188,19 @@ class Edit extends Component
             unset($this->uploads[$index]);
             $this->uploads = array_values($this->uploads);
         }
+
+        $this->resetValidation('uploads');
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'uploads.array' => __('Berkas tidak valid.'),
+            'uploads.max' => __('Maksimal 3 berkas.'),
+            'uploads.*.file' => __('Berkas tidak valid.'),
+            'uploads.*.mimes' => __('Berkas harus berformat PDF.'),
+            'uploads.*.max' => __('Ukuran berkas maksimal 5 MB.'),
+        ];
     }
 
     public function deleteExistingUpload(string $uploadId): void

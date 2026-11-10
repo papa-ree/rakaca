@@ -180,6 +180,26 @@ it('tetap menyimpan pengajuan upload biasa sebagai menunggu berkas', function ()
     expect(RakacaSubmission::firstOrFail()->status)->toBe(SubmissionStatus::MenungguBerkas);
 });
 
+it('menolak lebih dari tiga berkas dan pulih setelah dihapus', function () {
+    Storage::fake('public');
+    Storage::fake('local');
+
+    $component = Livewire::actingAs(User::factory()->create())
+        ->test(Create::class)
+        ->set('form_id', srikandiForm()->id)
+        ->set('uploads', collect(range(1, 4))
+            ->map(fn ($i) => UploadedFile::fake()->create("berkas{$i}.pdf", 10, 'application/pdf'))
+            ->all())
+        ->call('save')
+        ->assertHasErrors(['uploads' => __('Maksimal 3 berkas.')]);
+
+    $component->call('removeUpload', 3)
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(RakacaSubmission::firstOrFail()->uploads()->count())->toBe(3);
+});
+
 it('mempertahankan salinan surat saat form srikandi disimpan ulang', function () {
     $user = User::factory()->create();
     $form = srikandiForm([

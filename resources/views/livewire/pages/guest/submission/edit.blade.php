@@ -147,7 +147,7 @@
                                 </div>
                             @endif
                             @if(($submission->uploads->count() ?? 0) < 3)
-                                <x-core::upload-zone wire:model.live="uploads" accept="application/pdf,.pdf" :maxSize="5120" multiple label="Tap untuk pilih PDF atau drag & drop" hint="PDF, maksimal 3 file, 5 MB per file" />
+                                <x-core::upload-zone wire:model.live="uploads" accept="application/pdf,.pdf" :maxSize="5120" :maxFiles="3" remove-method="removeUpload" multiple label="Tap untuk pilih PDF atau drag & drop" hint="PDF, maksimal 3 file, 5 MB per file" />
                                 <x-core::input-error for="uploads" class="mt-2" />
                                 <x-core::input-error for="uploads.*" class="mt-1" />
                             @else

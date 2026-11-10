@@ -336,6 +336,25 @@ class Create extends Component
             unset($this->uploads[$index]);
             $this->uploads = array_values($this->uploads);
         }
+
+        $this->resetValidation('uploads');
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'form_id.required' => __('Formulir wajib dipilih.'),
+            'form_id.uuid' => __('Formulir tidak valid.'),
+            'form_id.exists' => __('Formulir tidak ditemukan.'),
+            'source.required' => __('Pilih sumber berkas.'),
+            'source.in' => __('Sumber berkas tidak valid.'),
+            'nomor_naskah.max' => __('Nomor naskah terlalu panjang.'),
+            'uploads.array' => __('Berkas tidak valid.'),
+            'uploads.max' => __('Maksimal 3 berkas.'),
+            'uploads.*.file' => __('Berkas tidak valid.'),
+            'uploads.*.mimes' => __('Berkas harus berformat PDF.'),
+            'uploads.*.max' => __('Ukuran berkas maksimal 5 MB.'),
+        ];
     }
 
     public function render()

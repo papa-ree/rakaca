@@ -214,6 +214,8 @@
                                         wire:model.live="uploads"
                                         accept="application/pdf,.pdf"
                                         :maxSize="5120"
+                                        :maxFiles="3"
+                                        remove-method="removeUpload"
                                         multiple
                                         label="Tap untuk pilih PDF atau drag & drop"
                                         hint="PDF, maksimal 3 file, 5 MB per file"
