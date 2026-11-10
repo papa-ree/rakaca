@@ -154,7 +154,7 @@ it('memetakan status lama ke status kanonik pada statistik', function () {
         ->and($stats[1]['total'])->toBe(1);
 });
 
-it('mengelompokkan pengajuan per layanan sepanjang waktu', function () {
+it('mengelompokkan pengajuan per layanan dalam periode terpilih', function () {
     $admin = overviewAdmin();
     $serviceA = overviewService('Layanan A');
     $serviceB = overviewService('Layanan B');
@@ -165,6 +165,9 @@ it('mengelompokkan pengajuan per layanan sepanjang waktu', function () {
     overviewSubmission($formA, $applicant, SubmissionStatus::Selesai);
     overviewSubmission($formA, $applicant, SubmissionStatus::Diproses);
     overviewSubmission($formB, $applicant, SubmissionStatus::MenungguBerkas);
+
+    // Di luar periode default (30 hari): tidak boleh terhitung.
+    overviewSubmission($formB, $applicant, SubmissionStatus::Selesai, '2025-01-01 10:00:00');
 
     $services = Livewire::actingAs($admin)->test(OverviewIndex::class)->viewData('services');
 

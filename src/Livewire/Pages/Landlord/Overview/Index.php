@@ -95,7 +95,7 @@ class Index extends Component
                 ->latest('created_at')
                 ->limit(8)
                 ->get(),
-            'services' => $this->perService(),
+            'services' => $this->perService($period),
             'monthly' => $this->monthly($period),
         ]);
     }
@@ -156,17 +156,18 @@ class Index extends Component
     }
 
     /**
-     * Distribusi pengajuan per layanan, sepanjang waktu.
+     * Distribusi pengajuan per layanan dalam periode terpilih.
      *
      * @return Collection<int, object>
      */
-    protected function perService()
+    protected function perService(OverviewPeriod $period)
     {
         return RakacaSubmission::query()
             ->join('rakaca_forms', 'rakaca_forms.id', '=', 'rakaca_submissions.rakaca_form_id')
             ->join('rakaca_services', 'rakaca_services.id', '=', 'rakaca_forms.rakaca_service_id')
             ->whereNull('rakaca_forms.deleted_at')
             ->whereNull('rakaca_submissions.deleted_at')
+            ->whereBetween('rakaca_submissions.created_at', [$period->start, $period->end])
             ->selectRaw('rakaca_services.name as service, count(*) as total')
             ->groupBy('rakaca_services.name')
             ->orderByDesc('total')

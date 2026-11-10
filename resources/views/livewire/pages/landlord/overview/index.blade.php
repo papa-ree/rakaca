@@ -267,7 +267,7 @@
         {{-- ========== Grafik ========== --}}
         <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 
-            {{-- Pie: layanan sepanjang waktu --}}
+            {{-- Pie: layanan dalam periode --}}
             <div class="rounded-xl border border-gray-100 bg-white shadow-sm dark:border-white/[0.06] dark:bg-gray-900">
                 <div
                     class="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 dark:border-white/[0.06] sm:flex-row sm:items-center sm:justify-between">
@@ -281,13 +281,13 @@
                                 {{ __('Pengajuan per Layanan') }}
                             </h2>
                             <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                                {{ __('Distribusi seluruh pengajuan.') }}
+                                {{ __('Dalam periode terpilih.') }}
                             </p>
                         </div>
                     </div>
                     <span
                         class="inline-flex shrink-0 items-center self-start rounded-full bg-teal-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:bg-teal-900/30 dark:text-teal-300 sm:self-auto">
-                        {{ __('Sepanjang waktu') }}
+                        {{ $periodeLabel }}
                     </span>
                 </div>
 
@@ -303,11 +303,14 @@
                             </p>
                         </div>
                     @else
-                        <x-core::chart type="pie" :labels="$serviceLabels" :datasets="[[
-                            'data' => $serviceTotals,
-                            'backgroundColor' => array_slice($pieColors, 0, count($serviceTotals)),
-                            'borderWidth' => 0,
-                        ]]" />
+                        {{-- Key per periode: chart hanya x-init, node harus diganti agar gambar ulang. --}}
+                        <div wire:key="chart-services-{{ $dari }}-{{ $sampai }}">
+                            <x-core::chart type="pie" :labels="$serviceLabels" :datasets="[[
+                                'data' => $serviceTotals,
+                                'backgroundColor' => array_slice($pieColors, 0, count($serviceTotals)),
+                                'borderWidth' => 0,
+                            ]]" />
+                        </div>
                     @endif
                 </div>
             </div>
@@ -337,15 +340,17 @@
                 </div>
 
                 <div class="p-4 sm:p-5">
-                    <x-core::chart type="line" :labels="$monthLabels" :datasets="[[
-                        'label' => __('Pengajuan'),
-                        'data' => array_values($monthly),
-                        'borderColor' => '#0d9488',
-                        'backgroundColor' => 'rgba(13, 148, 136, 0.15)',
-                        'pointBackgroundColor' => '#0d9488',
-                        'fill' => true,
-                        'tension' => 0.35,
-                    ]]" />
+                    <div wire:key="chart-monthly-{{ $dari }}-{{ $sampai }}">
+                        <x-core::chart type="line" :labels="$monthLabels" :datasets="[[
+                            'label' => __('Pengajuan'),
+                            'data' => array_values($monthly),
+                            'borderColor' => '#0d9488',
+                            'backgroundColor' => 'rgba(13, 148, 136, 0.15)',
+                            'pointBackgroundColor' => '#0d9488',
+                            'fill' => true,
+                            'tension' => 0.35,
+                        ]]" />
+                    </div>
                 </div>
             </div>
         </div>
