@@ -58,12 +58,20 @@
                 </a>
             @endif
             @if($status->cancellableByUser())
-                <button type="button"
-                    wire:click="$dispatch('cancelSubmission', { id: '{{ $record->id }}' })"
-                    wire:confirm="{{ __('Yakin ingin membatalkan tiket ini?') }}
-                    class="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 rounded-lg transition">
-                    <x-lucide-x class="w-4 h-4" />
-                </button>
+                <x-core::confirm-dialog
+                    variant="danger"
+                    :title="__('Batalkan tiket?')"
+                    :message="__('Yakin ingin membatalkan tiket ini? Tindakan ini tidak dapat dibatalkan.')"
+                    :confirmLabel="__('Ya, Batalkan')"
+                    event="cancelSubmission"
+                    :params="['id' => $record->id]">
+                    <x-slot name="trigger">
+                        <button type="button" x-on:click="open = true" title="{{ __('Batalkan tiket') }}"
+                            class="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 rounded-lg transition">
+                            <x-lucide-x class="w-4 h-4" />
+                        </button>
+                    </x-slot>
+                </x-core::confirm-dialog>
             @endif
         </div>
     </td>

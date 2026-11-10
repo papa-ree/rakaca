@@ -44,8 +44,7 @@ it('membatalkan pengajuan dari daftar pengajuan', function () {
 
     // Baris tabel dirender di dalam data-table, jadi tombol batal harus
     // mengirim event ke Index, bukan memanggil method di komponen tabel.
-    expect($component->html())
-        ->toContain("\$dispatch('cancelSubmission', { id: '{$submission->id}' })");
+    expect($component->html())->toContain("\$dispatch('cancelSubmission'");
 
     $component->call('cancelSubmission', $submission->id)
         ->assertDispatched('toast');

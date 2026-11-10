@@ -159,13 +159,16 @@
                     <div class="flex flex-col gap-2.5">
                         <x-core::secondary-button link href="{{ route('rakaca.guest.submission.index') }}" label="{{ __('Kembali') }}" class="w-full justify-center" />
                         @if($status->cancellableByUser())
-                            <x-core::danger-button type="button"
-                                wire:click="cancelSubmission('{{ $submission->id }}')"
-                                wire:confirm="{{ __('Yakin ingin membatalkan tiket ini?') }}"
-                                label="{{ __('Batalkan Tiket') }}"
-                                class="w-full justify-center">
-                                <x-slot name="icon"><x-lucide-x class="w-4 h-4" /></x-slot>
-                            </x-core::danger-button>
+                            <x-core::confirm-dialog
+                                variant="danger"
+                                :title="__('Batalkan tiket?')"
+                                :message="__('Yakin ingin membatalkan tiket ini? Tindakan ini tidak dapat dibatalkan.')"
+                                :confirmLabel="__('Ya, Batalkan')"
+                                action="cancelSubmission">
+                                <x-slot name="trigger">
+                                    <x-core::danger-button type="button" x-on:click="open = true" label="{{ __('Batalkan Tiket') }}" class="w-full justify-center" />
+                                </x-slot>
+                            </x-core::confirm-dialog>
                         @endif
                     </div>
                 </div>

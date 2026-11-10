@@ -139,9 +139,18 @@
                                     @foreach($submission->uploads as $up)
                                         <div class="flex items-center justify-between gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xs">
                                             <a href="{{ \Paparee\Rakaca\Support\SubmissionStorage::url($up->file_path) }}" target="_blank" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline truncate min-w-0 flex-1">{{ $up->original_name }} <span class="text-xs text-gray-500 dark:text-gray-400">({{ number_format($up->size/1024, 1) }} KB)</span></a>
-                                            <button type="button" wire:click="deleteExistingUpload('{{ $up->id }}')" wire:confirm="{{ __('Hapus berkas ini?') }}" class="shrink-0 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer">
-                                                <x-lucide-trash-2 class="w-4 h-4" />
-                                            </button>
+                                            <x-core::confirm-dialog
+                                                variant="danger"
+                                                :title="__('Hapus berkas?')"
+                                                :message="__('Berkas ini akan dihapus dari pengajuan dan tidak dapat dikembalikan.')"
+                                                :confirmLabel="__('Ya, Hapus')"
+                                                :action="'deleteExistingUpload(\''.$up->id.'\')'">
+                                                <x-slot name="trigger">
+                                                    <button type="button" x-on:click="open = true" class="shrink-0 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer">
+                                                        <x-lucide-trash-2 class="w-4 h-4" />
+                                                    </button>
+                                                </x-slot>
+                                            </x-core::confirm-dialog>
                                         </div>
                                     @endforeach
                                 </div>

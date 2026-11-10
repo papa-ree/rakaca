@@ -203,9 +203,17 @@
 
                     @can('submission.update')
                         @if($this->canTakeOver())
-                            <x-core::button type="button" variant="primary" wire:click="takeOver" wire:confirm="{{ __('Ambil alih tiket ini (diproses)?') }}" :label="__('Ambil Alih & Proses')" class="w-full justify-center">
-                                <x-slot name="icon"><x-lucide-play class="w-4 h-4" /></x-slot>
-                            </x-core::button>
+                            <x-core::confirm-dialog
+                                :title="__('Ambil alih tiket?')"
+                                :message="__('Tiket akan ditandai diproses atas nama Anda.')"
+                                :confirmLabel="__('Ya, Ambil Alih')"
+                                action="takeOver">
+                                <x-slot name="trigger">
+                                    <x-core::button type="button" variant="primary" x-on:click="open = true" :label="__('Ambil Alih & Proses')" class="w-full justify-center">
+                                        <x-slot name="icon"><x-lucide-play class="w-4 h-4" /></x-slot>
+                                    </x-core::button>
+                                </x-slot>
+                            </x-core::confirm-dialog>
                         @else
                             {{-- Pilih Aksi (Instant Alpine.js) --}}
                             <div class="space-y-2 pt-2 border-t border-gray-100 dark:border-slate-800">
@@ -258,9 +266,18 @@
                                         'schema' => $submission->form?->response_form_schema ?? [],
                                     ])
 
-                                    <x-core::button type="button" variant="success" wire:click="executeAction" wire:confirm="{{ __('Konfirmasi selesaikan tiket ini?') }}" :label="__('Simpan & Selesaikan')" class="w-full justify-center">
-                                        <x-slot name="icon"><x-lucide-check-circle class="w-4 h-4" /></x-slot>
-                                    </x-core::button>
+                                    <x-core::confirm-dialog
+                                        variant="success"
+                                        :title="__('Selesaikan tiket?')"
+                                        :message="__('Pastikan hasil layanan sudah benar. Status tiket akan berubah menjadi selesai dan SLA dihitung.')"
+                                        :confirmLabel="__('Ya, Selesaikan')"
+                                        action="executeAction">
+                                        <x-slot name="trigger">
+                                            <x-core::button type="button" variant="success" x-on:click="open = true" :label="__('Simpan & Selesaikan')" class="w-full justify-center">
+                                                <x-slot name="icon"><x-lucide-check-circle class="w-4 h-4" /></x-slot>
+                                            </x-core::button>
+                                        </x-slot>
+                                    </x-core::confirm-dialog>
                                 </div>
                             @endif
 
@@ -272,9 +289,17 @@
                                     <x-core::textarea wire:model="revise_note" id="revise_note" rows="4" :placeholder="__('Tulis catatan revisi untuk pemohon...')" />
                                     <x-core::input-error for="revise_note" />
 
-                                    <x-core::button type="button" variant="primary" wire:click="executeAction" wire:confirm="{{ __('Kirim permintaan revisi?') }}" :label="__('Kirim Revisi')" class="w-full justify-center">
-                                        <x-slot name="icon"><x-lucide-send class="w-4 h-4" /></x-slot>
-                                    </x-core::button>
+                                    <x-core::confirm-dialog
+                                        :title="__('Kirim permintaan revisi?')"
+                                        :message="__('Pemohon akan menerima catatan revisi dan harus mengunggah berkas ulang. SLA dijeda sampai berkas dikirim ulang.')"
+                                        :confirmLabel="__('Ya, Kirim')"
+                                        action="executeAction">
+                                        <x-slot name="trigger">
+                                            <x-core::button type="button" variant="primary" x-on:click="open = true" :label="__('Kirim Revisi')" class="w-full justify-center">
+                                                <x-slot name="icon"><x-lucide-send class="w-4 h-4" /></x-slot>
+                                            </x-core::button>
+                                        </x-slot>
+                                    </x-core::confirm-dialog>
                                 </div>
                             @endif
 
@@ -286,9 +311,18 @@
                                     <x-core::textarea wire:model="reason" id="reason" rows="4" :placeholder="__('Tulis alasan penolakan...')" />
                                     <x-core::input-error for="reason" />
 
-                                    <x-core::button type="button" variant="danger" wire:click="executeAction" wire:confirm="{{ __('Tolak tiket ini?') }}" :label="__('Konfirmasi Penolakan')" class="w-full justify-center">
-                                        <x-slot name="icon"><x-lucide-x-circle class="w-4 h-4" /></x-slot>
-                                    </x-core::button>
+                                    <x-core::confirm-dialog
+                                        variant="danger"
+                                        :title="__('Tolak tiket?')"
+                                        :message="__('Tiket akan ditolak dengan alasan yang Anda tulis dan tidak dapat dikembalikan.')"
+                                        :confirmLabel="__('Ya, Tolak')"
+                                        action="executeAction">
+                                        <x-slot name="trigger">
+                                            <x-core::button type="button" variant="danger" x-on:click="open = true" :label="__('Konfirmasi Penolakan')" class="w-full justify-center">
+                                                <x-slot name="icon"><x-lucide-x-circle class="w-4 h-4" /></x-slot>
+                                            </x-core::button>
+                                        </x-slot>
+                                    </x-core::confirm-dialog>
                                 </div>
                             @endif
                         @endif
