@@ -70,7 +70,7 @@
                                         <x-core::input :id="'items_' . $field['key']" type="email" inputmode="email" class="block w-full rounded-xl py-3" wire:model="items.{{ $field['key'] }}" :placeholder="__($field['placeholder'] ?? '')" />
 
                                     @elseif ($field['type'] === 'date')
-                                        <x-core::input :id="'items_' . $field['key']" type="date" class="block w-full rounded-xl py-3" wire:model="items.{{ $field['key'] }}" />
+                                        <x-core::date-picker :model="'items.' . $field['key']" :name="'items_' . $field['key']" mode="date" />
 
                                     @elseif ($field['type'] === 'select')
                                         <select id="items_{{ $field['key'] }}" wire:model="items.{{ $field['key'] }}" class="block w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent py-3 px-4 text-sm sm:text-base transition-all duration-200">

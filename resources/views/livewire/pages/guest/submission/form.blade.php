@@ -74,11 +74,10 @@
                                             />
 
                                         @elseif ($field['type'] === 'date')
-                                            <x-core::input
-                                                :id="'items_' . $field['key']"
-                                                type="date"
-                                                class="block w-full rounded-xl py-3"
-                                                wire:model="items.{{ $field['key'] }}"
+                                            <x-core::date-picker
+                                                :model="'items.' . $field['key']"
+                                                :name="'items_' . $field['key']"
+                                                mode="date"
                                             />
 
                                         @elseif ($field['type'] === 'select')
