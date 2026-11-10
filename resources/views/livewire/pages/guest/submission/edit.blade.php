@@ -146,7 +146,7 @@
                                                 :confirmLabel="__('Ya, Hapus')"
                                                 :action="'deleteExistingUpload(\''.$up->id.'\')'">
                                                 <x-slot name="trigger">
-                                                    <button type="button" x-on:click="open = true" class="shrink-0 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer">
+                                                    <button type="button" class="shrink-0 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer">
                                                         <x-lucide-trash-2 class="w-4 h-4" />
                                                     </button>
                                                 </x-slot>

@@ -161,12 +161,13 @@
                         @if($status->cancellableByUser())
                             <x-core::confirm-dialog
                                 variant="danger"
+                                class="w-full"
                                 :title="__('Batalkan tiket?')"
                                 :message="__('Yakin ingin membatalkan tiket ini? Tindakan ini tidak dapat dibatalkan.')"
                                 :confirmLabel="__('Ya, Batalkan')"
                                 action="cancelSubmission">
                                 <x-slot name="trigger">
-                                    <x-core::danger-button type="button" x-on:click="open = true" label="{{ __('Batalkan Tiket') }}" class="w-full justify-center" />
+                                    <x-core::danger-button type="button" label="{{ __('Batalkan Tiket') }}" class="w-full justify-center" />
                                 </x-slot>
                             </x-core::confirm-dialog>
                         @endif

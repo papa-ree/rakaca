@@ -66,7 +66,7 @@
                     event="cancelSubmission"
                     :params="['id' => $record->id]">
                     <x-slot name="trigger">
-                        <button type="button" x-on:click="open = true" title="{{ __('Batalkan tiket') }}"
+                        <button type="button" title="{{ __('Batalkan tiket') }}"
                             class="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 rounded-lg transition">
                             <x-lucide-x class="w-4 h-4" />
                         </button>
