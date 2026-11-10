@@ -88,7 +88,7 @@ it('membuat pengajuan atas nama pemohon dan mengarahkan ke detail', function () 
     $submission = RakacaSubmission::firstOrFail();
 
     expect($submission->user_uuid)->toBe($applicant->uuid)
-        ->and($submission->status)->toBe(SubmissionStatus::MenungguBerkas)
+        ->and($submission->status)->toBe(SubmissionStatus::SiapDireview)
         ->and($submission->user_uuid)->not->toBe($admin->uuid);
 
     $component->assertRedirect(
@@ -113,5 +113,5 @@ it('pengajuan guest tetap memakai user yang login', function () {
     $submission = RakacaSubmission::firstOrFail();
 
     expect($submission->user_uuid)->toBe($user->uuid)
-        ->and($submission->status)->toBe(SubmissionStatus::MenungguBerkas);
+        ->and($submission->status)->toBe(SubmissionStatus::SiapDireview);
 });

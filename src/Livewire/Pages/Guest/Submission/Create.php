@@ -307,10 +307,9 @@ class Create extends Component
             }
         }
 
-        // Surat Srikandi sudah final, jadi tidak perlu tahap "lengkapi berkas".
-        if ($this->surat) {
-            app(TicketWorkflowService::class, ['submission' => $submission])->submitFiles();
-        }
+        // Form awal sudah membawa berkas final (upload atau surat Srikandi),
+        // jadi langsung masuk antrean review tanpa tahap "lengkapi berkas".
+        app(TicketWorkflowService::class, ['submission' => $submission])->submitFiles();
 
         $this->afterSave($submission);
     }

@@ -166,7 +166,7 @@ it('menolak pengajuan tanpa berkas upload dan tanpa surat', function () {
     expect(RakacaSubmission::count())->toBe(0);
 });
 
-it('tetap menyimpan pengajuan upload biasa sebagai menunggu berkas', function () {
+it('langsung siap direview saat berkas diunggah pada form awal', function () {
     Storage::fake('public');
     Storage::fake('local');
 
@@ -177,7 +177,11 @@ it('tetap menyimpan pengajuan upload biasa sebagai menunggu berkas', function ()
         ->call('save')
         ->assertHasNoErrors();
 
-    expect(RakacaSubmission::firstOrFail()->status)->toBe(SubmissionStatus::MenungguBerkas);
+    $submission = RakacaSubmission::firstOrFail();
+
+    expect($submission->status)->toBe(SubmissionStatus::SiapDireview)
+        ->and($submission->files_finalized_at)->not->toBeNull()
+        ->and($submission->uploads()->count())->toBe(1);
 });
 
 it('menolak lebih dari tiga berkas dan pulih setelah dihapus', function () {

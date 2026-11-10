@@ -21,7 +21,7 @@
                                 {{ __('Tambah Pengajuan Manual') }}
                             </h2>
                             <p class="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                                {{ __('Buat pengajuan atas nama user terdaftar. Status awal Menunggu Berkas.') }}
+                                {{ __('Buat pengajuan atas nama user terdaftar. Status awal Siap Direview.') }}
                             </p>
                         </div>
                     </div>
