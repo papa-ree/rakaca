@@ -208,7 +208,10 @@
                                             </div>
                                         @endif
                                     </div>
-                                @else
+                                @endif
+
+                                {{-- Zona upload selalu ada di DOM agar scope Alpine tidak rusak saat ganti mode. --}}
+                                <div class="{{ $source === 'srikandi' ? 'hidden' : '' }}">
                                     <x-core::upload-zone
                                         wire:model.live="uploads"
                                         accept="application/pdf,.pdf"
@@ -219,7 +222,7 @@
                                     />
                                     <x-core::input-error for="uploads" class="mt-2" />
                                     <x-core::input-error for="uploads.*" class="mt-1" />
-                                @endif
+                                </div>
                             </div>
                         </div>
                     @endif
