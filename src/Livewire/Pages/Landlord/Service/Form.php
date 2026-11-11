@@ -4,9 +4,11 @@ namespace Paparee\Rakaca\Livewire\Pages\Landlord\Service;
 
 use Bale\Core\Support\Sanitize;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Paparee\Rakaca\Models\RakacaService;
+use Paparee\Rakaca\Support\ServicePalette;
 
 #[Layout('rakaca::layouts.app')]
 class Form extends Component
@@ -20,6 +22,8 @@ class Form extends Component
     public string $slug = '';
 
     public string $icon = '';
+
+    public string $color = ServicePalette::DEFAULT;
 
     public string $description = '';
 
@@ -39,6 +43,7 @@ class Form extends Component
             $this->name = $service->name;
             $this->slug = $service->slug;
             $this->icon = $service->icon ?? '';
+            $this->color = $service->color ?? ServicePalette::DEFAULT;
             $this->description = $service->description ?? '';
             $this->sla_days = $service->sla_days ? (string) $service->sla_days : '';
             $this->actived = $service->actived;
@@ -80,6 +85,7 @@ class Form extends Component
             'name' => 'required|min:3|max:255',
             'slug' => $uniqueRule,
             'icon' => 'nullable|string|max:255',
+            'color' => ['nullable', Rule::in(ServicePalette::keys())],
             'description' => 'nullable|string|max:1000',
             'sla_days' => 'nullable|integer|min:1|max:365',
             'actived' => 'boolean',
@@ -99,6 +105,7 @@ class Form extends Component
             'name' => $this->name,
             'slug' => $this->slug,
             'icon' => $this->icon,
+            'color' => $this->color,
             'description' => $this->description,
             'sla_days' => $this->sla_days === '' ? null : (int) $this->sla_days,
             'actived' => $this->actived,
@@ -117,6 +124,8 @@ class Form extends Component
 
     public function render()
     {
-        return view('rakaca::livewire.pages.landlord.service.form');
+        return view('rakaca::livewire.pages.landlord.service.form', [
+            'palette' => ServicePalette::TONES,
+        ]);
     }
 }

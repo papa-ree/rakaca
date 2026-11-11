@@ -10,7 +10,10 @@
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
             @forelse($this->services as $service)
-                @php $firstForm = $service->forms->first(); @endphp
+                @php
+                    $firstForm = $service->forms->first();
+                    $palette = \Paparee\Rakaca\Support\ServicePalette::get($service->color);
+                @endphp
                 <div
                     class="group relative overflow-hidden p-5 transition-all duration-300 bg-white border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700 rounded-2xl hover:shadow-xl hover:-translate-y-1 flex flex-col">
                     {{-- Gradient Accent --}}
@@ -20,13 +23,13 @@
 
                     <div class="flex items-center gap-4 flex-1">
                         <div
-                            class="shrink-0 flex items-center justify-center w-11 h-11 bg-linear-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg transition-transform duration-200 group-hover:scale-110">
+                            class="shrink-0 flex items-center justify-center w-11 h-11 bg-linear-to-br {{ $palette['icon'] }} rounded-xl transition-transform duration-200 group-hover:scale-110">
                             <x-dynamic-component :component="'lucide-' . $service->icon"
                                 class="w-5 h-5 text-white" />
                         </div>
                         <div class="min-w-0 flex-1">
                             <h4
-                                class="text-sm font-bold text-gray-900 transition-colors dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 truncate">
+                                class="text-sm font-bold text-gray-900 transition-colors dark:text-white {{ $palette['title'] }} truncate">
                                 {{ $service->name }}
                             </h4>
                             <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-0.5">
@@ -37,7 +40,7 @@
                     <div class="mt-4">
                         @if($firstForm)
                             <a href="{{ route('rakaca.guest.submission.create', ['form_id' => $firstForm->id]) }}" wire:navigate
-                                class="inline-flex w-full items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
+                                class="inline-flex w-full items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-white {{ $palette['button'] }} rounded-lg transition">
                                 <x-lucide-plus class="w-3 h-3" /> {{ __('Ajukan') }}
                             </a>
                         @else

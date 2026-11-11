@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (Schema::hasTable('rakaca_services') && ! Schema::hasColumn('rakaca_services', 'color')) {
+            Schema::table('rakaca_services', function (Blueprint $table) {
+                // Token palet (ServicePalette), bukan hex. Null = warna brand.
+                $table->string('color', 20)->nullable()->after('icon');
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        if (Schema::hasTable('rakaca_services') && Schema::hasColumn('rakaca_services', 'color')) {
+            Schema::table('rakaca_services', function (Blueprint $table) {
+                $table->dropColumn('color');
+            });
+        }
+    }
+};

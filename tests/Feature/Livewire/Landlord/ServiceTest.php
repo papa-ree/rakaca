@@ -74,6 +74,32 @@ it('berhasil membuat service baru', function () {
         ->and($service->actived)->toBeTrue();
 });
 
+it('menyimpan warna layanan yang dipilih', function () {
+    $user = serviceUser(['service.create', 'service.read']);
+
+    Livewire::actingAs($user)
+        ->test(ServiceForm::class)
+        ->set('name', 'Layanan Teal')
+        ->set('slug', 'layanan-teal')
+        ->set('color', 'teal')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(RakacaService::where('slug', 'layanan-teal')->value('color'))->toBe('teal');
+});
+
+it('menolak token warna di luar palet', function () {
+    $user = serviceUser(['service.create', 'service.read']);
+
+    Livewire::actingAs($user)
+        ->test(ServiceForm::class)
+        ->set('name', 'Warna Salah')
+        ->set('slug', 'warna-salah')
+        ->set('color', 'merah-jambu')
+        ->call('save')
+        ->assertHasErrors(['color']);
+});
+
 it('menolak duplikat slug saat create', function () {
     RakacaService::create([
         'id' => (string) Str::uuid(),
@@ -112,6 +138,21 @@ it('berhasil mengupdate service', function () {
 
     expect($service->fresh()->name)->toBe('New Name')
         ->and($service->fresh()->slug)->toBe('new-name');
+});
+
+it('mewarnai card layanan guest sesuai token warna', function () {
+    RakacaService::create([
+        'id' => (string) Str::uuid(),
+        'name' => 'Layanan Teal',
+        'slug' => 'layanan-teal-card',
+        'icon' => 'layers',
+        'color' => 'teal',
+        'actived' => true,
+    ]);
+
+    Livewire::test(\Paparee\Rakaca\Livewire\Pages\Guest\Dashboard\Section\ServiceList::class)
+        ->assertSee('from-teal-500')
+        ->assertSee('group-hover:text-teal-600');
 });
 
 it('berhasil menghapus service via deleteItem', function () {

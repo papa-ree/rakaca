@@ -109,8 +109,8 @@
                                         x-model="serviceIcon" placeholder="e.g. globe, activity, users" />
                                 </div>
                                 <div
-                                    class="shrink-0 w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm">
-                                    <span class="text-indigo-600 dark:text-indigo-400">
+                                    class="shrink-0 w-12 h-12 rounded-xl bg-linear-to-br {{ \Paparee\Rakaca\Support\ServicePalette::get($color)['icon'] }} flex items-center justify-center shadow-sm">
+                                    <span class="text-white">
                                         <template x-if="serviceIcon">
                                             <x-dynamic-component component="lucide-help-circle"
                                                 x-bind:is="'x-lucide-' + serviceIcon.replace('lucide-', '')"
@@ -123,6 +123,31 @@
                                 </div>
                             </div>
                             <x-core::input-error for="icon" class="mt-2" />
+                        </div>
+
+                        {{-- Color --}}
+                        <div class="mt-4">
+                            <x-core::label :value="__('Service Color')" />
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                @foreach($palette as $tone => $style)
+                                    <button type="button" wire:click="$set('color', '{{ $tone }}')"
+                                        title="{{ $style['label'] }}" aria-label="{{ $style['label'] }}"
+                                        @class([
+                                            'flex h-8 w-8 items-center justify-center rounded-full ring-offset-2 ring-offset-white transition dark:ring-offset-slate-900',
+                                            $style['swatch'],
+                                            'ring-2 ring-slate-900 dark:ring-white' => $color === $tone,
+                                            'ring-1 ring-black/5 hover:ring-slate-400 dark:ring-white/10' => $color !== $tone,
+                                        ])>
+                                        @if($color === $tone)
+                                            <x-lucide-check class="w-4 h-4 text-white" />
+                                        @endif
+                                    </button>
+                                @endforeach
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                {{ __('Warna dipakai pada card layanan di portal pengguna.') }}
+                            </p>
+                            <x-core::input-error for="color" class="mt-2" />
                         </div>
                     </div>
 

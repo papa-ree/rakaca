@@ -17,6 +17,7 @@ class RakacaService extends Model
         'name',
         'slug',
         'icon',
+        'color',
         'description',
         'sla_days',
         'actived',
