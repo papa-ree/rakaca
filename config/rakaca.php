@@ -5,6 +5,9 @@
 // Catatan: blok config `whatsapp` dan `aduan` sudah dipindahkan ke
 // bale/frasasti (config/frasasti.php) bersama fitur aduan.
 return [
+    // Nomor WhatsApp bantuan yang tampil di area guest (format 62…, tanpa "+").
+    'support_whatsapp' => env('RAKACA_SUPPORT_WHATSAPP', '6285126061182'),
+
     'ticket' => [
         'auto_cancel_hours' => (int) env('RAKACA_TICKET_AUTO_CANCEL_HOURS', 72),
         'rejection_min_chars' => (int) env('RAKACA_TICKET_REJECTION_MIN_CHARS', 10),

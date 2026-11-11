@@ -166,7 +166,7 @@
                             <x-lucide-arrow-left class="w-4 h-4 mr-2" />
                             Kembali ke Dashboard
                         </a>
-                        <a href="https://wa.me/6285126061182" target="_blank"
+                        <a href="https://wa.me/{{ config('rakaca.support_whatsapp') }}" target="_blank" rel="noopener"
                             class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-linear-to-br from-green-500 to-green-600 rounded-lg hover:from-green-600 hover:to-green-700 transition-all shadow-lg hover:shadow-xl">
                             <x-lucide-headphones class="w-4 h-4 mr-2" />
                             Hubungi Support
@@ -190,7 +190,7 @@
                     Jika Anda mengalami kesulitan atau memerlukan bantuan dalam memilih layanan, tim support kami siap
                     membantu Anda.
                 </p>
-                <a href="https://wa.me/6285126061182" target="_blank"
+                <a href="https://wa.me/{{ config('rakaca.support_whatsapp') }}" target="_blank" rel="noopener"
                     class="inline-flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
                     Hubungi Support
                     <x-lucide-external-link class="w-4 h-4 ml-1" />

@@ -10,6 +10,11 @@ use Paparee\Rakaca\Models\RakacaService;
 #[Layout('rakaca::layouts.app')]
 class ServiceList extends Component
 {
+    public function render()
+    {
+        return view('rakaca::livewire.pages.guest.dashboard.section.service-list');
+    }
+
     #[Computed()]
     public function services()
     {
@@ -17,10 +22,5 @@ class ServiceList extends Component
             ->with(['forms' => fn ($q) => $q->where('actived', true)])
             ->orderBy('name')
             ->get();
-    }
-
-    public function render()
-    {
-        return view('rakaca::livewire.pages.guest.dashboard.section.service-list');
     }
 }

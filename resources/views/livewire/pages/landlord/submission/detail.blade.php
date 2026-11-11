@@ -59,6 +59,10 @@
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $submission->user?->email ?? '' }}</p>
                         </div>
                         <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">{{ __('No. HP') }}</p>
+                            <p class="font-mono text-sm text-gray-900 dark:text-white">{{ $submission->user?->profile?->phone ?? '-' }}</p>
+                        </div>
+                        <div>
                             <p class="text-xs text-gray-500 uppercase tracking-wide">{{ __('NIP') }}</p>
                             @php
                                 $nipRaw = $submission->items['data']['nip'] ?? $submission->items['data']['NIP'] ?? '-';
