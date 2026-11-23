@@ -100,7 +100,7 @@
                                     <span class="text-sm text-gray-900 dark:text-white break-all">
                                         @if(is_array($val))
                                             {{ json_encode($val) }}
-                                        @elseif(Str::startsWith($val, 'rakaca-submissions/') || Str::startsWith($val, 'rakaca-submission-uploads/'))
+                                        @elseif(str_contains($val, 'rakaca-submissions/') || str_contains($val, 'rakaca-submission-uploads/'))
                                             <a href="{{ \Paparee\Rakaca\Support\SubmissionStorage::url($val) }}" target="_blank" class="text-indigo-600 dark:text-indigo-400 hover:underline">{{ basename($val) }}</a>
                                         @else
                                             {{ $val }}

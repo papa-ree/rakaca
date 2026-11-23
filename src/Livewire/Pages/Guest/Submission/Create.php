@@ -24,6 +24,12 @@ class Create extends Component
 {
     use WithFileUploads;
 
+    protected function uploadPath(string $directory): string
+    {
+        $slug = session('bale_active_slug');
+        return $slug ? "{$slug}/{$directory}" : $directory;
+    }
+
     public ?Form $selectedForm = null;
 
     public string $form_id = '';
@@ -265,9 +271,9 @@ class Create extends Component
             if (($field['type'] ?? null) === 'file' && isset($itemsToSave[$key]) && is_object($itemsToSave[$key])) {
                 $file = $itemsToSave[$key];
                 if ($file instanceof TemporaryUploadedFile) {
-                    $itemsToSave[$key] = $file->store('rakaca-submissions', SubmissionStorage::disk());
+                    $itemsToSave[$key] = $file->store($this->uploadPath('rakaca-submissions'), SubmissionStorage::disk());
                 } elseif (method_exists($file, 'store')) {
-                    $itemsToSave[$key] = $file->store('rakaca-submissions', SubmissionStorage::disk());
+                    $itemsToSave[$key] = $file->store($this->uploadPath('rakaca-submissions'), SubmissionStorage::disk());
                 }
             }
         }
@@ -295,7 +301,7 @@ class Create extends Component
         // Handle multi-upload zone (pdf, max 3, 5MB each) — separate table
         foreach ($this->uploads as $file) {
             if ($file instanceof TemporaryUploadedFile) {
-                $path = $file->store('rakaca-submission-uploads', SubmissionStorage::disk());
+                $path = $file->store($this->uploadPath('rakaca-submission-uploads'), SubmissionStorage::disk());
                 RakacaSubmissionUpload::create([
                     'rakaca_submission_id' => $submission->id,
                     'user_uuid' => $this->applicantUuid(),

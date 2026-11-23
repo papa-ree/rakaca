@@ -28,9 +28,10 @@ class Edit extends Component
 
     public ?array $surat = null;
 
-    public function temporaryFileUploadDisk(): string
+    protected function uploadPath(string $directory): string
     {
-        return app()->isProduction() ? 's3' : 'local';
+        $slug = session('bale_active_slug');
+        return $slug ? "{$slug}/{$directory}" : $directory;
     }
 
     public function mount(RakacaSubmission $submission)
@@ -39,8 +40,8 @@ class Edit extends Component
             abort(403);
         }
 
-        if ($submission->status !== SubmissionStatus::MenungguBerkas) {
-            session()->flash('error', 'Hanya tiket dengan status Menunggu Berkas yang bisa dilengkapi.');
+        if (! in_array($submission->status, [SubmissionStatus::MenungguBerkas, SubmissionStatus::MenungguRevisi], true)) {
+            session()->flash('error', 'Hanya tiket dengan status Menunggu Berkas atau Menunggu Revisi yang bisa dilengkapi.');
             $this->redirectRoute('rakaca.guest.submission.index', navigate: true);
 
             return;
@@ -130,7 +131,7 @@ class Edit extends Component
             if (($field['type'] ?? null) === 'file' && isset($itemsToSave[$key]) && is_object($itemsToSave[$key])) {
                 $file = $itemsToSave[$key];
                 if (method_exists($file, 'store')) {
-                    $itemsToSave[$key] = $file->store('rakaca-submissions', SubmissionStorage::disk());
+                    $itemsToSave[$key] = $file->store($this->uploadPath('rakaca-submissions'), SubmissionStorage::disk());
                 }
             }
         }
@@ -153,7 +154,7 @@ class Edit extends Component
         $remaining = 3 - $existingCount;
         foreach (array_slice($this->uploads, 0, $remaining) as $file) {
             if (method_exists($file, 'store')) {
-                $path = $file->store('rakaca-submission-uploads', SubmissionStorage::disk());
+                $path = $file->store($this->uploadPath('rakaca-submission-uploads'), SubmissionStorage::disk());
                 RakacaSubmissionUpload::create([
                     'rakaca_submission_id' => $this->submission->id,
                     'user_uuid' => auth()->user()->uuid,
@@ -170,7 +171,7 @@ class Edit extends Component
 
     public function submitFiles()
     {
-        if ($this->submission->status !== SubmissionStatus::MenungguBerkas) {
+        if (! in_array($this->submission->status, [SubmissionStatus::MenungguBerkas, SubmissionStatus::MenungguRevisi], true)) {
             abort(403);
         }
 
