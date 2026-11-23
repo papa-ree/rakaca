@@ -176,9 +176,14 @@ class Edit extends Component
 
         $this->saveItems();
 
-        app(TicketWorkflowService::class, ['submission' => $this->submission])->submitFiles();
+        $notified = app(TicketWorkflowService::class, ['submission' => $this->submission])->submitFiles();
 
         $this->dispatch('toast', message: 'Berkas berhasil dikirim untuk review.', type: 'success');
+
+        if (! $notified) {
+            $this->dispatch('toast', message: __('Nomor WhatsApp Anda belum tersedia, notifikasi tidak dikirim.'), type: 'warning');
+        }
+
         $this->redirectRoute('rakaca.guest.submission.index', navigate: true);
     }
 

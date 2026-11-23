@@ -54,8 +54,9 @@ it('reject mengharuskan rejection_reason minimal 10 karakter', function () {
     $submission = landlordDetailFixture();
 
     Livewire::test(Detail::class, ['submission' => $submission])
+        ->set('selectedAction', 'reject')
         ->set('reason', 'pendek')
-        ->call('reject')
+        ->call('executeAction')
         ->assertHasErrors(['reason']);
 
     expect($submission->fresh()->status)->toBe(SubmissionStatus::SiapDireview);
@@ -73,8 +74,9 @@ it('reject berhasil dengan alasan valid', function () {
     $submission = landlordDetailFixture();
 
     Livewire::test(Detail::class, ['submission' => $submission])
+        ->set('selectedAction', 'reject')
         ->set('reason', 'Berkas yang dilampirkan tidak sesuai ketentuan.')
-        ->call('reject')
+        ->call('executeAction')
         ->assertHasNoErrors(['reason'])
         ->assertRedirect();
 

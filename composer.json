@@ -19,6 +19,8 @@
         "php": "^8.3",
         "awssat/laravel-visits": "*",
         "bale/api": "*",
+        "bale/core": "*",
+        "bale/wara": "*",
         "illuminate/contracts": "^11.0||^12.0||^13.0",
         "phpoffice/phpspreadsheet": "^2.0||^3.0||^4.0||^5.0"
     },

@@ -204,6 +204,7 @@ class Detail extends Component
         $this->validate();
 
         $service = app(TicketWorkflowService::class, ['submission' => $this->submission]);
+        $notified = true;
 
         if ($this->selectedAction === 'complete') {
             if (! $this->canComplete()) {
@@ -215,7 +216,7 @@ class Detail extends Component
                 $resolution[$key] = is_string($value) ? Sanitize::text($value) : $value;
             }
 
-            $service->complete($resolution);
+            $notified = $service->complete($resolution);
             $this->dispatch('toast', message: __('Tiket diselesaikan.'), type: 'success');
         } elseif ($this->selectedAction === 'revise') {
             if (! $this->canRequestRevision()) {
@@ -223,7 +224,7 @@ class Detail extends Component
             }
 
             $note = Sanitize::text($this->revise_note);
-            $service->requestRevision($note);
+            $notified = $service->requestRevision($note);
             $this->dispatch('toast', message: __('Permintaan revisi dikirim.'), type: 'success');
         } elseif ($this->selectedAction === 'reject') {
             if (! $this->canReject()) {
@@ -231,8 +232,12 @@ class Detail extends Component
             }
 
             $reason = Sanitize::text($this->reason);
-            $service->reject($reason);
+            $notified = $service->reject($reason);
             $this->dispatch('toast', message: __('Tiket ditolak.'), type: 'success');
+        }
+
+        if (! $notified) {
+            $this->dispatch('toast', message: __('Nomor WhatsApp pemohon kosong, notifikasi tidak dikirim.'), type: 'warning');
         }
 
         $this->redirectRoute('rakaca.landlord.submission.detail', ['submission' => $this->submission->id], navigate: true);

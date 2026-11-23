@@ -19,4 +19,15 @@ return [
         'work_end' => env('RAKACA_SLA_WORK_END', '15:45'),
         'work_days' => array_map('intval', explode(',', (string) env('RAKACA_SLA_WORK_DAYS', '1,2,3,4,5'))),
     ],
+
+    // Notifikasi WhatsApp status pengajuan lewat client Wara milik Rakaca.
+    'notify' => [
+        'enabled' => (bool) env('RAKACA_WA_NOTIFY', false),
+        'purpose' => env('RAKACA_WA_PURPOSE', 'rakaca'),
+        'client_name' => env('RAKACA_WA_CLIENT_NAME', 'Rakaca (Package)'),
+        'recipients' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('RAKACA_WA_RECIPIENTS', ''))
+        ))),
+    ],
 ];

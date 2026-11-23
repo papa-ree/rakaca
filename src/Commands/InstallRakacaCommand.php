@@ -4,6 +4,7 @@ namespace Paparee\Rakaca\Commands;
 
 use Bale\Core\Support\RootPermissions;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -15,7 +16,7 @@ class InstallRakacaCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'rakaca:install';
+    protected $signature = 'rakaca:install {--with-wa-notify : Buat client Wara untuk notifikasi WhatsApp}';
 
     /**
      * The console command description.
@@ -33,9 +34,54 @@ class InstallRakacaCommand extends Command
 
         $this->seedPermissions();
 
+        $this->ensureWaraClient();
+
         $this->info('Rakaca installation completed successfully!');
 
         return self::SUCCESS;
+    }
+
+    protected function ensureWaraClient(): void
+    {
+        if (! $this->option('with-wa-notify')) {
+            return;
+        }
+
+        $name = (string) config('rakaca.notify.client_name', 'Rakaca (Package)');
+
+        if (! $this->confirm('Buat client Wara "'.$name.'" untuk notifikasi WhatsApp?', false)) {
+            return;
+        }
+
+        if (! Schema::hasTable('wara_clients')) {
+            $this->warn('Tabel wara_clients belum ada. Jalankan: php artisan wara:install');
+
+            return;
+        }
+
+        $class = 'Bale\\Wara\\Models\\WaraClient';
+
+        if (! class_exists($class)) {
+            $this->warn('Kelas WaraClient tidak ditemukan. Jalankan: php artisan wara:install');
+
+            return;
+        }
+
+        $model = new $class;
+
+        $client = $model::query()->firstOrCreate(
+            ['name' => $name],
+            [
+                'type' => 'service',
+                'bale_id' => null,
+                'api_token_id' => null,
+                'name' => $name,
+                'is_active' => true,
+            ]
+        );
+
+        $this->line('  + Client Wara: '.$client->name);
+        $this->line('  Petakan purpose "'.config('rakaca.notify.purpose', 'rakaca').'" ke device di menu Wara > Client setelah wara:sync-devices.');
     }
 
     protected function seedPermissions(): void

@@ -35,6 +35,7 @@ class TestCase extends Orchestra
         ]);
 
         $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+        $app['config']->set('core.index_key', 'rakaca-test-index-key');
         $app['config']->set('activitylog.enabled', true);
         $app['config']->set('activitylog.default_auth_driver', 'web');
         $app['config']->set('auth.defaults.guard', 'web');
@@ -48,6 +49,8 @@ class TestCase extends Orchestra
         $this->createPermissionTables();
         $this->createActivityLogTable();
         $this->createBaleTables();
+        $this->createUserProfilesTable();
+        $this->createWaraClientsTable();
         $this->createRakacaTables();
         $this->createApiTokensTable();
     }
@@ -173,6 +176,36 @@ class TestCase extends Orchestra
             $table->boolean('enabled')->default(true);
             $table->timestamps();
             $table->foreign('bale_id')->references('id')->on('bale_lists')->cascadeOnDelete();
+        });
+    }
+
+    protected function createUserProfilesTable(): void
+    {
+        Schema::create('user_profiles', function ($table) {
+            $table->uuid('id')->primary();
+            $table->uuid('user_uuid')->unique();
+            $table->text('phone')->nullable();
+            $table->string('phone_index', 64)->nullable()->index();
+            $table->string('asal_instansi')->nullable();
+            $table->timestamps();
+            $table->foreign('user_uuid')->references('uuid')->on('users')->cascadeOnDelete();
+        });
+    }
+
+    protected function createWaraClientsTable(): void
+    {
+        Schema::create('wara_clients', function ($table) {
+            $table->uuid('id')->primary();
+            $table->uuid('bale_id')->nullable();
+            $table->string('type', 32)->default('service');
+            $table->uuid('api_token_id')->nullable();
+            $table->string('name');
+            $table->boolean('is_active')->default(true);
+            $table->boolean('header_enabled')->default(false);
+            $table->text('header_text')->nullable();
+            $table->boolean('footer_enabled')->default(false);
+            $table->text('footer_text')->nullable();
+            $table->timestamps();
         });
     }
 

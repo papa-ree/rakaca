@@ -309,7 +309,11 @@ class Create extends Component
 
         // Form awal sudah membawa berkas final (upload atau surat Srikandi),
         // jadi langsung masuk antrean review tanpa tahap "lengkapi berkas".
-        app(TicketWorkflowService::class, ['submission' => $submission])->submitFiles();
+        $notified = app(TicketWorkflowService::class, ['submission' => $submission])->submitFiles();
+
+        if (! $notified) {
+            $this->dispatch('toast', message: __('Nomor WhatsApp Anda belum tersedia, notifikasi tidak dikirim.'), type: 'warning');
+        }
 
         $this->afterSave($submission);
     }

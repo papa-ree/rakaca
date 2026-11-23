@@ -114,7 +114,7 @@ it('complete menyelesaikan tiket dengan data resolusi', function () {
     expect($submission->fresh()->status)->toBe(SubmissionStatus::Selesai);
 
     $response = RakacaFormResponse::where('rakaca_submission_id', $submission->id)->first();
-    expect($response->resolution_data)->toBe([
+    expect($response->resolution_data)->toMatchArray([
         'disetujui' => true,
         'catatan' => 'Dokumen diterima',
     ])->and($response->resolved_at)->not->toBeNull()

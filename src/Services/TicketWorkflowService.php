@@ -13,7 +13,7 @@ final class TicketWorkflowService
         private RakacaSubmission $submission
     ) {}
 
-    public function submitFiles(): void
+    public function submitFiles(): bool
     {
         $this->transitionTo(
             SubmissionStatus::SiapDireview,
@@ -24,6 +24,8 @@ final class TicketWorkflowService
                 $this->snapshotSla();
             }
         );
+
+        return $this->notify(includeOfficers: true);
     }
 
     public function takeOver(): void
@@ -38,7 +40,7 @@ final class TicketWorkflowService
         });
     }
 
-    public function reject(string $reason): void
+    public function reject(string $reason): bool
     {
         $this->ensureResponse()->update([
             'rejection_reason' => $reason,
@@ -46,9 +48,11 @@ final class TicketWorkflowService
         ]);
 
         $this->transitionTo(SubmissionStatus::Ditolak);
+
+        return $this->notify();
     }
 
-    public function requestRevision(string $note): void
+    public function requestRevision(string $note): bool
     {
         $this->ensureResponse()->update([
             'revise_note' => $note,
@@ -60,9 +64,11 @@ final class TicketWorkflowService
         }
 
         $this->transitionTo(SubmissionStatus::MenungguRevisi);
+
+        return $this->notify();
     }
 
-    public function complete(array $resolutionData): void
+    public function complete(array $resolutionData): bool
     {
         $this->ensureResponse()->update([
             'resolution_data' => $resolutionData,
@@ -71,6 +77,8 @@ final class TicketWorkflowService
         ]);
 
         $this->transitionTo(SubmissionStatus::Selesai);
+
+        return $this->notify();
     }
 
     public function userCancel(): void
@@ -115,6 +123,11 @@ final class TicketWorkflowService
         return $this->submission->response()->firstOrCreate([
             'rakaca_submission_id' => $this->submission->id,
         ]);
+    }
+
+    private function notify(bool $includeOfficers = false): bool
+    {
+        return app(SubmissionNotifier::class)->notify($this->submission, $includeOfficers);
     }
 
     /**
