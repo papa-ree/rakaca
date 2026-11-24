@@ -11,7 +11,7 @@ class AutoCancelTicketsCommand extends Command
 {
     protected $signature = 'rakaca:auto-cancel';
 
-    protected $description = 'Batalkan otomatis tiket menunggu-berkas yang belum difinalisasi dalam 3x24 jam';
+    protected $description = 'Batalkan otomatis tiket menunggu-berkas/menunggu-revisi tanpa update dalam 3x24 jam';
 
     public function handle(): int
     {
@@ -19,12 +19,9 @@ class AutoCancelTicketsCommand extends Command
         $cutoff = now()->subHours($hours);
 
         $tickets = RakacaSubmission::query()
-            ->where('status', SubmissionStatus::MenungguBerkas->value)
-            ->where(function ($q) use ($cutoff) {
-                $q->whereNull('status_changed_at')
-                    ->where('created_at', '<=', $cutoff)
-                    ->orWhere('status_changed_at', '<=', $cutoff);
-            })
+            ->whereIn('status', [SubmissionStatus::MenungguBerkas->value, SubmissionStatus::MenungguRevisi->value])
+            // updated_at bergerak saat pemohon menyimpan draf, jadi "tidak ada update" = tidak ada save sama sekali.
+            ->where('updated_at', '<=', $cutoff)
             ->get();
 
         $count = 0;

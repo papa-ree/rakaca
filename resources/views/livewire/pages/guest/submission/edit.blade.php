@@ -33,18 +33,33 @@
                     </div>
                 </div>
 
-                {{-- Notifikasi auto-cancel --}}
-                <div class="mx-6 mt-6 p-4 bg-linear-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200 dark:border-amber-800">
-                    <div class="flex items-start gap-3">
-                        <div class="p-2.5 bg-amber-600 rounded-xl shadow-md shrink-0">
-                            <x-lucide-alert-triangle class="w-5 h-5 text-white" />
+                @if ($status === \Paparee\Rakaca\Enums\SubmissionStatus::MenungguRevisi)
+                    {{-- Catatan revisi dari petugas --}}
+                    <div class="mx-6 mt-6 p-4 bg-linear-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200 dark:border-amber-800">
+                        <div class="flex items-start gap-3">
+                            <div class="p-2.5 bg-amber-600 rounded-xl shadow-md shrink-0">
+                                <x-lucide-message-square-warning class="w-5 h-5 text-white" />
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h5 class="text-sm font-bold text-amber-900 dark:text-amber-200">{{ __('Catatan Revisi dari Petugas') }}</h5>
+                                <p class="mt-1 text-xs sm:text-sm text-amber-900/90 dark:text-amber-100/90 whitespace-pre-line">{{ $submission->response?->revise_note ?: __('Tidak ada catatan.') }}</p>
+                            </div>
                         </div>
-                        <p class="text-xs sm:text-sm text-amber-900 dark:text-amber-200 leading-relaxed">
-                            Tiket akan <span class="font-semibold">dibatalkan otomatis</span> jika berkas tidak dikirim dalam
-                            <span class="font-semibold">{{ config('rakaca.ticket.auto_cancel_hours', 72) }} jam</span> sejak dibuat.
-                        </p>
                     </div>
-                </div>
+                @else
+                    {{-- Notifikasi auto-cancel --}}
+                    <div class="mx-6 mt-6 p-4 bg-linear-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200 dark:border-amber-800">
+                        <div class="flex items-start gap-3">
+                            <div class="p-2.5 bg-amber-600 rounded-xl shadow-md shrink-0">
+                                <x-lucide-alert-triangle class="w-5 h-5 text-white" />
+                            </div>
+                            <p class="text-xs sm:text-sm text-amber-900 dark:text-amber-200 leading-relaxed">
+                                Tiket akan <span class="font-semibold">dibatalkan otomatis</span> jika berkas tidak dikirim dalam
+                                <span class="font-semibold">{{ config('rakaca.ticket.auto_cancel_hours', 72) }} jam</span> sejak dibuat.
+                            </p>
+                        </div>
+                    </div>
+                @endif
 
                 <form wire:submit="submitFiles" class="p-6 sm:p-8 space-y-6">
                     {{-- Dynamic Fields --}}
@@ -173,7 +188,7 @@
                         </x-core::secondary-button>
                         <div class="flex flex-col-reverse sm:flex-row items-center gap-3 w-full sm:w-auto">
                             <x-core::secondary-button link href="{{ route('rakaca.guest.submission.index') }}" label="{{ __('Batal') }}" class="w-full sm:w-auto justify-center" />
-                            <x-core::button type="submit" spinner="submitFiles" label="{{ __('Kirim Berkas untuk Review') }}" class="w-full sm:w-auto justify-center">
+                            <x-core::button type="submit" spinner="submitFiles" :label="$status === \Paparee\Rakaca\Enums\SubmissionStatus::MenungguRevisi ? __('Kirim Revisi') : __('Kirim Berkas untuk Review')" class="w-full sm:w-auto justify-center">
                                 <x-slot name="icon"><x-lucide-send class="w-4 h-4" /></x-slot>
                             </x-core::button>
                         </div>

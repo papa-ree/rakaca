@@ -65,7 +65,7 @@ enum SubmissionStatus: string
             self::MenungguBerkas => [self::SiapDireview, self::Ditolak, self::Dibatalkan],
             self::SiapDireview => [self::Diproses, self::Ditolak, self::Dibatalkan],
             self::Diproses => [self::MenungguRevisi, self::Selesai, self::Ditolak],
-            self::MenungguRevisi => [self::SiapDireview, self::Ditolak],
+            self::MenungguRevisi => [self::SiapDireview, self::Ditolak, self::Dibatalkan],
             default => [],
         };
     }

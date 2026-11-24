@@ -31,6 +31,7 @@ class Edit extends Component
     protected function uploadPath(string $directory): string
     {
         $slug = session('bale_active_slug');
+
         return $slug ? "{$slug}/{$directory}" : $directory;
     }
 
@@ -47,7 +48,7 @@ class Edit extends Component
             return;
         }
 
-        $this->submission = $submission->load(['form', 'uploads']);
+        $this->submission = $submission->load(['form', 'uploads', 'response']);
         $this->items = $submission->items['data'] ?? [];
         $this->surat = $submission->items['srikandi'] ?? null;
     }
@@ -116,6 +117,10 @@ class Edit extends Component
 
     public function saveItems()
     {
+        if (! in_array($this->submission->status, [SubmissionStatus::MenungguBerkas, SubmissionStatus::MenungguRevisi], true)) {
+            abort(403);
+        }
+
         $this->validate();
 
         $itemsToSave = $this->items;

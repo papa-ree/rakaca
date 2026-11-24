@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Paparee\Rakaca\Tests\TestCase;
+use Tests\Concerns\RefreshTestDatabaseSafely;
 
 uses(TestCase::class)
-    ->use(RefreshDatabase::class)
+    ->use(RefreshTestDatabaseSafely::class)
     ->in('Feature', 'Unit');

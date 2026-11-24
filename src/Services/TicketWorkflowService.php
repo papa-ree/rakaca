@@ -97,7 +97,7 @@ final class TicketWorkflowService
     public function autoCancel(): void
     {
         $this->ensureResponse()->update([
-            'cancelled_reason' => 'auto-cancel: 3x24 jam (Menunggu Berkas)',
+            'cancelled_reason' => 'auto-cancel: 3x24 jam ('.$this->submission->status?->label().')',
         ]);
 
         $this->transitionTo(SubmissionStatus::Dibatalkan);

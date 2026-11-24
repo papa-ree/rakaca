@@ -36,6 +36,21 @@
                 </div>
 
                 <div class="p-6 sm:p-8 space-y-6">
+                    {{-- Catatan revisi dari petugas --}}
+                    @if($status === \Paparee\Rakaca\Enums\SubmissionStatus::MenungguRevisi)
+                        <div class="p-4 sm:p-5 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-200 dark:border-amber-800/40">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2.5 bg-amber-600 rounded-xl shadow-md shrink-0">
+                                    <x-lucide-message-square-warning class="w-5 h-5 text-white" />
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="text-sm font-bold text-amber-900 dark:text-amber-200">{{ __('Catatan Revisi dari Petugas') }}</h3>
+                                    <p class="mt-1 text-sm text-amber-900/90 dark:text-amber-100/90 whitespace-pre-line">{{ $submission->response?->revise_note ?: __('Tidak ada catatan.') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     {{-- Reservation data --}}
                     @if($items)
                         <div>
@@ -143,8 +158,8 @@
                         <p class="mt-2.5 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{{ $status->description() }}</p>
                     </div>
 
-                    @if($status->value === \Paparee\Rakaca\Enums\SubmissionStatus::MenungguBerkas->value)
-                        <x-core::button link href="{{ route('rakaca.guest.submission.edit', $submission->id) }}" label="{{ __('Lengkapi Berkas') }}" class="w-full justify-center">
+                    @if(in_array($status, [\Paparee\Rakaca\Enums\SubmissionStatus::MenungguBerkas, \Paparee\Rakaca\Enums\SubmissionStatus::MenungguRevisi], true))
+                        <x-core::button link href="{{ route('rakaca.guest.submission.edit', $submission->id) }}" :label="$status === \Paparee\Rakaca\Enums\SubmissionStatus::MenungguRevisi ? __('Revisi Berkas') : __('Lengkapi Berkas')" class="w-full justify-center">
                             <x-slot name="icon"><x-lucide-upload class="w-4 h-4" /></x-slot>
                         </x-core::button>
                     @endif

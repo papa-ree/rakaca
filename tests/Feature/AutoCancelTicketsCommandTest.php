@@ -13,6 +13,7 @@ use Paparee\Rakaca\Models\RakacaSubmission;
 it('rakaca:auto-cancel membatalkan tiket menunggu-berkas yang lewat cutoff', function () {
     [$submission] = oldMenungguBerkasSubmission();
     $submission->created_at = now()->subHours(100);
+    $submission->updated_at = now()->subHours(100);
     $submission->save();
 
     $this->artisan('rakaca:auto-cancel')->assertExitCode(0);
@@ -22,6 +23,33 @@ it('rakaca:auto-cancel membatalkan tiket menunggu-berkas yang lewat cutoff', fun
     $response = RakacaFormResponse::where('rakaca_submission_id', $submission->id)->first();
     expect($response)->not->toBeNull()
         ->and($response->cancelled_reason)->toContain('auto-cancel');
+});
+
+it('rakaca:auto-cancel membatalkan tiket menunggu-revisi yang lewat cutoff', function () {
+    [$submission] = oldMenungguBerkasSubmission(status: SubmissionStatus::MenungguRevisi);
+    $submission->created_at = now()->subHours(100);
+    $submission->updated_at = now()->subHours(100);
+    $submission->save();
+
+    $this->artisan('rakaca:auto-cancel')->assertExitCode(0);
+
+    expect($submission->fresh()->status)->toBe(SubmissionStatus::Dibatalkan);
+
+    $response = RakacaFormResponse::where('rakaca_submission_id', $submission->id)->first();
+    expect($response?->cancelled_reason)->toContain('Menunggu Revisi');
+});
+
+it('rakaca:auto-cancel mempertahankan tiket menunggu-revisi yang baru diperbarui pemohon', function () {
+    [$submission] = oldMenungguBerkasSubmission(status: SubmissionStatus::MenungguRevisi);
+    $submission->created_at = now()->subHours(100);
+    $submission->updated_at = now()->subHours(100);
+    $submission->save();
+    // Simpan draf pemohon = ada update, jadi tenggat auto-cancel mundur.
+    $submission->update(['items' => ['data' => ['catatan' => 'revisi']]]);
+
+    $this->artisan('rakaca:auto-cancel')->assertExitCode(0);
+
+    expect($submission->fresh()->status)->toBe(SubmissionStatus::MenungguRevisi);
 });
 
 it('rakaca:auto-cancel tidak menyentuh tiket muda', function () {

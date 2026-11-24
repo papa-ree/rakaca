@@ -44,7 +44,7 @@ it('allowedTransitions sesuai state machine', function () {
         ->toBe([SubmissionStatus::MenungguRevisi, SubmissionStatus::Selesai, SubmissionStatus::Ditolak]);
 
     expect(SubmissionStatus::allowedTransitions(SubmissionStatus::MenungguRevisi))
-        ->toBe([SubmissionStatus::SiapDireview, SubmissionStatus::Ditolak]);
+        ->toBe([SubmissionStatus::SiapDireview, SubmissionStatus::Ditolak, SubmissionStatus::Dibatalkan]);
 
     expect(SubmissionStatus::allowedTransitions(SubmissionStatus::Selesai))->toBe([])
         ->and(SubmissionStatus::allowedTransitions(SubmissionStatus::Ditolak))->toBe([])

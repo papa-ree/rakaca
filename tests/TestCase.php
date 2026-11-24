@@ -4,6 +4,7 @@ namespace Paparee\Rakaca\Tests;
 
 use Bale\Api\ApiServiceProvider;
 use Bale\Cms\CmsServiceProvider;
+use Bale\Cms\Services\TenantManager;
 use Bale\Core\CoreServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Livewire\LivewireServiceProvider;
@@ -39,6 +40,15 @@ class TestCase extends Orchestra
         $app['config']->set('activitylog.enabled', true);
         $app['config']->set('activitylog.default_auth_driver', 'web');
         $app['config']->set('auth.defaults.guard', 'web');
+    }
+
+    protected function tearDown(): void
+    {
+        // State statis tenant bocor antar tes dalam satu proses dan bisa
+        // mengarahkan koneksi default ke MySQL development.
+        TenantManager::clear();
+
+        parent::tearDown();
     }
 
     protected function setUp(): void
