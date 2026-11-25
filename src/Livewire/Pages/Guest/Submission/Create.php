@@ -27,6 +27,7 @@ class Create extends Component
     protected function uploadPath(string $directory): string
     {
         $slug = session('bale_active_slug');
+
         return $slug ? "{$slug}/{$directory}" : $directory;
     }
 
@@ -339,7 +340,7 @@ class Create extends Component
         $this->redirectRoute('rakaca.guest-dashboard.index', navigate: true);
     }
 
-    public function removeUpload(int $index): void
+    public function removeFile(int $index): void
     {
         if (isset($this->uploads[$index])) {
             unset($this->uploads[$index]);

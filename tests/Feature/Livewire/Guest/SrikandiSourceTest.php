@@ -197,7 +197,7 @@ it('menolak lebih dari tiga berkas dan pulih setelah dihapus', function () {
         ->call('save')
         ->assertHasErrors(['uploads' => __('Maksimal 3 berkas.')]);
 
-    $component->call('removeUpload', 3)
+    $component->call('removeFile', 3)
         ->call('save')
         ->assertHasNoErrors();
 

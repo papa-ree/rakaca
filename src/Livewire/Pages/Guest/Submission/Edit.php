@@ -193,7 +193,7 @@ class Edit extends Component
         $this->redirectRoute('rakaca.guest.submission.index', navigate: true);
     }
 
-    public function removeUpload(int $index): void
+    public function removeFile(int $index): void
     {
         if (isset($this->uploads[$index])) {
             unset($this->uploads[$index]);
