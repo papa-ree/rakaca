@@ -34,13 +34,13 @@
                         @endif
                         <input type="text" wire:model.live.debounce.400ms="query"
                             placeholder="{{ __('Search by name, email, bale, or role...') }}"
-                            class="block w-full py-2 ps-9 {{ $query ? 'pe-8' : 'pe-4' }} text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-500 dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30" />
+                            class="block w-full py-2 ps-9 {{ $query ? 'pe-8' : 'pe-4' }} text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-500 dark:focus:bg-gray-800 dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30" />
                     </div>
 
                     {{-- Per-page --}}
                     <div class="relative">
                         <select wire:model.live="perPage"
-                            class="appearance-none py-2 ps-3 pe-8 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:border-indigo-500 cursor-pointer">
+                            class="appearance-none py-2 ps-3 pe-8 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:bg-gray-800 dark:focus:border-indigo-500 cursor-pointer">
                             <option value="10">10 / page</option>
                             <option value="20">20 / page</option>
                             <option value="50">50 / page</option>

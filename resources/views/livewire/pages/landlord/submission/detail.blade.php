@@ -18,7 +18,7 @@
                 {{-- Status & Layanan --}}
                 <div class="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-{{ $submission->statusColor }}-50 text-{{ $submission->statusColor }}-700 ring-1 ring-{{ $submission->statusColor }}-600/20 dark:bg-{{ $submission->statusColor }}-900/30 dark:text-{{ $submission->statusColor }}-300">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border {{ $submission->statusBadgeClass }}">
                             {{ __($submission->statusLabel) }}
                         </span>
                         <span class="text-xs text-gray-500 dark:text-gray-400">{{ $submission->created_at->format('d M Y H:i') }} WIB</span>

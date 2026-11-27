@@ -26,8 +26,8 @@
                             <p class="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                 <span class="font-mono text-xs bg-white dark:bg-gray-700 px-2 py-0.5 rounded border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">#{{ $submission->code }}</span>
                                 <span class="mx-1">·</span> {{ $submission->created_at->format('d M Y H:i') }}
-                                <span class="ml-2 px-3 py-1 text-xs font-semibold text-{{ $status->color() }}-700 bg-{{ $status->color() }}-100 rounded-full dark:bg-{{ $status->color() }}-900/50 dark:text-{{ $status->color() }}-300 inline-flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-{{ $status->color() }}-500 animate-pulse"></span>
+                                <span class="ml-2 px-3 py-1 text-xs font-semibold rounded-full border inline-flex items-center gap-1.5 {{ $status->badgeClass() }}">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
                                     {{ $status->label() }}
                                 </span>
                             </p>
@@ -151,8 +151,8 @@
                 </div>
                 <div class="p-6 space-y-4">
                     <div>
-                        <span class="px-3 py-1 text-xs font-semibold text-{{ $status->color() }}-700 bg-{{ $status->color() }}-100 rounded-full dark:bg-{{ $status->color() }}-900/50 dark:text-{{ $status->color() }}-300 inline-flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-{{ $status->color() }}-500 animate-pulse"></span>
+                        <span class="px-3 py-1 text-xs font-semibold rounded-full border inline-flex items-center gap-1.5 {{ $status->badgeClass() }}">
+                            <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
                             {{ $status->label() }}
                         </span>
                         <p class="mt-2.5 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{{ $status->description() }}</p>

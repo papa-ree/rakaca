@@ -28,8 +28,8 @@
 
     {{-- Status (responsive) --}}
     <td class="px-4 py-3.5 hidden sm:table-cell">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-{{ $status->color() }}-50 text-{{ $status->color() }}-700 ring-1 ring-inset ring-{{ $status->color() }}-600/20 dark:bg-{{ $status->color() }}-900/30 dark:text-{{ $status->color() }}-400">
-            <span class="h-2 w-2 rounded-full bg-{{ $status->color() }}-500"></span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {{ $status->badgeClass() }}">
+            <span class="h-2 w-2 rounded-full bg-current"></span>
             {{ $status->label() }}
         </span>
     </td>

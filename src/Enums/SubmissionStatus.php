@@ -38,6 +38,19 @@ enum SubmissionStatus: string
         };
     }
 
+    /** Class badge lengkap dengan pasangan dark; warna mengikuti palet status Bale. */
+    public function badgeClass(): string
+    {
+        return match ($this) {
+            self::Selesai => 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800/40',
+            self::Ditolak => 'bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-800/40',
+            self::Dibatalkan => 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600',
+            self::SiapDireview => 'bg-sky-50 text-sky-700 border-sky-100 dark:bg-sky-900/20 dark:text-sky-300 dark:border-sky-800/40',
+            self::Diproses => 'bg-indigo-50 text-indigo-700 border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800/40',
+            default => 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40',
+        };
+    }
+
     public function cancellableByUser(): bool
     {
         return in_array($this, [self::MenungguBerkas, self::SiapDireview], true);

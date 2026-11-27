@@ -42,13 +42,15 @@ it('merender dashboard guest dengan angka, layanan, dan status terakhir', functi
         'actived' => true,
     ]);
 
-    RakacaSubmission::create([
-        'user_uuid' => $user->uuid,
-        'rakaca_form_id' => $form->id,
-        'code' => 'TIK-0001',
-        'status' => SubmissionStatus::Diproses,
-        'items' => [],
-    ]);
+    foreach ([SubmissionStatus::Diproses, SubmissionStatus::MenungguRevisi, SubmissionStatus::Dibatalkan] as $index => $status) {
+        RakacaSubmission::create([
+            'user_uuid' => $user->uuid,
+            'rakaca_form_id' => $form->id,
+            'code' => 'TIK-'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+            'status' => $status,
+            'items' => [],
+        ]);
+    }
 
     Livewire::withoutLazyLoading()->actingAs($user)->test(Index::class)->assertOk();
 
@@ -64,6 +66,8 @@ it('merender dashboard guest dengan angka, layanan, dan status terakhir', functi
     Livewire::withoutLazyLoading()->actingAs($user)->test(StatusSection::class)
         ->assertSee('TIK-0001')
         ->assertSee(SubmissionStatus::Diproses->label())
+        ->assertSeeHtml('dark:bg-amber-900/20')
+        ->assertSeeHtml('dark:bg-gray-700')
         ->assertSeeHtml('open: 0')
         ->assertSeeHtml('submission-panel-0');
 });

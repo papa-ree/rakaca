@@ -92,6 +92,11 @@ class RakacaSubmission extends Model
         return $this->status?->color() ?? 'gray';
     }
 
+    public function getStatusBadgeClassAttribute(): string
+    {
+        return ($this->status ?? SubmissionStatus::Dibatalkan)->badgeClass();
+    }
+
     public function getStatusLabelAttribute(): string
     {
         return $this->status?->label() ?? 'Unknown';

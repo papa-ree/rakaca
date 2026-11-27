@@ -23,6 +23,22 @@ it('label dan color tersedia untuk setiap status', function () {
     }
 });
 
+it('badgeClass memakai class statis dengan pasangan dark untuk setiap status', function () {
+    foreach (SubmissionStatus::cases() as $status) {
+        expect($status->badgeClass())
+            ->toContain('bg-')
+            ->toContain('text-')
+            ->toContain('border-')
+            ->toContain('dark:bg-')
+            ->toContain('dark:text-')
+            ->toContain('dark:border-')
+            ->not->toContain('{{');
+    }
+
+    expect(SubmissionStatus::MenungguRevisi->badgeClass())->toContain('dark:bg-amber-900/20')
+        ->and(SubmissionStatus::Dibatalkan->badgeClass())->toContain('dark:bg-gray-700');
+});
+
 it('cancellableByUser hanya untuk status yang diizinkan', function () {
     expect(SubmissionStatus::MenungguBerkas->cancellableByUser())->toBeTrue()
         ->and(SubmissionStatus::SiapDireview->cancellableByUser())->toBeTrue()

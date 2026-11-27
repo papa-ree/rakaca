@@ -214,7 +214,7 @@
                         <a href="{{ route('rakaca.landlord.submission.detail', $item->id) }}" wire:navigate class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition">
                             <div>
                                 <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $item->code }} — {{ $item->form?->name ?? '' }} ({{ $item->form?->service?->name ?? '' }})</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->user?->name ?? $item->items['data']['nama_lengkap'] ?? '-' }} · {{ $item->created_at->format('d M Y H:i') }} · <span class="px-2 py-0.5 rounded-full text-xs bg-{{ $item->statusColor }}-100 text-{{ $item->statusColor }}-700">{{ $item->statusLabel }}</span> · {{ $item->uploads->count() }} berkas</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->user?->name ?? $item->items['data']['nama_lengkap'] ?? '-' }} · {{ $item->created_at->format('d M Y H:i') }} · <span class="px-2 py-0.5 rounded-full text-xs border {{ $item->statusBadgeClass }}">{{ $item->statusLabel }}</span> · {{ $item->uploads->count() }} berkas</p>
                             </div>
                             <x-lucide-chevron-right class="w-4 h-4 text-gray-400" />
                         </a>
