@@ -5,8 +5,8 @@ namespace Paparee\Rakaca\Tests\Feature;
 use App\Models\User;
 use Bale\Core\Models\UserProfile;
 use Bale\Wara\Models\WaraClient;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
+use Illuminate\Support\Str;
 use Paparee\Rakaca\Enums\SubmissionStatus;
 use Paparee\Rakaca\Models\Form;
 use Paparee\Rakaca\Models\RakacaService;
@@ -153,5 +153,56 @@ it('pesan penolakan memuat alasan', function () {
     NotificationFacade::assertSentOnDemand(
         SubmissionStatusChanged::class,
         fn ($notification, $channels, $notifiable) => str_contains($notification->toWara($notifiable), 'Alasan: Berkas tidak sesuai ketentuan.')
+    );
+});
+
+it('pesan penyelesaian memuat isian formulir respon admin', function () {
+    $submission = submissionNotifierFixture();
+    $submission->update(['status' => SubmissionStatus::Diproses]);
+    $submission->form->update([
+        'response_form_schema' => [
+            ['key' => 'nomor_surat', 'label' => 'Nomor Surat', 'type' => 'string'],
+            ['key' => 'disetujui', 'label' => 'Disetujui', 'type' => 'checkbox'],
+            ['key' => 'kosong', 'label' => 'Tidak Diisi', 'type' => 'string'],
+        ],
+    ]);
+
+    rakacaWorkflow($submission)->complete([
+        'nomor_surat' => 'B-123',
+        'disetujui' => true,
+    ]);
+
+    NotificationFacade::assertSentOnDemand(
+        SubmissionStatusChanged::class,
+        function ($notification, $channels, $notifiable) {
+            $message = $notification->toWara($notifiable);
+
+            return str_contains($message, 'Nomor Surat: B-123')
+                && str_contains($message, 'Disetujui: Ya')
+                && ! str_contains($message, 'Tidak Diisi')
+                && ! str_contains($message, 'dapat diunduh');
+        }
+    );
+});
+
+it('pesan penyelesaian memberitahu berkas respon dapat diunduh di rakaca', function () {
+    $submission = submissionNotifierFixture();
+    $submission->update(['status' => SubmissionStatus::Diproses]);
+    $submission->form->update([
+        'response_form_schema' => [
+            ['key' => 'lampiran', 'label' => 'Lampiran', 'type' => 'string'],
+        ],
+    ]);
+
+    rakacaWorkflow($submission)->complete([
+        'lampiran' => 'rakaca-submissions/hasil-surat.pdf',
+    ]);
+
+    NotificationFacade::assertSentOnDemand(
+        SubmissionStatusChanged::class,
+        fn ($notification, $channels, $notifiable) => str_contains(
+            $notification->toWara($notifiable),
+            'Berkas hasil dapat diunduh di Rakaca.'
+        )
     );
 });

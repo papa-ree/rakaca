@@ -40,6 +40,43 @@ class SubmissionStatusChanged extends Notification implements ShouldQueue
             $lines[] = 'Alasan: '.$submission->response->rejection_reason;
         }
 
+        if ($status === SubmissionStatus::Selesai) {
+            $resolution = $submission->response?->resolution_data ?? [];
+            $schema = $submission->form?->response_form_schema ?? [];
+
+            if ($schema === []) {
+                if (filled($resolution['manual_result'] ?? null)) {
+                    $lines[] = 'Hasil Layanan: '.$resolution['manual_result'];
+                }
+            } else {
+                foreach ($schema as $field) {
+                    $key = (string) ($field['key'] ?? '');
+                    $value = $resolution[$key] ?? null;
+
+                    if ($key === '' || $value === null || $value === '' || ! is_scalar($value)) {
+                        continue;
+                    }
+
+                    if (is_bool($value)) {
+                        $value = $value ? 'Ya' : 'Tidak';
+                    }
+
+                    $lines[] = ($field['label'] ?? $key).': '.$value;
+                }
+            }
+
+            $hasFile = collect($resolution)->flatten()->contains(
+                fn ($value) => is_string($value) && (
+                    str_contains($value, 'rakaca-submissions/')
+                    || str_contains($value, 'rakaca-submission-uploads/')
+                )
+            );
+
+            if ($hasFile) {
+                $lines[] = 'Berkas hasil dapat diunduh di Rakaca.';
+            }
+        }
+
         return implode("\n", $lines);
     }
 

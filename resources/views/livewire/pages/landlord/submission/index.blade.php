@@ -64,7 +64,7 @@
         :with="['form.service', 'user', 'uploads', 'response']"
         :searchable="['code', 'status']"
         sortField="created_at"
-        sortDirection="asc"
+        sortDirection="desc"
         :perPage="20"
     />
 </div>
